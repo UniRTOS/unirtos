@@ -15,7 +15,7 @@ UniRTOS SDK is a unified embedded development kit for multiple Quectel cellular 
 
 ## Directory Structure
 ```
-├── build.sh                # One-click build script (Linux/Windows)
+├── build.sh                # One-click build script (Windows)
 ├── CMakeLists.txt          # Top-level CMake configuration
 ├── Kconfig                 # Main configuration entry
 ├── qos_applications/       # Application examples and business code
