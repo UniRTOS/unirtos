@@ -83,11 +83,11 @@ config QCM_MQTT_FUNC
     bool "UniRTOS mqtt function"
     select QCM_SOCKET_ADP_FUNC
     select QCM_UTILS_UTF8_FUNC
-    imply QCM_MQTT5_FUNC
     default n
 
 config QCM_MQTT5_FUNC
     bool "UniRTOS mqtt5.0 function"
+    select QCM_MQTT_FUNC
     default n
 
 config QCM_FILE_SFS_FUNC
@@ -207,16 +207,21 @@ config QCM_MBEDTLS_LIBRARY_FUNC
     bool "UniRTOS mbedtls function"
     default n
 
+choice
+    prompt "mbedtls version"
+    depends on QCM_MBEDTLS_LIBRARY_FUNC
+    default QCM_MBEDTLS_2_LIBRARY_FUNC
+
 config QCM_MBEDTLS_2_LIBRARY_FUNC
-    bool "UniRTOS mbedtls2 function"
-    default n
+    bool "mbedtls 2.x"
 
 config QCM_MBEDTLS_4_LIBRARY_FUNC
-    bool "UniRTOS mbedtls4 function"
-    default n
+    bool "mbedtls 4.x"
+endchoice
 
 config QCM_MBEDTLS_CONFIG_FILE
     bool "UniRTOS mbedtls file function"
+    depends on QCM_MBEDTLS_LIBRARY_FUNC
     default n
 
 config QCM_GNSS_FUNC

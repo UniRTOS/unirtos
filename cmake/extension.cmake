@@ -125,6 +125,7 @@ function(unirtos_collect_auto_link_component_targets out_var)
     _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_MINI_HTTP_FUNC mini_http)
     _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_ESIM_FUNC esim_sdk)
     _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_GNSS_FUNC qcm_gnss)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_UTILS_XMODEM_FUNC xmodem)
 
     list(REMOVE_DUPLICATES _auto_link_libs)
     set(${out_var} ${_auto_link_libs} PARENT_SCOPE)
