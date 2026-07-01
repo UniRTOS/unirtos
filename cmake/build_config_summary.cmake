@@ -1,7 +1,7 @@
 
 message("\nUNIRTOS APPS")
 message(STATUS "CONFIG_QAPP_UNIRTOS_STD_FUNC ------------------------- ${CONFIG_QAPP_UNIRTOS_STD_FUNC}")
-message(STATUS "SELECTED_APP_DEMO_ENTRY_NAMES ----------------------- ${SELECTED_APP_DEMO_ENTRY_NAMES}")
+message(STATUS "SELECTED_APP_DEMO_ENTRY_NAMES ------------------------ ${SELECTED_APP_DEMO_ENTRY_NAMES}")
 
 message("\nUNIRTOS APPS STD AT")
 #unirtos std at
@@ -46,11 +46,10 @@ message(STATUS "CONFIG_QAPP_UNIRTOS_AT_QDBGCFG_CMD ------------------- ${CONFIG_
 message(STATUS "CONFIG_QAPP_UNIRTOS_AT_QVSIM_FUNC -------------------- ${CONFIG_QAPP_UNIRTOS_AT_QVSIM_FUNC}")
 message(STATUS "CONFIG_QAPP_UNIRTOS_AT_QADC_CMD ---------------------- ${CONFIG_QAPP_UNIRTOS_AT_QADC_CMD}")
 message(STATUS "CONFIG_QAPP_UNIRTOS_AT_QTEMP_CMD --------------------- ${CONFIG_QAPP_UNIRTOS_AT_QTEMP_CMD}")
-message(STATUS "CONFIG_QAPP_UNIRTOS_AT_CBC_CMD ----------------------- ${CONFIG_QAPP_UNIRTOS_AT_CBC_CMD}")
 message(STATUS "CONFIG_QAPP_UNIRTOS_NB_AT_FUNC ----------------------- ${CONFIG_QAPP_UNIRTOS_NB_AT_FUNC}")
 message(STATUS "CONFIG_QAPP_UNIRTOS_JD_AT_FUNC ----------------------- ${CONFIG_QAPP_UNIRTOS_JD_AT_FUNC}")
 message(STATUS "CONFIG_QAPP_UNIRTOS_AT_FLASH_TEST_CMD ---------------- ${CONFIG_QAPP_UNIRTOS_AT_FLASH_TEST_CMD}")
-message(STATUS "CONFIG_QAPP_UNIRTOS_AT_QESIM_CMD --------------------- ${CONFIG_QAPP_UNIRTOS_AT_ESIM_CMD}")
+message(STATUS "CONFIG_QAPP_UNIRTOS_AT_QESIM_CMD --------------------- ${CONFIG_QAPP_UNIRTOS_AT_QESIM_CMD}")
 message(STATUS "CONFIG_QOSA_EIGEN_PLATFORM_FUNC ---------------------- ${CONFIG_QOSA_EIGEN_PLATFORM_FUNC}")
 message(STATUS "CONFIG_QAPP_UNIRTOS_AT_QSVN_CMD ---------------------- ${CONFIG_QAPP_UNIRTOS_AT_QSVN_CMD}")
 message(STATUS "CONFIG_QAPP_UNIRTOS_QBAND_AT_FUNC -------------------- ${CONFIG_QAPP_UNIRTOS_QBAND_AT_FUNC}")
@@ -71,7 +70,7 @@ message(STATUS "CONFIG_QCM_MINI_HTTP_FUNC --------------------------- ${CONFIG_Q
 message(STATUS "CONFIG_QCM_LBS_FUNC --------------------------------- ${CONFIG_QCM_LBS_FUNC}")
 message(STATUS "CONFIG_QCM_MMS_FUNC --------------------------------- ${CONFIG_QCM_MMS_FUNC}")
 message(STATUS "CONFIG_QCM_MQTT_FUNC -------------------------------- ${CONFIG_QCM_MQTT_FUNC}")
-message(STATUS "CONFIG_QCM_MQTT5_FUNC --------------------------------${CONFIG_QCM_MQTT5_FUNC}")
+message(STATUS "CONFIG_QCM_MQTT5_FUNC ------------------------------- ${CONFIG_QCM_MQTT5_FUNC}")
 message(STATUS "CONFIG_QCM_NTP_FUNC --------------------------------- ${CONFIG_QCM_NTP_FUNC}")
 message(STATUS "CONFIG_QCM_SBFOTA_FUNC ------------------------------ ${CONFIG_QCM_SBFOTA_FUNC}")
 message(STATUS "CONFIG_QCM_WEBSOCKET_FUNC --------------------------- ${CONFIG_QCM_WEBSOCKET_FUNC}")
