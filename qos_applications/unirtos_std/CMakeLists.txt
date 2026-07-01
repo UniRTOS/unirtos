@@ -53,22 +53,10 @@ target_add_sources(${target} PRIVATE
 )
 
 # Set targets to link for std compilation
-list(APPEND LINK_LIB socket_adapter)
-
-if(CONFIG_QCM_UTILS_UTILS_FUNC)
-    list(APPEND LINK_LIB utils)
-endif()
-
-if(CONFIG_QCM_UTILS_BASE64_FUNC)
-    list(APPEND LINK_LIB base64)
-endif()
-
-if(CONFIG_QCM_VTLS_FUNC)
-    list(APPEND LINK_LIB vtls)
-endif()
-
-if(CONFIG_QCM_FILE_API_FUNC)
-    list(APPEND LINK_LIB qcm_file)
+if(COMMAND unirtos_get_auto_link_component_targets)
+    unirtos_get_auto_link_component_targets(LINK_LIB)
+elseif(COMMAND unirtos_collect_auto_link_component_targets)
+    unirtos_collect_auto_link_component_targets(LINK_LIB)
 endif()
 
 if(CONFIG_QOSA_LINK_SYSTEM_LIBRARIES_FUNC)
@@ -368,6 +356,7 @@ list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_virt_func.c")
 
 # Targets to link for STD compilation
 if (NOT PREBUILT_OBJECTS)
+    list(REMOVE_DUPLICATES LINK_LIB)
     target_link_libraries(${target} ${LINK_LIB})
 endif()
 

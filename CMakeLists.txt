@@ -568,6 +568,15 @@ include(${QL_KERNEL_DIR}/kernel.cmake)
 # Add compilation subdirectory
 add_subdirectory_if_exist(qos_components/components)
 
+# Cache menuconfig-driven component auto-link targets after component targets are created.
+if(COMMAND unirtos_collect_auto_link_component_targets)
+    unirtos_collect_auto_link_component_targets(UNIRTOS_AUTO_LINK_COMPONENT_TARGETS)
+    set_property(GLOBAL PROPERTY unirtos_auto_link_component_targets "${UNIRTOS_AUTO_LINK_COMPONENT_TARGETS}")
+    if(UNIRTOS_AUTO_LINK_COMPONENT_TARGETS)
+        message(STATUS "[auto-link] component targets: ${UNIRTOS_AUTO_LINK_COMPONENT_TARGETS}")
+    endif()
+endif()
+
 # Define all_components_libs.a library, used to aggregate all lib libraries from global components_libraries together
 set(target all_components_libs)
 set(all_components_libs_out ${out_unir_lib_dir}/all_components_libs.ld)

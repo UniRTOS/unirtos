@@ -41,7 +41,20 @@ if(QURL_COMPILE_CFG_EXE)
         message(QURL_COMPILE_CFG_SDK_CMD:${QURL_COMPILE_CFG_SDK_CMD})
     endif()
 
-    target_link_libraries(${target}.elf PRIVATE qurl ${QURL_USER_LIBS})
+    # Auto-resolve link libs from the shared SDK menuconfig mapping.
+    set(QURL_AUTO_LINK_LIBS)
+    if(COMMAND unirtos_get_auto_link_component_targets)
+        unirtos_get_auto_link_component_targets(QURL_AUTO_LINK_LIBS)
+    elseif(COMMAND unirtos_collect_auto_link_component_targets)
+        unirtos_collect_auto_link_component_targets(QURL_AUTO_LINK_LIBS)
+    endif()
+
+    if(QURL_AUTO_LINK_LIBS)
+        message(STATUS "QURL auto link libs from menuconfig: ${QURL_AUTO_LINK_LIBS}")
+    endif()
+
+    # Keep QURL_USER_LIBS as optional compatibility fallback.
+    target_link_libraries(${target}.elf PRIVATE qurl ${QURL_AUTO_LINK_LIBS} ${QURL_USER_LIBS})
     if(QURL_COMPILE_CFG_APPS)
         target_link_libraries(${target}.elf PRIVATE qurl_apps)
     endif()

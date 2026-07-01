@@ -79,6 +79,69 @@ function(add_firmware_link_libraries)
     set_property(GLOBAL PROPERTY firmware_link_libraries ${firmware_link_libraries} ${ARGN})
 endfunction()
 
+# Append a component target only when both the config symbol is enabled and the target exists.
+function(_unirtos_append_component_if_enabled out_var cfg_sym lib_target)
+    if(${cfg_sym} AND TARGET ${lib_target})
+        set(_tmp_libs ${${out_var}})
+        list(APPEND _tmp_libs ${lib_target})
+        set(${out_var} ${_tmp_libs} PARENT_SCOPE)
+    endif()
+endfunction()
+
+# Collect component targets from menuconfig CONFIG_QCM_* symbols.
+# The result can be linked directly to app-side targets to avoid per-app manual library lists.
+function(unirtos_collect_auto_link_component_targets out_var)
+    set(_auto_link_libs)
+
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_FILE_API_FUNC qcm_file)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_SOCKET_ADP_FUNC socket_adapter)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_VTLS_FUNC vtls)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_QURL_FUNC qurl)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_UTILS_BASE64_FUNC base64)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_UTILS_TLV_FUNC tlv)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_UTILS_UTF8_FUNC utf8)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_UTILS_UTILS_FUNC utils)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_MMS_FUNC qcm_mms)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_MQTT_FUNC qcm_mqtt)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_NTP_FUNC qcm_ntp)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_PING_FUNC ping)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_URC_FUNC qcm_urc)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_WEBSOCKET_FUNC qcm_websocket)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_LBS_FUNC qcm_lbs)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_VIRT_AT_FUNC qcm_virt_at)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_SPI_NOR_FUNC qcm_spi_nor)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_COAP_FUNC coap)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_COAP_API_FUNC qcm_coap)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_LWM2M_FUNC osa_lwm2m)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_LWM2M_FOTA_FUNC qcm_lwm2m_fota)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_SBFOTA_FUNC qcm_sbfota)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_DMHTTP_FUNC qcm_dmhttp)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_AUDIO_STREAM_FUNC qcm_audio)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_AUDIO_MP3_FUNC qcm_mp3_dec)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_AUDIO_AMR_FUNC qcm_amr)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_QVSIM_FUNC qvsim)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_MBEDTLS_LIBRARY_FUNC mbedtls)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_UART_LOG_FUNC qcm_uart_log)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_MINI_HTTP_FUNC mini_http)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_ESIM_FUNC esim_sdk)
+    _unirtos_append_component_if_enabled(_auto_link_libs CONFIG_QCM_GNSS_FUNC qcm_gnss)
+
+    list(REMOVE_DUPLICATES _auto_link_libs)
+    set(${out_var} ${_auto_link_libs} PARENT_SCOPE)
+endfunction()
+
+# Get globally cached auto-link targets if available, otherwise collect on demand.
+function(unirtos_get_auto_link_component_targets out_var)
+    get_property(_cached_libs GLOBAL PROPERTY unirtos_auto_link_component_targets)
+    if(_cached_libs)
+        set(${out_var} ${_cached_libs} PARENT_SCOPE)
+        return()
+    endif()
+
+    unirtos_collect_auto_link_component_targets(_resolved_libs)
+    set(${out_var} ${_resolved_libs} PARENT_SCOPE)
+endfunction()
+
 
 # add_subdirectory_if_exist - If there is a CMakeLists.txt file in the current dir directory, add it
 # Check if folder exists, if it does, add the corresponding folder directory
