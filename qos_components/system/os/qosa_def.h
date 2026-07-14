@@ -27,10 +27,6 @@
 // system support configuration, every platform is different
 #include "qosa_system_config.h"
 
-// unirtos version info
-#define QOSA_SDK_VERSION    0
-#define QOSA_SDK_SUBVERSION 0
-#define QOSA_SDK_REVISION   1
 
 // Define the data type of CPU related data type
 typedef signed long   qosa_base_t;  /**< Nbit CPU related date type */

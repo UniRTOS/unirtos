@@ -500,6 +500,147 @@ execute_process(
 )
 include(${TARGET_CMAKE})
 
+# Resolve SDK runtime version strings with priority:
+# 1) project-root version.txt
+# 2) git metadata from SDK repo
+# 3) qosa_sdk_version.h numeric version macros
+set(QOSA_SDK_VERSION_TAG "")
+set(QOSA_SDK_GIT_DESCRIBE "")
+set(QOSA_SDK_GIT_COMMIT "unknown")
+set(QOSA_SDK_GIT_DIRTY 0)
+set(QOSA_SDK_VERSION_DETAIL "")
+set(QOSA_PROJECT_VERSION_TXT "")
+set(QOSA_SDK_RESOLVED_VERSION_MAJOR "")
+set(QOSA_SDK_RESOLVED_VERSION_MINOR "")
+set(QOSA_SDK_RESOLVED_VERSION_PATCH "")
+
+if(DEFINED UNIRTOS_EXTERNAL_APP_DIR AND EXISTS "${UNIRTOS_EXTERNAL_APP_DIR}/version.txt")
+    set(QOSA_PROJECT_VERSION_TXT "${UNIRTOS_EXTERNAL_APP_DIR}/version.txt")
+elseif(DEFINED SELECTED_APP_BUILD_DIRS)
+    list(LENGTH SELECTED_APP_BUILD_DIRS SELECTED_APP_BUILD_DIRS_LEN)
+    if(SELECTED_APP_BUILD_DIRS_LEN EQUAL 1)
+        list(GET SELECTED_APP_BUILD_DIRS 0 SINGLE_SELECTED_APP_DIR)
+        if(EXISTS "${QOS_APPLICATIONS_DIR}/${SINGLE_SELECTED_APP_DIR}/version.txt")
+            set(QOSA_PROJECT_VERSION_TXT "${QOS_APPLICATIONS_DIR}/${SINGLE_SELECTED_APP_DIR}/version.txt")
+        endif()
+    endif()
+endif()
+
+if(NOT "${QOSA_PROJECT_VERSION_TXT}" STREQUAL "")
+    file(READ "${QOSA_PROJECT_VERSION_TXT}" _project_sdk_version_txt)
+    string(STRIP "${_project_sdk_version_txt}" _project_sdk_version_txt)
+    if(NOT "${_project_sdk_version_txt}" STREQUAL "")
+        set(QOSA_SDK_VERSION_TAG "${_project_sdk_version_txt}")
+        set(QOSA_SDK_VERSION_DETAIL "${_project_sdk_version_txt}")
+        if("${_project_sdk_version_txt}" MATCHES "^[vV]?([0-9]+)\.([0-9]+)\.([0-9]+)$")
+            set(QOSA_SDK_RESOLVED_VERSION_MAJOR "${CMAKE_MATCH_1}")
+            set(QOSA_SDK_RESOLVED_VERSION_MINOR "${CMAKE_MATCH_2}")
+            set(QOSA_SDK_RESOLVED_VERSION_PATCH "${CMAKE_MATCH_3}")
+        endif()
+    endif()
+endif()
+
+if("${QOSA_SDK_VERSION_TAG}" STREQUAL "")
+    execute_process(
+        COMMAND git -C ${UNIRTOS_DIR} rev-parse --is-inside-work-tree
+        RESULT_VARIABLE QOSA_SDK_GIT_CHECK_RET
+        OUTPUT_VARIABLE QOSA_SDK_GIT_CHECK_OUT
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+    )
+
+    if(QOSA_SDK_GIT_CHECK_RET EQUAL 0 AND "${QOSA_SDK_GIT_CHECK_OUT}" STREQUAL "true")
+        execute_process(
+            COMMAND git -C ${UNIRTOS_DIR} describe --tags --always --dirty
+            RESULT_VARIABLE QOSA_SDK_GIT_DESCRIBE_RET
+            OUTPUT_VARIABLE QOSA_SDK_GIT_DESCRIBE_OUT
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_QUIET
+        )
+        if(QOSA_SDK_GIT_DESCRIBE_RET EQUAL 0 AND NOT "${QOSA_SDK_GIT_DESCRIBE_OUT}" STREQUAL "")
+            set(QOSA_SDK_GIT_DESCRIBE "${QOSA_SDK_GIT_DESCRIBE_OUT}")
+        endif()
+
+        execute_process(
+            COMMAND git -C ${UNIRTOS_DIR} describe --tags --abbrev=0
+            RESULT_VARIABLE QOSA_SDK_GIT_TAG_RET
+            OUTPUT_VARIABLE QOSA_SDK_GIT_TAG_OUT
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_QUIET
+        )
+        if(QOSA_SDK_GIT_TAG_RET EQUAL 0 AND NOT "${QOSA_SDK_GIT_TAG_OUT}" STREQUAL "")
+            set(QOSA_SDK_VERSION_TAG "${QOSA_SDK_GIT_TAG_OUT}")
+        elseif(NOT "${QOSA_SDK_GIT_DESCRIBE}" STREQUAL "")
+            set(QOSA_SDK_VERSION_TAG "${QOSA_SDK_GIT_DESCRIBE}")
+        endif()
+
+        if("${QOSA_SDK_VERSION_TAG}" MATCHES "^[vV]?([0-9]+)\.([0-9]+)\.([0-9]+)")
+            set(QOSA_SDK_RESOLVED_VERSION_MAJOR "${CMAKE_MATCH_1}")
+            set(QOSA_SDK_RESOLVED_VERSION_MINOR "${CMAKE_MATCH_2}")
+            set(QOSA_SDK_RESOLVED_VERSION_PATCH "${CMAKE_MATCH_3}")
+        endif()
+
+        execute_process(
+            COMMAND git -C ${UNIRTOS_DIR} rev-parse --short HEAD
+            RESULT_VARIABLE QOSA_SDK_GIT_COMMIT_RET
+            OUTPUT_VARIABLE QOSA_SDK_GIT_COMMIT_OUT
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_QUIET
+        )
+        if(QOSA_SDK_GIT_COMMIT_RET EQUAL 0 AND NOT "${QOSA_SDK_GIT_COMMIT_OUT}" STREQUAL "")
+            set(QOSA_SDK_GIT_COMMIT "${QOSA_SDK_GIT_COMMIT_OUT}")
+        endif()
+
+        execute_process(
+            COMMAND git -C ${UNIRTOS_DIR} diff --quiet --ignore-submodules --
+            RESULT_VARIABLE QOSA_SDK_GIT_DIRTY_RET
+            ERROR_QUIET
+        )
+        if(NOT QOSA_SDK_GIT_DIRTY_RET EQUAL 0)
+            set(QOSA_SDK_GIT_DIRTY 1)
+        endif()
+    endif()
+endif()
+
+if("${QOSA_SDK_VERSION_TAG}" STREQUAL "")
+    file(STRINGS "${QL_COMPONENTS_DIR}/system/version/qosa_sdk_version.h" QOSA_DEF_VERSION_MAJOR REGEX "^[ 	]*#define[ 	]+QOSA_SDK_DEFAULT_VERSION[ 	]+[0-9]+")
+    file(STRINGS "${QL_COMPONENTS_DIR}/system/version/qosa_sdk_version.h" QOSA_DEF_VERSION_MINOR REGEX "^[ 	]*#define[ 	]+QOSA_SDK_DEFAULT_SUBVERSION[ 	]+[0-9]+")
+    file(STRINGS "${QL_COMPONENTS_DIR}/system/version/qosa_sdk_version.h" QOSA_DEF_VERSION_PATCH REGEX "^[ 	]*#define[ 	]+QOSA_SDK_DEFAULT_REVISION[ 	]+[0-9]+")
+    string(REGEX REPLACE ".*QOSA_SDK_DEFAULT_VERSION[ 	]+([0-9]+).*" "\\1" QOSA_DEF_VERSION_MAJOR "${QOSA_DEF_VERSION_MAJOR}")
+    string(REGEX REPLACE ".*QOSA_SDK_DEFAULT_SUBVERSION[ 	]+([0-9]+).*" "\\1" QOSA_DEF_VERSION_MINOR "${QOSA_DEF_VERSION_MINOR}")
+    string(REGEX REPLACE ".*QOSA_SDK_DEFAULT_REVISION[ 	]+([0-9]+).*" "\\1" QOSA_DEF_VERSION_PATCH "${QOSA_DEF_VERSION_PATCH}")
+    if(NOT "${QOSA_DEF_VERSION_MAJOR}" STREQUAL "" AND NOT "${QOSA_DEF_VERSION_MINOR}" STREQUAL "" AND NOT "${QOSA_DEF_VERSION_PATCH}" STREQUAL "")
+        set(QOSA_SDK_RESOLVED_VERSION_MAJOR "${QOSA_DEF_VERSION_MAJOR}")
+        set(QOSA_SDK_RESOLVED_VERSION_MINOR "${QOSA_DEF_VERSION_MINOR}")
+        set(QOSA_SDK_RESOLVED_VERSION_PATCH "${QOSA_DEF_VERSION_PATCH}")
+        set(QOSA_SDK_VERSION_TAG "v${QOSA_DEF_VERSION_MAJOR}.${QOSA_DEF_VERSION_MINOR}.${QOSA_DEF_VERSION_PATCH}")
+    endif()
+endif()
+
+if("${QOSA_SDK_VERSION_TAG}" STREQUAL "")
+    set(QOSA_SDK_VERSION_TAG "v0.0.0")
+endif()
+
+if("${QOSA_SDK_RESOLVED_VERSION_MAJOR}" STREQUAL "")
+    set(QOSA_SDK_RESOLVED_VERSION_MAJOR 0)
+endif()
+if("${QOSA_SDK_RESOLVED_VERSION_MINOR}" STREQUAL "")
+    set(QOSA_SDK_RESOLVED_VERSION_MINOR 0)
+endif()
+if("${QOSA_SDK_RESOLVED_VERSION_PATCH}" STREQUAL "")
+    set(QOSA_SDK_RESOLVED_VERSION_PATCH 0)
+endif()
+
+if(NOT "${QOSA_PROJECT_VERSION_TXT}" STREQUAL "")
+    set(QOSA_SDK_VERSION_DETAIL "${QOSA_SDK_VERSION_TAG}")
+elseif(NOT "${QOSA_SDK_GIT_DESCRIBE}" STREQUAL "")
+    set(QOSA_SDK_VERSION_DETAIL "${QOSA_SDK_GIT_DESCRIBE}")
+else()
+    set(QOSA_SDK_VERSION_DETAIL "${QOSA_SDK_VERSION_TAG}")
+endif()
+
+message(STATUS "[sdk-version] source=${QOSA_PROJECT_VERSION_TXT}; tag=${QOSA_SDK_VERSION_TAG}, detail=${QOSA_SDK_VERSION_DETAIL}, dirty=${QOSA_SDK_GIT_DIRTY}")
+
 # Later generate unirtos_version.h file and put it in bat script to generate
 # Get current date and time, generate unirtos_version.h file
 string(TIMESTAMP CURRENT_TIME "%Y_%m_%d_%H_%M_%S")
@@ -513,6 +654,7 @@ execute_process(
 # Convert .h.in files to corresponding .h files in cmake using SRC_CONFIG
 configure_file(${QL_COMPONENTS_DIR}/components/include/qcm_proj_config.h.in ${out_inc_dir}/qcm_proj_config.h)
 configure_file(${QL_DEMO_DIR}/include/unirtos_apps_config.h.in ${out_inc_dir}/unirtos_apps_config.h)
+configure_file(${QL_COMPONENTS_DIR}/system/version/qosa_sdk_version_gen.h.in ${out_inc_dir}/qosa_sdk_version_gen.h @ONLY)
 if(CONFIG_QAPP_UNIRTOS_STD_FUNC)
     configure_file(${QL_DEMO_DIR}/unirtos_std/inc/unirtos_atcmd_cfg.h.in ${out_inc_dir}/unirtos_atcmd_cfg.h)
 endif()
@@ -556,6 +698,7 @@ include_directories(${QL_COMPONENTS_DIR}/system/public_comp/license)
 include_directories(${QL_COMPONENTS_DIR}/system/cam)
 include_directories(${QL_COMPONENTS_DIR}/system/secboot)
 include_directories(${QL_COMPONENTS_DIR}/system/vsim_adapt)
+include_directories(${QL_COMPONENTS_DIR}/system/version)
 include_directories(${QL_DEMO_DIR}/app_init)
 
 # Conditional include paths for menuconfig-driven component targets (global scope)
@@ -661,6 +804,8 @@ include(cmake/build_config_summary.cmake)
 
 #Link the components.a library
 include(${QL_KERNEL_DIR}/kernel.cmake)
+
+add_subdirectory_if_exist(qos_components/system/version)
 
 # Add compilation subdirectory
 add_subdirectory_if_exist(qos_components/components)
