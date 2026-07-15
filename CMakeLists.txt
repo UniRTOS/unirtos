@@ -503,12 +503,8 @@ include(${TARGET_CMAKE})
 # Resolve SDK runtime version strings with priority:
 # 1) project-root version.txt
 # 2) git metadata from SDK repo
-# 3) qosa_def.h numeric version macros
+# 3) qosa_sdk_version.h numeric version macros
 set(QOSA_SDK_VERSION_TAG "")
-set(QOSA_SDK_GIT_DESCRIBE "")
-set(QOSA_SDK_GIT_COMMIT "unknown")
-set(QOSA_SDK_GIT_DIRTY 0)
-set(QOSA_SDK_VERSION_DETAIL "")
 set(QOSA_PROJECT_VERSION_TXT "")
 set(QOSA_SDK_RESOLVED_VERSION_MAJOR "")
 set(QOSA_SDK_RESOLVED_VERSION_MINOR "")
@@ -531,7 +527,6 @@ if(NOT "${QOSA_PROJECT_VERSION_TXT}" STREQUAL "")
     string(STRIP "${_project_sdk_version_txt}" _project_sdk_version_txt)
     if(NOT "${_project_sdk_version_txt}" STREQUAL "")
         set(QOSA_SDK_VERSION_TAG "${_project_sdk_version_txt}")
-        set(QOSA_SDK_VERSION_DETAIL "${_project_sdk_version_txt}")
         if("${_project_sdk_version_txt}" MATCHES "^[vV]?([0-9]+)\.([0-9]+)\.([0-9]+)$")
             set(QOSA_SDK_RESOLVED_VERSION_MAJOR "${CMAKE_MATCH_1}")
             set(QOSA_SDK_RESOLVED_VERSION_MINOR "${CMAKE_MATCH_2}")
@@ -551,17 +546,6 @@ if("${QOSA_SDK_VERSION_TAG}" STREQUAL "")
 
     if(QOSA_SDK_GIT_CHECK_RET EQUAL 0 AND "${QOSA_SDK_GIT_CHECK_OUT}" STREQUAL "true")
         execute_process(
-            COMMAND git -C ${UNIRTOS_DIR} describe --tags --always --dirty
-            RESULT_VARIABLE QOSA_SDK_GIT_DESCRIBE_RET
-            OUTPUT_VARIABLE QOSA_SDK_GIT_DESCRIBE_OUT
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-            ERROR_QUIET
-        )
-        if(QOSA_SDK_GIT_DESCRIBE_RET EQUAL 0 AND NOT "${QOSA_SDK_GIT_DESCRIBE_OUT}" STREQUAL "")
-            set(QOSA_SDK_GIT_DESCRIBE "${QOSA_SDK_GIT_DESCRIBE_OUT}")
-        endif()
-
-        execute_process(
             COMMAND git -C ${UNIRTOS_DIR} describe --tags --abbrev=0
             RESULT_VARIABLE QOSA_SDK_GIT_TAG_RET
             OUTPUT_VARIABLE QOSA_SDK_GIT_TAG_OUT
@@ -570,34 +554,23 @@ if("${QOSA_SDK_VERSION_TAG}" STREQUAL "")
         )
         if(QOSA_SDK_GIT_TAG_RET EQUAL 0 AND NOT "${QOSA_SDK_GIT_TAG_OUT}" STREQUAL "")
             set(QOSA_SDK_VERSION_TAG "${QOSA_SDK_GIT_TAG_OUT}")
-        elseif(NOT "${QOSA_SDK_GIT_DESCRIBE}" STREQUAL "")
-            set(QOSA_SDK_VERSION_TAG "${QOSA_SDK_GIT_DESCRIBE}")
+        else()
+            execute_process(
+                COMMAND git -C ${UNIRTOS_DIR} describe --tags --always
+                RESULT_VARIABLE QOSA_SDK_GIT_FALLBACK_RET
+                OUTPUT_VARIABLE QOSA_SDK_GIT_FALLBACK_OUT
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+                ERROR_QUIET
+            )
+            if(QOSA_SDK_GIT_FALLBACK_RET EQUAL 0 AND NOT "${QOSA_SDK_GIT_FALLBACK_OUT}" STREQUAL "")
+                set(QOSA_SDK_VERSION_TAG "${QOSA_SDK_GIT_FALLBACK_OUT}")
+            endif()
         endif()
 
         if("${QOSA_SDK_VERSION_TAG}" MATCHES "^[vV]?([0-9]+)\.([0-9]+)\.([0-9]+)")
             set(QOSA_SDK_RESOLVED_VERSION_MAJOR "${CMAKE_MATCH_1}")
             set(QOSA_SDK_RESOLVED_VERSION_MINOR "${CMAKE_MATCH_2}")
             set(QOSA_SDK_RESOLVED_VERSION_PATCH "${CMAKE_MATCH_3}")
-        endif()
-
-        execute_process(
-            COMMAND git -C ${UNIRTOS_DIR} rev-parse --short HEAD
-            RESULT_VARIABLE QOSA_SDK_GIT_COMMIT_RET
-            OUTPUT_VARIABLE QOSA_SDK_GIT_COMMIT_OUT
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-            ERROR_QUIET
-        )
-        if(QOSA_SDK_GIT_COMMIT_RET EQUAL 0 AND NOT "${QOSA_SDK_GIT_COMMIT_OUT}" STREQUAL "")
-            set(QOSA_SDK_GIT_COMMIT "${QOSA_SDK_GIT_COMMIT_OUT}")
-        endif()
-
-        execute_process(
-            COMMAND git -C ${UNIRTOS_DIR} diff --quiet --ignore-submodules --
-            RESULT_VARIABLE QOSA_SDK_GIT_DIRTY_RET
-            ERROR_QUIET
-        )
-        if(NOT QOSA_SDK_GIT_DIRTY_RET EQUAL 0)
-            set(QOSA_SDK_GIT_DIRTY 1)
         endif()
     endif()
 endif()
@@ -631,15 +604,7 @@ if("${QOSA_SDK_RESOLVED_VERSION_PATCH}" STREQUAL "")
     set(QOSA_SDK_RESOLVED_VERSION_PATCH 0)
 endif()
 
-if(NOT "${QOSA_PROJECT_VERSION_TXT}" STREQUAL "")
-    set(QOSA_SDK_VERSION_DETAIL "${QOSA_SDK_VERSION_TAG}")
-elseif(NOT "${QOSA_SDK_GIT_DESCRIBE}" STREQUAL "")
-    set(QOSA_SDK_VERSION_DETAIL "${QOSA_SDK_GIT_DESCRIBE}")
-else()
-    set(QOSA_SDK_VERSION_DETAIL "${QOSA_SDK_VERSION_TAG}")
-endif()
-
-message(STATUS "[sdk-version] source=${QOSA_PROJECT_VERSION_TXT}; tag=${QOSA_SDK_VERSION_TAG}, detail=${QOSA_SDK_VERSION_DETAIL}, dirty=${QOSA_SDK_GIT_DIRTY}")
+message(STATUS "[sdk-version] source=${QOSA_PROJECT_VERSION_TXT}; tag=${QOSA_SDK_VERSION_TAG}")
 
 # Later generate unirtos_version.h file and put it in bat script to generate
 # Get current date and time, generate unirtos_version.h file

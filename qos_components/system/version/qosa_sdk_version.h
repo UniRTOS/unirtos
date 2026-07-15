@@ -23,11 +23,6 @@ QOSA_INLINE const char *qosa_sdk_get_version(void)
     return QOSA_SDK_VERSION_TAG;
 }
 
-QOSA_INLINE const char *qosa_sdk_get_version_detail(void)
-{
-    return QOSA_SDK_VERSION_DETAIL;
-}
-
 #ifdef __cplusplus
 }
 #endif
