@@ -100,6 +100,7 @@ void qosa_dns_result_free(struct qosa_addrinfo_s *info);
  *        - Return QOSA_DNS_RESULT_OK on success
  *        - Return other error codes from qosa_dns_error_e on failure
  */
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 qosa_dns_error_e qosa_dns_asyn_getaddrinfo(
     qosa_uint8_t            simcid,
     qosa_uint8_t            pdpcid,
@@ -111,5 +112,15 @@ qosa_dns_error_e qosa_dns_asyn_getaddrinfo(
 
 qosa_dns_error_e
 qosa_dns_syn_getaddrinfo(qosa_uint8_t simcid, qosa_uint8_t pdpcid, const char *hostname, struct qosa_addrinfo_s *hints, struct qosa_addrinfo_s **res);
+#else
+qosa_dns_error_e qosa_dns_asyn_getaddrinfo(
+    const char             *hostname,
+    struct qosa_addrinfo_s *hints,
+    dns_result_callback     cb,
+    void                   *user_argv
+);
 
+qosa_dns_error_e
+qosa_dns_syn_getaddrinfo(const char *hostname, struct qosa_addrinfo_s *hints, struct qosa_addrinfo_s **res);
+#endif
 #endif /* __QOSA_ASYN_DNS_H__ */

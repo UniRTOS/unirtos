@@ -17,7 +17,7 @@
 #define __MPC__H__
 
 #include "qosa_def.h"
-
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #define MPC_RET_SUCCESS                             0x00
 #define MPC_RET_FAIL                                0x0f
 #define MPC_FREE_LATER(ev, p)                       (ev.d |= (0x01 << (((qosa_ptr)&ev.p - ((qosa_ptr)&ev + 4)) / sizeof(qosa_ptr))))
@@ -199,4 +199,5 @@ void mpc_post_success_full(
  */
 void mpc_post_error(qosa_uint8_t simid, mpc_cb_t cb, qosa_ptr p1, qosa_ptr p2, qosa_ptr p3);
 
+#endif/ !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif

@@ -3,6 +3,7 @@
 #
 
 menu "datacall"
+depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
 
 config QOSA_DATACALL_LIGHT_MODE
     bool "datacall light mode"

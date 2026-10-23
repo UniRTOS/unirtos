@@ -17,6 +17,7 @@
 #define __QOSA_URC_H__
 
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
 #include "qosa_sys.h"
 #include "qosa_at_sio.h"
 
@@ -380,5 +381,5 @@ qcm_urc_cmux_config_e unir_cmux_get_urc_port(void);
  */
 qosa_urc_errcode_e unir_cmux_set_urc_port(qosa_urc_cmux_config_e urc_port);
 #endif /* CONFIG_UNIR_CMUX_SUPPORT */
-
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
 #endif /* __QOSA_URC_H__ */

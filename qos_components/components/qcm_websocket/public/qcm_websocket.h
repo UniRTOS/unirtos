@@ -28,6 +28,7 @@
 /*!< Defines the maximum value of configuration items */
 #define QCM_WEB_CFG_CONFIG_ID_MAX              2
 
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
 /*!< Defines the number of PDP context connection PDPCIDs */
 #define QCM_WEB_CFG_CONN_PDP_CID_MIN           QOSA_PDP_CID_MIN
 #define QCM_WEB_CFG_CONN_PDP_CID_MAX           QOSA_PDP_CID_MAX
@@ -35,7 +36,7 @@
 /*!< Defines the number of PDP context connection SIMIDs */
 #define QCM_WEB_CFG_CONN_SIM_CID_MIN           0
 #define QCM_WEB_CFG_CONN_SIM_CID_MAX           (QOSA_SIMID_NUM - 1)
-
+#endif
 /*!< Defines the maximum value of SSL connection ID */
 #define QCM_WEB_CFG_CONN_SSL_ID_MIN            0
 #define QCM_WEB_CFG_CONN_SSL_ID_MAX            5
@@ -106,9 +107,12 @@
  * This enumeration type is used to specify different parameters of Web configuration, including connection parameters, timeout settings, buffer sizes, callback functions, etc.
  */
 typedef enum
-{
-    QCM_WEB_CFG_CONN_PDPCID = 0,   /*!< PDPCID of the connection */
+{   
+    QCM_WEB_CFG_CONN_MIN = 0,
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
+    QCM_WEB_CFG_CONN_PDPCID,   /*!< PDPCID of the connection */
     QCM_WEB_CFG_CONN_SIMCID,       /*!< SIMCID of the connection */
+#endif
     QCM_WEB_CFG_CONN_SSL_CTX_ID,   /*!< SSL context ID */
     QCM_WEB_CFG_CONN_SSLCONFIG,    /*!< SSL configuration */
     QCM_WEB_CFG_CONN_URL,          /*!< URL of the connection */
@@ -311,8 +315,10 @@ typedef struct
  */
 typedef struct
 {
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
     int   pdp_cid;       /*!< PDP context ID, used to identify a session in the mobile network. */
     int   sim_cid;       /*!< SIM card ID, used to identify the SIM card in use. */
+#endif
     char *url;           /*!< Target URL, specifying the server address and path to connect to. */
     int   url_len;       /*!< URL data length, used to specify the length of the url string. */
     int   url_ex;        /*!< Whether URL is configured through "conn/url-ex". */

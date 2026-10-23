@@ -18,6 +18,7 @@
 #include "qurl_def_basic.h"
 #include "qurl_def_in.h"
 
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
 int qurl_nw_activate_async(qurl_core_ctrl_t *core_ptr);
 
 int qurl_nw_activate_async_ex(int nw_id, qurl_nw_activate_cb nw_activate_func, void *cb_arg);
@@ -25,5 +26,6 @@ int qurl_nw_activate_async_ex(int nw_id, qurl_nw_activate_cb nw_activate_func, v
 int qurl_nw_is_activated(qurl_core_ctrl_t *core_ptr);
 
 int qurl_nw_get_ip(qurl_core_ctrl_t *core_ptr);
+#endif
 
 #endif /* Head define end*/

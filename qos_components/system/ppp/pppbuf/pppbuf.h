@@ -17,6 +17,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #if UNIRTOS_PPP_USE_EXTERNAL_PBUF
 
 #include "lwip/pbuf.h"
@@ -102,5 +103,5 @@ struct qpppbuf *pppbuf_clone_impl(uint32_t layer, uint32_t type, struct qpppbuf 
 struct qpppbuf *pppbuf_coalesce_impl(struct qpppbuf *p, uint32_t layer);
 
 #endif  // !UNIRTOS_PPP_USE_EXTERNAL_PBUF
-
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif  // !__PPPBUF__H__

@@ -17,6 +17,7 @@
 #define __QOSA_DEV_H__
 
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_sys.h"
 #include "qosa_at_sio.h"
 
@@ -615,4 +616,5 @@ qosa_int32_t qosa_cpu_usage_start(qosa_uint32_t period_ms, qosa_cpu_usage_cb_t c
  */
 qosa_int32_t qosa_cpu_usage_stop(void);
 
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __QOSA_DEV_H__ */

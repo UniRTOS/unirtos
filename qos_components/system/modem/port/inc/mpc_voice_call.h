@@ -17,11 +17,11 @@
 #define __MPC_VOICE_CALL__H__
 
 #include "mpc.h"
-
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 int mpc_start_voice_call(const char *phone_number);
 
 int mpc_stop_voice_call(qosa_uint8_t  simid);
 
 int mpc_answer_call(void);
-
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __MPC_VOICE_CALL__H__ */

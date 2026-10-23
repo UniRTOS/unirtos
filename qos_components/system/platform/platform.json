@@ -57,5 +57,15 @@
 		"EG916QGL_LG",
 		"EG915QJP_LC",
 		"EG915QJP_LG"
+	],
+	"bk7258": [
+		"FCM665D"
+	],
+	"bk7238": [
+		"FGM842D",
+		"FCM242D"
+	],
+	"ecr6600": [
+		"FCM360W"
 	]
 }

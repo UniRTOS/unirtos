@@ -18,7 +18,7 @@
 #define __QOSA_MODEM_FEATURE_DIFF_H__
 
 #include "qosa_def.h"
-
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 typedef enum
 {
     QOSA_MFD_NW_CFG_CREG_EMERGENCY, /*!< Whether to display cell information in creg command under emergency registration; Default: not display */
@@ -49,5 +49,5 @@ typedef struct
 qosa_uint32_t qosa_mfd_get_cfg(qosa_mfd_e feature);
 
 void qosa_mfd_set_cfg(qosa_mfd_e feature, qosa_uint32_t value);
-
+#endif//!(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __QOSA_MODEM_FEATURE_DIFF_H__ */

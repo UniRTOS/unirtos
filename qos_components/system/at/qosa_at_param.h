@@ -17,6 +17,9 @@
 #define __AT_PARAM_H__
 
 #include "qosa_def.h"
+
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+
 #include "qosa_sys.h"
 #include "qosa_at_sio.h"
 #include "qosa_queue_list.h"
@@ -939,4 +942,5 @@ qosa_bool_t qosa_at_param_is_empty(qosa_at_param_t *param);
  */
 qosa_int64_t qosa_at_param_hex_int64_in_range(qosa_at_param_t *param, qosa_int64_t minval, qosa_int64_t maxval, qosa_bool_t *paramok);
 
+#endif//!(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __AT_PARAM_H__ */

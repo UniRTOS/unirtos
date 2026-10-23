@@ -18,6 +18,8 @@
 #define __QOSA_NETWORK_PARAM__H__
 
 #include "qosa_def.h"
+
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_sys.h"
 
 #define QOSA_SS_RSRP_REPORT(x)    qosa_nr_rsrp_report((x))
@@ -137,5 +139,5 @@ int qosa_wcdma_rscp_meas(qosa_rscp_t x);
 int qosa_wcdma_rscp_report(qosa_rscp_t x);
 int qosa_wcdma_ecno_meas(qosa_ecno_t x);
 int qosa_wcdma_ecno_report(qosa_ecno_t x);
-
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __QOSA_NETWORK_PARAM__H__ */

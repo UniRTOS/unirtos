@@ -56,6 +56,7 @@ class BuildConfig:
 def resolve_output_root() -> Path:
     """Resolve output root directory (prefer external app dir when provided)."""
     external_app_dir = os.environ.get("UNIRTOS_EXTERNAL_APP_DIR", "").strip()
+    print(f"external_app_dir: {external_app_dir}")
     if external_app_dir:
         external_root = Path(external_app_dir).expanduser().resolve()
         external_root.mkdir(parents=True, exist_ok=True)
@@ -169,7 +170,7 @@ def build_environment(toolchain_root: Path, config: BuildConfig, arch: str):
         str(toolchain_root / "make"),
         str(toolchain_root / "ninja-win-1.12.1"),
         str(toolchain_root / "cmake-3.28.0" / "bin"),
-        str(toolchain_root / "Python38"),
+        str(toolchain_root / "Python312"),
         str(toolchain_root / "Git"),
         str(toolchain_root / "Git" / "bin"),
         str(toolchain_root / "Git" / "usr" / "bin"),
@@ -177,10 +178,20 @@ def build_environment(toolchain_root: Path, config: BuildConfig, arch: str):
 
     if arch not in ARM_ARCH_LIST:
         raise BuildError(f"unsupported build arch: {arch}", EXIT_PROJECT_ERROR)
-
-    compiler_path = f"{toolchain_root_posix}/gcc-arm-none-eabi-10.2.1"
-    compiler_bin = f"{compiler_path}/bin"
-    path_entries.append(str(toolchain_root / "gcc-arm-none-eabi-10.2.1" / "bin"))
+        
+    if arch == "ecr6600":
+        compiler_path = f"{toolchain_root_posix}/nds32le-elf-mculib-v3s-win"
+        compiler_bin = f"{compiler_path}/bin"
+        path_entries.append(str(toolchain_root / "nds32le-elf-mculib-v3s-win" / "bin"))
+    elif arch == "bk7258" or arch == "bk7238":
+        compiler_path = f"{toolchain_root_posix}/gcc-arm-none-eabi-10.3-2021.10-win32"
+        compiler_bin = f"{compiler_path}/bin"    
+        path_entries.append(str(toolchain_root / "gcc-arm-none-eabi-10.3-2021.10-win32" / "bin"))
+    else:
+        compiler_path = f"{toolchain_root_posix}/gcc-arm-none-eabi-10.2.1"
+        compiler_bin = f"{compiler_path}/bin"
+        path_entries.append(str(toolchain_root / "gcc-arm-none-eabi-10.2.1" / "bin"))
+    
     env["PATH"] = os.pathsep.join(path_entries + [env.get("PATH", "")])
 
     env["CMAKE_SYSTEM_NAME"] = "Generic"
@@ -191,27 +202,46 @@ def build_environment(toolchain_root: Path, config: BuildConfig, arch: str):
     env["build_version"] = config.version
     env["build_tasknum"] = config.build_tasknum
     env["COMPILER_PATH"] = compiler_path
-    env["COMPILER_AS"] = f"{compiler_bin}/arm-none-eabi-as.exe"
-    env["COMPILER_CC"] = f"{compiler_bin}/arm-none-eabi-gcc.exe"
-    env["COMPILER_CXX"] = f"{compiler_bin}/arm-none-eabi-g++.exe"
-    env["COMPILER_AR"] = f"{compiler_bin}/arm-none-eabi-ar.exe"
-    env["COMPILER_LD"] = f"{compiler_bin}/arm-none-eabi-ld.exe"
-    env["COMPILER_OBJCOPY"] = f"{compiler_bin}/arm-none-eabi-objcopy.exe"
-    env["COMPILER_SIZE"] = f"{compiler_bin}/arm-none-eabi-size.exe"
-    env["COMPILER_STRIP"] = f"{compiler_bin}/arm-none-eabi-strip.exe"
-    env["COMPILER_GDB"] = f"{compiler_bin}/arm-none-eabi-gdb.exe"
-    env["COMPILER_OBJDUMP"] = f"{compiler_bin}/arm-none-eabi-objdump.exe"
-    env["COMPILER_READELF"] = f"{compiler_bin}/arm-none-eabi-readelf.exe"
+    if arch == "ecr6600":
+        env["COMPILER_AS"] = f"{compiler_bin}/nds32le-elf-as.exe"
+        env["COMPILER_CC"] = f"{compiler_bin}/nds32le-elf-gcc.exe"
+        env["COMPILER_CXX"] = f"{compiler_bin}/nds32le-elf-g++.exe"
+        env["COMPILER_AR"] = f"{compiler_bin}/nds32le-elf-ar.exe"
+        env["COMPILER_LD"] = f"{compiler_bin}/nds32le-elf-ld.exe"
+        env["COMPILER_OBJCOPY"] = f"{compiler_bin}/nds32le-elf-objcopy.exe"
+        env["COMPILER_SIZE"] = f"{compiler_bin}/nds32le-elf-size.exe"
+        env["COMPILER_STRIP"] = f"{compiler_bin}/nds32le-elf-strip.exe"
+        env["COMPILER_GDB"] = f"{compiler_bin}/nds32le-elf-gdb.exe"
+        env["COMPILER_OBJDUMP"] = f"{compiler_bin}/nds32le-elf-objdump.exe"
+        env["COMPILER_READELF"] = f"{compiler_bin}/nds32le-elf-readelf.exe"
+        env["COMPILER_NM"] = f"{compiler_bin}/nds32le-elf-nm.exe"
+    else:
+        env["COMPILER_AS"] = f"{compiler_bin}/arm-none-eabi-as.exe"
+        env["COMPILER_CC"] = f"{compiler_bin}/arm-none-eabi-gcc.exe"
+        env["COMPILER_CXX"] = f"{compiler_bin}/arm-none-eabi-g++.exe"
+        env["COMPILER_AR"] = f"{compiler_bin}/arm-none-eabi-ar.exe"
+        env["COMPILER_LD"] = f"{compiler_bin}/arm-none-eabi-ld.exe"
+        env["COMPILER_OBJCOPY"] = f"{compiler_bin}/arm-none-eabi-objcopy.exe"
+        env["COMPILER_SIZE"] = f"{compiler_bin}/arm-none-eabi-size.exe"
+        env["COMPILER_STRIP"] = f"{compiler_bin}/arm-none-eabi-strip.exe"
+        env["COMPILER_GDB"] = f"{compiler_bin}/arm-none-eabi-gdb.exe"
+        env["COMPILER_OBJDUMP"] = f"{compiler_bin}/arm-none-eabi-objdump.exe"
+        env["COMPILER_READELF"] = f"{compiler_bin}/arm-none-eabi-readelf.exe"
+        env["COMPILER_NM"] = f"{compiler_bin}/arm-none-eabi-nm.exe"
+
     return env
 
 
 def clean_for_new(output_root: Path):
     current_build_dir = build_dir(output_root)
     current_output_dir = output_dir(output_root)
+    root_config = sdk_root() / ".config"
     if current_build_dir.exists():
         shutil.rmtree(current_build_dir)
     if current_output_dir.exists():
         shutil.rmtree(current_output_dir)
+    if root_config.exists():
+        root_config.unlink()
 
 
 def ensure_gccout_for_app(sdk_root_path: Path, output_root: Path, arch: str, project: str, toolchain_root: Path):
@@ -342,6 +372,7 @@ def run_cmake_and_ninja(source_root: Path, output_root: Path, env, toolchain_roo
         f"-DPython_EXECUTABLE={python_exe}",
     ]
     if ext_app_dir:
+        print(f"ext_app_dir: {ext_app_dir}")
         cmake_cmd.append(f"-DUNIRTOS_EXTERNAL_APP_DIR={ext_app_dir}")
     if ext_app_name:
         cmake_cmd.append(f"-DUNIRTOS_EXTERNAL_APP_NAME={ext_app_name}")
@@ -381,11 +412,12 @@ def handle_make(args):
         return 0
 
     source_root = sdk_root()
+    arch = resolve_build_arch(source_root, config.project)
     output_root = resolve_output_root()
     external_app_mode = bool(os.environ.get("UNIRTOS_EXTERNAL_APP_DIR", "").strip())
     toolchain_root = resolve_toolchain_root()
     python_exe = resolve_python(toolchain_root)
-    arch = resolve_build_arch(source_root, config.project)
+    
     env = build_environment(toolchain_root, config, arch)
     env["UNIRTOS_OUTPUT_ROOT"] = str(output_root)
 
@@ -411,7 +443,7 @@ def handle_make(args):
     # all first prepares platform-side artifacts; app reuses or restores gccout prereq.
     if config.build_type == "all":
         run_platform_build(source_root, config, arch, python_exe)
-    else:
+    elif arch not in {"bk7258", "bk7238", "ecr6600"}:
         ensure_gccout_for_app(source_root, output_root, arch, config.project, toolchain_root)
 
     run_cmake_and_ninja(source_root, output_root, env, toolchain_root, python_exe)

@@ -3,7 +3,7 @@
 #
 
 menu "Network AT config"
-
+depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
 
 config QOSA_MODEM_AT_NW_RSSI_QCSQ_LTE_SPEC
     bool "Whether QCSQ command displays RSSI value in special format under LTE system"

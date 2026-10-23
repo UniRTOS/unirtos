@@ -23,6 +23,7 @@
 #ifndef _QOSA_cJSON__h
 #define _QOSA_cJSON__h
 
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #ifdef __cplusplus
 extern "C"
 {
@@ -302,5 +303,5 @@ then using the CJSON_API_VISIBILITY flag to "export" the same symbols the way Q_
 #ifdef __cplusplus
 }
 #endif
-
+#endif//!(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* _QOSA_cJSON__h */

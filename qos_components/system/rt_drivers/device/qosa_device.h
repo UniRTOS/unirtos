@@ -17,6 +17,7 @@
 #define __DEVICE_H__
 
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_sys.h"
 #include "qosa_watermark.h"
 #include "qosa_object.h"
@@ -295,4 +296,6 @@ void rt_device_transmit(rt_device_t dev, qosa_buffer_block_t* tx_ptr);
 int rt_device_control(rt_device_t dev, int cmd, void* arg);
 
 rt_device_t rt_device_find_id(qosa_uint32_t decive_id);
+
+#endif//!(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __DEVICE_H__ */

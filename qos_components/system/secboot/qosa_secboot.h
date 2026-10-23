@@ -17,6 +17,7 @@
 #define __QOSA_SECBOOT_H__
 
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
 #include "qosa_sys.h"
 
 
@@ -78,4 +79,5 @@ void qosa_redda_set_dm_log_ctl(qosa_uint8_t onoff);
  *          - No return value
  */
 void qosa_redda_set_dm_dump_ctl(qosa_uint8_t onoff);
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
 #endif /* __QOSA_SECBOOT_H__ */

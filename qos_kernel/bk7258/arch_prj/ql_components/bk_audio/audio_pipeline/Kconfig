@@ -1,0 +1,452 @@
+menu "Adk"
+	config ADK
+		depends on FREERTOS_USE_QUEUE_SETS
+		bool "Enable Audio Development Kit"
+		default n
+
+	menu "Audio_pipeline"
+
+		depends on ADK
+
+		choice ADK_USE_MEMORY
+			prompt "Select ADK use memory"
+			default ADK_USE_PSRAM
+
+			config ADK_USE_SRAM
+				bool "Enable ADK use sram"
+				help
+					ADK use sram memory
+
+			config ADK_USE_PSRAM
+				depends on PSRAM
+				bool "Enable ADK use psram"
+				help
+					ADK use psram memory
+		endchoice
+
+		config ADK_BIND_TASK_TO_CORE
+			depends on SOC_SMP
+			bool "Enable ADK bind task to cpu core according to module configuration"
+			default n
+
+		config ADK_AUTO_TEST
+			bool "Enable ADK auto test"
+			default n
+
+		config ADK_AUTO_TEST_PIPELINE
+			depends on ADK_AUTO_TEST
+			bool "Enable ADK pipeline auto test "
+			default n
+
+		config ADK_AUTO_TEST_ELEMENT
+			depends on ADK_AUTO_TEST
+			bool "Enable ADK element auto test "
+			default n
+
+		config ADK_AUTO_TEST_EVENT
+			depends on ADK_AUTO_TEST
+			bool "Enable ADK event listener auto test "
+			default n
+	endmenu
+
+	menu "Audio_algorithms"
+
+		depends on ADK
+
+		menu "Aec_algorithm"
+			config ADK_AEC_ALGORITHM
+				bool "Enable AEC algorithm"
+				default n
+
+			config ADK_AEC_ALGORITHM_TEST
+				depends on ADK_AEC_ALGORITHM && ADK_VFS_STREAM
+				bool "Enable AEC algorithm test"
+				default n
+		endmenu
+
+		menu "Aec_algorithm V3"
+			config ADK_AEC_V3_ALGORITHM
+				bool "Enable Audio AEC V3 algorithm"
+				default n
+
+			config ADK_AEC_V3_ALGORITHM_TEST
+				depends on ADK_AEC_V3_ALGORITHM && ADK_VFS_STREAM
+				bool "Enable Audio AEC V3 algorithm test"
+				default n
+
+			config AUD_AI_NS_SUPPORT
+				depends on ADK_AEC_V3_ALGORITHM
+				bool "Support AEC AI NS function"
+				default n
+
+			config AUD_AI_NS_USE_STATIC_SRAM
+				depends on AUD_AI_NS_SUPPORT
+				bool "AEC AI NS Extra buffer in SRAM"
+				default n
+		endmenu
+
+		menu "Agc_algorithm"
+			config ADK_AGC_ALGORITHM
+				bool "Enable Audio AGC algorithm"
+				default n
+
+			config ADK_AGC_ALGORITHM_TEST
+				depends on ADK_AGC_ALGORITHM
+				bool "Enable Audio AGC algorithm test"
+				default n
+		endmenu
+
+		menu "EQ_algorithm"
+			config ADK_EQ_ALGORITHM
+				bool "Enable Audio EQ algorithm"
+				default n
+
+			config ADK_EQ_ALGORITHM_TEST
+				depends on ADK_EQ_ALGORITHM && ADK_ARRAY_STREAM && ADK_UART_STREAM
+				bool "Enable Audio EQ algorithm test"
+				default n
+		endmenu
+
+		menu "Mix_algorithm"
+			config ADK_MIX_ALGORITHM
+				bool "Enable Audio MIX algorithm"
+				default n
+
+			config ADK_MIX_ALGORITHM_TEST
+				depends on ADK_MIX_ALGORITHM && ADK_ARRAY_STREAM && ADK_UART_STREAM
+				bool "Enable Audio MIX algorithm test"
+				default n
+		endmenu
+
+		menu "Rsp_algorithm"
+			config ADK_RSP_ALGORITHM
+				bool "Enable Audio RSP algorithm"
+				default n
+
+			config ADK_RSP_ALGORITHM_TEST
+				depends on ADK_RSP_ALGORITHM
+				bool "Enable Audio RSP algorithm test"
+				default n
+		endmenu
+	endmenu
+
+	menu "Audio_decoders"
+
+		depends on ADK
+
+		menu "AAC_decoder"
+			config ADK_AAC_DECODER
+				bool "Enable Audio AAC decoder"
+				default n
+
+			config ADK_AAC_DECODER_TEST
+				depends on ADK_AAC_DECODER && ADK_VFS_STREAM
+				bool "Enable Audio AAC decoder test"
+				default n
+		endmenu
+
+		menu "G711_decoder"
+			config ADK_G711_DECODER
+				bool "Enable Audio G711 decoder"
+				default n
+
+			config ADK_G711_DECODER_TEST
+				depends on ADK_G711_DECODER && ADK_ARRAY_STREAM && ADK_UART_STREAM
+				bool "Enable Audio G711 decoder test"
+				default n
+		endmenu
+
+		menu "G722_decoder"
+			config ADK_G722_DECODER
+				bool "Enable Audio G722 decoder"
+				default n
+
+			config ADK_G722_DECODER_TEST
+				depends on ADK_G722_DECODER && ADK_ARRAY_STREAM && ADK_UART_STREAM
+				bool "Enable Audio G722 decoder test"
+				default n
+		endmenu
+
+		menu "MP3_decoder"
+			config ADK_MP3_DECODER
+				bool "Enable Audio MP3 decoder"
+				default n
+
+			config ADK_MP3_DECODER_TEST
+				depends on ADK_MP3_DECODER && ADK_ARRAY_STREAM && ADK_ONBOARD_SPEAKER_STREAM
+				bool "Enable Audio MP3 decoder test"
+				default n
+		endmenu
+
+		menu "Opus_decoder"
+			config ADK_OPUS_DECODER
+				bool "Enable Audio OPUS decoder"
+				default n
+
+			config ADK_OPUS_DECODER_TEST
+				depends on ADK_OPUS_DECODER && ADK_ARRAY_STREAM && ADK_UART_STREAM
+				bool "Enable Audio OPUS decoder test"
+				default n
+		endmenu
+
+		menu "SBC_decoder"
+			config ADK_SBC_DECODER
+				bool "Enable Audio SBC decoder"
+				default n
+
+			config ADK_SBC_DECODER_TEST
+				depends on ADK_SBC_DECODER && ADK_RAW_STREAM && ADK_UART_STREAM
+				bool "Enable Audio SBC decoder test"
+				default n
+		endmenu
+
+		menu "Wav_decoder"
+			config ADK_WAV_DECODER
+				bool "Enable Audio WAV decoder"
+				default n
+
+			config ADK_WAV_DECODER_TEST
+				depends on ADK_WAV_DECODER && ADK_ARRAY_STREAM && ADK_ONBOARD_SPEAKER_STREAM
+				bool "Enable Audio WAV decoder test"
+				default n
+		endmenu
+	endmenu
+
+	menu "Audio_encoders"
+
+		depends on ADK
+
+		menu "AAC_encoder"
+			config ADK_AAC_ENCODER
+				bool "Enable Audio AAC encoder"
+				default n
+
+			config ADK_AAC_ENCODER_TEST
+				depends on ADK_AAC_ENCODER && ADK_ONBOARD_MIC_STREAM && ADK_UART_STREAM
+				bool "Enable Audio AAC encoder test"
+				default n
+		endmenu
+
+		menu "G711_encoder"
+			config ADK_G711_ENCODER
+				bool "Enable Audio G711 encoder"
+				default n
+
+			config ADK_G711_ENCODER_TEST
+				depends on ADK_G711_ENCODER && ADK_ARRAY_STREAM && ADK_UART_STREAM
+				bool "Enable Audio G711 encoder test"
+				default n
+		endmenu
+
+		menu "G722_encoder"
+			config ADK_G722_ENCODER
+				bool "Enable Audio G722 encoder"
+				default n
+
+			config ADK_G722_ENCODER_TEST
+				depends on ADK_G722_ENCODER && ADK_ARRAY_STREAM && ADK_UART_STREAM
+				bool "Enable Audio G722 encoder test"
+				default n
+		endmenu
+
+		menu "Opus_encoder"
+			config ADK_OPUS_ENCODER
+				bool "Enable Audio OPUS encoder"
+				default n
+
+			config ADK_OPUS_ENCODER_TEST
+				depends on ADK_OPUS_ENCODER && ADK_FRAME_ARRAY_STREAM && ADK_UART_STREAM
+				bool "Enable Audio OPUS encoder test"
+				default n
+		endmenu
+
+		menu "Sbc_encoder"
+			config ADK_SBC_ENCODER
+				bool "Enable Audio SBC encoder"
+				default n
+
+			config ADK_SBC_ENCODER_TEST
+				depends on ADK_SBC_ENCODER && ADK_ARRAY_STREAM && ADK_UART_STREAM
+				bool "Enable Audio SBC encoder test"
+				default n
+		endmenu
+	endmenu
+
+	menu "Audio_streams"
+
+		depends on ADK
+
+		menu "Array_stream"
+			config ADK_ARRAY_STREAM
+				bool "Enable Audio Array stream"
+				default n
+
+			config ADK_ARRAY_STREAM_TEST
+				depends on ADK_ARRAY_STREAM
+				bool "Enable Audio Array stream test"
+				default n
+		endmenu
+
+		menu "Frame_array_stream"
+			config ADK_FRAME_ARRAY_STREAM
+				bool "Enable Audio Frame Array stream"
+				default n
+
+			config ADK_FRAME_ARRAY_STREAM_TEST
+				depends on ADK_FRAME_ARRAY_STREAM
+				bool "Enable Audio Frame Array stream test"
+				default n
+		endmenu
+
+		menu "Onboard_dual_dmic_stream"
+			config ADK_ONBOARD_DUAL_DMIC_MIC_STREAM
+				depends on AUDIO_DMIC
+				bool "Enable Onboard dual dmic stream"
+				default n
+		endmenu
+
+		menu "Onboard_mic_stream"
+			config ADK_ONBOARD_MIC_STREAM
+				depends on AUDIO_ADC
+				bool "Enable onboard mic stream"
+				default n
+
+			config ADK_ONBOARD_MIC_STREAM_TEST
+				depends on ADK_ONBOARD_MIC_STREAM && ADK_UART_STREAM
+				bool "Enable onboard mic stream test"
+				default n
+		endmenu
+
+		menu "Onboard_speaker_stream"
+			config ADK_ONBOARD_SPEAKER_STREAM
+				depends on AUDIO_DAC
+				bool "Enable onboard speaker stream"
+				default n
+
+			config ADK_ONBOARD_SPEAKER_STREAM_SUPPORT_MULTIPLE_SOURCE
+				depends on ADK_ONBOARD_SPEAKER_STREAM
+				bool "Enable onboard speaker stream to support multiple sources. The module automatically selects playback based on the priority of multiple sources."
+				default n
+
+			config ADK_ONBOARD_SPEAKER_STREAM_TEST
+				depends on ADK_ONBOARD_SPEAKER_STREAM && ADK_ARRAY_STREAM
+				bool "Enable onboard speaker stream test"
+				default n
+		endmenu
+
+		menu "Raw_stream"
+			config ADK_RAW_STREAM
+				bool "Enable raw stream"
+				default n
+
+			config ADK_RAW_STREAM_TEST
+				depends on ADK_RAW_STREAM
+				bool "Enable raw stream test"
+				default n
+		endmenu
+
+		menu "Uac_mic_stream"
+			config ADK_UAC_MIC_STREAM
+				depends on USBH_UAC
+				bool "Enable uac mic stream"
+				default n
+
+			config ADK_UAC_MIC_STREAM_TEST
+				depends on ADK_UAC_MIC_STREAM && ADK_UART_STREAM
+				bool "Enable uac mic stream test"
+				default n
+		endmenu
+
+		menu "Uac_speaker_stream"
+			config ADK_UAC_SPEAKER_STREAM
+				depends on USBH_UAC
+				bool "Enable uac speaker stream"
+				default n
+
+			config ADK_UAC_SPEAKER_STREAM_TEST
+				depends on ADK_UAC_SPEAKER_STREAM && ADK_RAW_STREAM
+				bool "Enable uac speaker stream test"
+				default n
+		endmenu
+
+		menu "Uart_stream"
+			config ADK_UART_STREAM
+				bool "Enable uart stream"
+				default n
+
+			config ADK_UART_STREAM_TEST
+				depends on ADK_UART_STREAM
+				bool "Enable uart stream test"
+				default n
+		endmenu
+
+		menu "Vfs_stream"
+			config ADK_VFS_STREAM
+				depends on VFS
+				bool "Enable vfs stream"
+				default n
+
+			config ADK_VFS_STREAM_TEST
+				depends on ADK_VFS_STREAM
+				bool "Enable vfs stream test"
+				default n
+		endmenu
+
+		menu "I2s_stream"
+			config ADK_I2S_STREAM
+				bool "Enable I2S Stream Component"
+				depends on I2S
+				default n
+				help
+					Enable I2S stream component for audio data transmission via I2S interface.
+
+			config ADK_I2S_STREAM_SUPPORT_MULTIPLE_SOURCE
+				depends on ADK_I2S_STREAM
+				bool "Enable I2S stream to support multiple sources. The module automatically selects playback based on the priority of multiple sources."
+				default n
+
+			config ADK_I2S_STREAM_TEST
+				bool "Enable I2S Stream Test"
+				depends on ADK_I2S_STREAM && ADK_ONBOARD_MIC_STREAM && ADK_ONBOARD_SPEAKER_STREAM
+				default n
+				help
+					Enable I2S stream test functionality.
+		endmenu
+
+	endmenu
+
+	menu "Audio_utils"
+
+		depends on ADK
+
+		config ADK_UTILS
+			bool "Enable ADK debug utils"
+			default y
+
+		config ADK_UART_UTIL
+			depends on ADK_UTILS
+			bool "Enable ADK uart debug util"
+			default y
+
+		config ADK_COUNT_UTIL
+			depends on ADK_UTILS
+			bool "Enable ADK count debug util"
+			default y
+
+		config ADK_VFS_UTIL
+			depends on ADK_UTILS
+			bool "Enable ADK vfs debug util"
+			default y
+
+		config ADK_DEBUG_DUMP_UTIL
+			depends on ADK_UTILS && ADK_UART_UTIL
+			bool "Enable ADK debug dump util"
+			default y
+
+		config ADK_DEBUG_DUMP_DATA_TYPE_EXTENSION
+			depends on ADK_DEBUG_DUMP_UTIL
+			bool "Enable ADK debug dump data type extension"
+			default n
+	endmenu
+
+endmenu

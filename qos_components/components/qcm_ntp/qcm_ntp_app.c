@@ -25,7 +25,9 @@
 #include "qosa_sys.h"
 #include "qosa_log.h"
 #include "qosa_rtc.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
 #include "qosa_datacall.h"
+#endif
 #include "qosa_asyn_dns.h"
 #include "qcm_socket_adp.h"
 
@@ -101,6 +103,8 @@ struct qcm_ntp_time
     qosa_uint32_t fine;   /*!< Fine-grained timestamp (fractional part), with a precision of 2^-32 seconds*/
 };
 
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
+
 /**
  * @brief NTP PDP activation returns session notification
  */
@@ -109,6 +113,7 @@ typedef struct
     qcm_ntp_client_id       client_id; /*!< NTP session operation ID*/
     qosa_datacall_act_cnf_t act_info;  /*!< PDP activation operation response content*/
 } qcm_ntp_pdp_resp_t;
+#endif
 
 /**
  * @brief NTP DNS result returned
@@ -258,6 +263,7 @@ static void qcm_ntp_retry_timer_callback(void *ctx)
     //Send a timer processing event to the time processing function
     qcm_ntp_req_event(QCM_NTP_RETRY_TIMER_EXP, ntp_ptr);
 }
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
 
 /**
  * @brief PDP activation callback function reports
@@ -353,6 +359,7 @@ static qcm_ntp_result_code qcm_ntp_service_data_call(void *argv)
         datacall_ret = qosa_datacall_start_async(conn, ntp_ptr->user_opts.retry_interval_tm, (datacall_callback_cb_ptr)qcm_ntp_pdp_acitve_response_cb, req_ptr);
         if (datacall_ret != QOSA_DATACALL_OK)
         {
+            qosa_free(req_ptr);
             result = QCM_NTP_ERR_PDP_ACTIVE_FAILURE;
             return result;
         }
@@ -394,7 +401,7 @@ exit:
     qosa_free(pdp_resp_ptr);
     return result;
 }
-
+#endif
 /**
  * @brief DNS resolution callback, upon successful DNS resolution, passes the content and proceeds to the next request action.
  */
@@ -463,10 +470,11 @@ static qcm_ntp_result_code qcm_ntp_service_dns_parse(void *argv)
     qcm_ntp_client_info    *send_ptr = QOSA_NULL;
     qcm_ntp_client_info    *req_ptr = QOSA_NULL;
     int                     ip_type = 0;
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
     qosa_datacall_ip_info_t info = {0};
     qosa_datacall_conn_t    conn = 0;
     qosa_datacall_errno_e   ret = QOSA_DATACALL_OK;
-
+#endif
     send_ptr = (qcm_ntp_client_info *)argv;
     ntp_ptr = qcm_ntp_get_ptr(send_ptr->client_id);
     qosa_free(send_ptr);
@@ -476,6 +484,7 @@ static qcm_ntp_result_code qcm_ntp_service_dns_parse(void *argv)
         goto exit;
     }
 
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
     //Get the datacall IP type to determine whether it is IPv4 or IPv6.
     conn = qosa_datacall_conn_new(ntp_ptr->user_opts.sim_id, ntp_ptr->user_opts.pdp_id, QOSA_DATACALL_CONN_TCPIP);
     ret = qosa_datacall_get_ip_info(conn, &info);
@@ -487,21 +496,38 @@ static qcm_ntp_result_code qcm_ntp_service_dns_parse(void *argv)
     }
 
     QLOGD("host_name :%s ip_type=%d", ntp_ptr->host_name, info.ip_type);
+#endif
     //Get whether the user input is of IP type
     ip_type = qcm_socket_checkip_is_ip46(ntp_ptr->host_name);
     if (ip_type == QCM_AF_INET || ip_type == QCM_AF_INET6)
     {
         //If it is an IP type and matches the datacall IP type, or is a V4V6 type, proceed directly to the next request action.
-        if (ip_type == QCM_AF_INET && (info.ip_type == QOSA_PDP_IPV4 || info.ip_type == QOSA_PDP_IPV4V6))
-        {
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
+         if (ip_type == QCM_AF_INET && (info.ip_type == QOSA_PDP_IPV4 || info.ip_type == QOSA_PDP_IPV4V6))
+#else
+         if (ip_type == QCM_AF_INET)
+#endif
+         {
             inet_pton(QCM_AF_INET, ntp_ptr->host_name, &ntp_ptr->remote_ip.addr.ipv4_addr);
-            ntp_ptr->remote_ip.ip_vsn = QOSA_PDP_IPV4;
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
+             ntp_ptr->remote_ip.ip_vsn = QOSA_PDP_IPV4;
+#else
+            ntp_ptr->remote_ip.ip_vsn = QOSA_IP_V4;
+#endif
         }
         //If it is an IPV6 type and matches the datacall IP type, or is a V4V6 type, proceed directly to the next request action.
-        else if (ip_type == QCM_AF_INET6 && (info.ip_type == QOSA_PDP_IPV6 || info.ip_type == QOSA_PDP_IPV4V6))
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
+        else if (ip_type == QCM_AF_INET6 && (info.ip_type == QOSA_PDP_IPV6 || info.ip_type == QOSA_PDP_IPV4V6))        
+#else
+        else if (ip_type == QCM_AF_INET6)
+#endif
         {
             inet_pton(QCM_AF_INET6, ntp_ptr->host_name, &ntp_ptr->remote_ip.addr.ipv6_addr);
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
             ntp_ptr->remote_ip.ip_vsn = QOSA_PDP_IPV6;
+#else
+            ntp_ptr->remote_ip.ip_vsn = QOSA_IP_V6;
+#endif
         }
         else
         {
@@ -528,8 +554,10 @@ static qcm_ntp_result_code qcm_ntp_service_dns_parse(void *argv)
 
         //DNS resolution success callback or direct return
         dns_ret = qosa_dns_asyn_getaddrinfo(
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
             ntp_ptr->user_opts.sim_id,
             ntp_ptr->user_opts.pdp_id,
+#endif
             ntp_ptr->host_name,
             &addrinfo_list,
             qcm_ntp_dns_result_cb,
@@ -539,6 +567,7 @@ static qcm_ntp_result_code qcm_ntp_service_dns_parse(void *argv)
 
     if (dns_ret != QOSA_DNS_RESULT_OK)
     {
+        qosa_free(req_ptr);
         result = QCM_NTP_ERR_DNS_FAILURE;  //Report error
     }
 
@@ -572,12 +601,20 @@ static qcm_ntp_result_code qcm_ntp_dns_response_handler(void *argv)
         if (dns_ptr->info->ai_family == QCM_AF_INET)
         {
             inet_pton(QCM_AF_INET, dns_ptr->info->ip_addr, &ntp_ptr->remote_ip.addr.ipv4_addr);
-            ntp_ptr->remote_ip.ip_vsn = QOSA_PDP_IPV4;
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
+             ntp_ptr->remote_ip.ip_vsn = QOSA_PDP_IPV4;
+#else
+            ntp_ptr->remote_ip.ip_vsn = QOSA_IP_V4;
+#endif
         }
         else
         {
             inet_pton(QCM_AF_INET6, dns_ptr->info->ip_addr, &ntp_ptr->remote_ip.addr.ipv6_addr);
-            ntp_ptr->remote_ip.ip_vsn = QOSA_PDP_IPV6;
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
+             ntp_ptr->remote_ip.ip_vsn = QOSA_PDP_IPV6;
+#else
+            ntp_ptr->remote_ip.ip_vsn = QOSA_IP_V6;
+#endif
         }
         ntp_ptr->ai_family = dns_ptr->info->ai_family;
 
@@ -657,8 +694,13 @@ static qcm_ntp_result_code qcm_ntp_send_sync_request(void *argv)
     {
         QLOGD("sock_hd :%d ntp_ptr=%p ntp_ptr->ai_family=%d", ntp_ptr->socket_hndl, ntp_ptr, ntp_ptr->ai_family);
 
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
         ntp_ptr->socket_hndl
             = qcm_socket_create(ntp_ptr->user_opts.sim_id, ntp_ptr->user_opts.pdp_id, ntp_ptr->ai_family, QCM_SOCK_DGRAM, QCM_UDP_PROTOCOL, 0, QOSA_FALSE);
+#else
+        ntp_ptr->socket_hndl = qcm_socket_create(ntp_ptr->ai_family, QCM_SOCK_DGRAM, QCM_UDP_PROTOCOL, 0, QOSA_FALSE);
+
+#endif
         if (ntp_ptr->socket_hndl < 0)
         {
             return QCM_NTP_ERR_SOCKET_NEW_FAILURE;
@@ -945,11 +987,13 @@ static void qcm_ntp_main_task(void *argv)
         QLOGD("enter ntp task,msgid   = %d", ntp_wait_msg.msgid);
         switch (ntp_wait_msg.msgid)
         {
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
             //PDP Request
             case QCM_NTP_PDP_ACTIVE_REQ: {
                 result = qcm_ntp_service_data_call(ntp_wait_msg.argv);
             }
             break;
+#endif
             //DNS Resolution
             case QCM_NTP_DNS_PARSE_REQ: {
                 result = qcm_ntp_service_dns_parse(ntp_wait_msg.argv);
@@ -976,10 +1020,12 @@ static void qcm_ntp_main_task(void *argv)
                 result = (ntp_ptr->final_result != QCM_NTP_SUCCESS) ? ntp_ptr->final_result : QCM_NTP_ERR_UNKNOW;
             }
             break;
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
             case QCM_NTP_PDP_RESP: {
                 result = qcm_ntp_datacall_response_handler(ntp_wait_msg.argv);
             }
             break;
+#endif
             case QCM_NTP_DNS_RESP: {
                 result = qcm_ntp_dns_response_handler(ntp_wait_msg.argv);
             }
@@ -1166,8 +1212,9 @@ qcm_ntp_result_code qcm_ntp_sync_start(
     int                  ret = 0;
     qcm_ntp_client_t    *ntp_ptr = QOSA_NULL;
     char                *host_addr = QOSA_NULL;
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
     qosa_datacall_conn_t conn = 0;
-
+#endif
     if (host_name == QOSA_NULL || ntp_options == QOSA_NULL||cb_fun == QOSA_NULL)
     {
         return QCM_NTP_ERR_INVALID_PARAM;
@@ -1209,7 +1256,7 @@ qcm_ntp_result_code qcm_ntp_sync_start(
     ntp_ptr->notify_fcn = cb_fun;
     ntp_ptr->user_arg = user_param;
     qosa_mutex_unlock(g_qcm_ntp_mutex);
-
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
     //Check if the current PDP is activated; if already activated, proceed directly with DNS resolution; otherwise, perform PDP activation.
     conn = qosa_datacall_conn_new(ntp_options->sim_id, ntp_options->pdp_id, QOSA_DATACALL_CONN_TCPIP);
     if (qosa_datacall_get_status(conn) == QOSA_TRUE)
@@ -1222,7 +1269,9 @@ qcm_ntp_result_code qcm_ntp_sync_start(
         //Perform PDP request action
         return  qcm_ntp_req_event(QCM_NTP_PDP_ACTIVE_REQ, ntp_ptr);
     }
-
+#else
+     return qcm_ntp_req_event(QCM_NTP_DNS_PARSE_REQ, ntp_ptr);
+#endif
 }
 
 //July 2, 2024, 13:19:47 Do not use stop to release resources; after the callback notifies the client, the task will automatically exit,

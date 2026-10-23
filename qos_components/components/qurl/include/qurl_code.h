@@ -174,7 +174,9 @@ typedef enum
     QURL_OPT_USERNAME,            /*!< Username: "user" */
     QURL_OPT_PASSWORD,            /*!< Password: "password" */
     QURL_OPT_ACCOUNT,             /*!< Account: "xxx" */
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
     QURL_OPT_NETWORK_ID,          /*!< User specified network id. <0 means not specified. >=0: refer to platform adaptation instructions. */
+#endif
     QURL_OPT_PORT,                /*!< User specified port number */
     QURL_OPT_TIMEOUT_MS,          /*!< Overall operation timeout */
     QURL_OPT_IDLE_TIMEOUT_MS,     /*!< Internal idle timeout during operation */

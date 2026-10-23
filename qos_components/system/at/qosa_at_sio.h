@@ -17,6 +17,9 @@
 #define __AT_SIO_H__
 
 #include "qosa_def.h"
+
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+
 #include "qosa_sys.h"
 #include "qosa_watermark.h"
 #include "qosa_uart.h"
@@ -335,5 +338,5 @@ typedef void (*wm_item_report_cb_t)(void*);
  * 4. Otherwise, add the callback to the queue and start the daemon task
  */
 qosa_bool_t qosa_register_watermark_callback(wm_item_report_cb_t cb, void* p_arg);
-
+#endif//!(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __AT_SIO_H__ */

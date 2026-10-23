@@ -16,7 +16,7 @@
 #ifndef __QOSA_VSIM_ADAPT_H__
 #define __QOSA_VSIM_ADAPT_H__
 #include "qosa_def.h"
-
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
 /**
  * @enum qosa_vsim_adapt_event_e
  * @brief Virtual SIM adapter event types
@@ -138,5 +138,5 @@ int qosa_vsim_adapt_set_type(qosa_uint8_t simid, qosa_vsim_adapt_type_e type);
  *          - 0 on success, negative value on failure
  */
 int qosa_vsim_adapt_register_apdu_cb(qosa_vsim_adapt_apdu_cb cb);
-
+#endif//!(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
 #endif /* __QOSA_VSIM_ADAPT_H__ */

@@ -1,0 +1,1 @@
+add_sub_cmake("${CMAKE_CURRENT_LIST_DIR}" RECURSIVE)

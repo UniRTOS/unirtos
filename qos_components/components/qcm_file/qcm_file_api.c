@@ -16,7 +16,9 @@
 #include "qcm_proj_config.h"
 #include "qcm_file_api.h"
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_dev.h"
+#endif
 #include "qosa_sys.h"
 #include "qosa_log.h"
 #include "qosa_errno.h"
@@ -1280,6 +1282,7 @@ qosa_int64_t qcm_file_get_size(qcm_file_get_size_type_e type, const char *path)
             //return QCM_FILE_NO_SPACE;
         }
     }
+#if !(defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
     else if (sys_type == QCM_FILE_SD_1ST)
     {
         qosa_int64_t trace_size = 0;
@@ -1300,6 +1303,7 @@ qosa_int64_t qcm_file_get_size(qcm_file_get_size_type_e type, const char *path)
             return QCM_FILE_GET_DISK_INFO_FAIL;
         }
     }
+#endif
 #if 0
     else if (sys_type == QCM_FILE_EXNSFFS)
     {

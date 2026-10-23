@@ -18,6 +18,7 @@
 #define __QOSA_MODEM__H__
 
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_sys.h"
 #include "qosa_sim_config.h"
 
@@ -60,5 +61,5 @@ typedef struct
 {
     QOSA_MODEM_COMMON_CNF_HDR;
 } qosa_modem_general_cnf_t;
-
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /*__QOSA_MODEM__H__*/

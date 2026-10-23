@@ -47,13 +47,13 @@ qurl_ecode_t qurl_platform_event_send(qurl_queue_t queue, const qurl_event_t *se
 unsigned long qurl_platform_get_pthread_id(void);
 
 qurl_timeval_t qurl_platform_time_now(void);
-
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
 int qurl_platform_nw_activate(int nw_id);
 
 int qurl_platform_nw_is_activated(int nw_id);
 
 int qurl_platform_nw_get_ip(int nw_id, char *ipv4_buf, int ipv4_buf_len, char *ipv6_buf, int ipv6_buf_len);
-
+#endif
 qurl_ecode_t qurl_platform_socket_nonblock(qurl_socket_t sockfd, int nonblock);
 
 int qurl_platform_socket_get_errno(qurl_socket_t sockfd);

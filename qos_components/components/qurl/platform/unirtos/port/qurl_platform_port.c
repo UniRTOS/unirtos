@@ -15,15 +15,27 @@
 #include "qosa_sys.h"
 #include "qosa_log.h"
 #include "qosa_rtc.h"
-#include "qosa_datacall.h"
+
+#if defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) || defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)
+#include <fcntl.h>
+#endif
+#include "qosa_sockets.h"
 #include "qosa_virtual_file.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
+#include "qosa_datacall.h"
+#endif
+#include "qosa_ip_addr.h"
 #include "qurl_platform_port.h"
 #ifndef CONFIG_QOSA_LINUX_PLATFORM_FUNC
 #include "qosa_errno.h"
 #endif
 
-#define QOS_LOG_TAG                         LOG_TAG_MODEM
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
 
+#define QOS_LOG_TAG                         LOG_TAG_MODEM
+#else
+#define QOS_LOG_TAG                         LOG_TAG_QURL_API
+#endif
 // OS
 qurl_ecode_t qurl_platform_thread_create(qurl_thread_t *thread_ptr, qurl_thread_cb func, unsigned char priority, unsigned int stack_size, void *arg)
 {
@@ -198,6 +210,7 @@ qurl_timeval_t qurl_platform_time_now(void)
 
     return timeval;
 }
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
 
 // NETWORK
 int qurl_platform_nw_activate(int nw_id)
@@ -261,15 +274,41 @@ int qurl_platform_nw_get_ip(int nw_id, char *ipv4_buf, int ipv4_buf_len, char *i
 
     return QURL_ECODE_NETWORK_ERR;
 }
-
-// SOCKET
+#endif
+/** Platform-specific interface */
+#ifdef CONFIG_QOSA_QT2131_PLATFORM_FUNC
 qurl_ecode_t qurl_platform_socket_nonblock(qurl_socket_t sockfd, int nonblock)
 {
-    int flags = 0;
-
-    flags = fcntl(sockfd, F_GETFL, 0);
-    return fcntl(sockfd, F_SETFL, nonblock ? flags | O_NONBLOCK : flags & ~O_NONBLOCK) < 0 ? QURL_ECODE_SOCK_CTRL_FAILED : QURL_OK;
+    return uapi_lwip_fcntl(sockfd, F_SETFL, nonblock ? O_NONBLOCK : O_BLOCK) < 0 ? QURL_ECODE_SOCK_CTRL_FAILED : QURL_OK;
 }
+#else
+// SOCKET
+
+qurl_ecode_t qurl_platform_socket_nonblock(qurl_socket_t sockfd, int nonblock)
+{
+    int flags = fcntl(sockfd, F_GETFL, 0);
+
+    QLOGV("O_NONBLOCK=%x\n",O_NONBLOCK);
+    if (flags < 0) {
+        QLOGV("sockfd=%d, F_GETFL failed, errno=%d\n", sockfd, errno);
+        return QURL_ECODE_SOCK_CTRL_FAILED;
+    }
+    if (nonblock) {
+        flags |= O_NONBLOCK;
+    } else {
+        flags &= ~O_NONBLOCK;
+    }
+
+    int ret = fcntl(sockfd, F_SETFL, flags);
+    if (ret < 0) {
+        QLOGV("sockfd=%d, F_SETFL failed, errno=%d\n", sockfd, errno);
+        return QURL_ECODE_SOCK_CTRL_FAILED;
+    }
+    return QURL_OK;
+    // int flags = 0;
+    // return fcntl(sockfd, F_SETFL, nonblock ? flags | O_NONBLOCK : flags & ~O_NONBLOCK) < 0 ? QURL_ECODE_SOCK_CTRL_FAILED : QURL_OK;
+}
+#endif
 
 int qurl_platform_socket_get_errno(qurl_socket_t sockfd)
 {
@@ -305,6 +344,8 @@ int qurl_platform_socket_dns_get(const char *nodename, const char *servname, str
     return getaddrinfo_with_pcid(nodename, servname, hints, ai, nw_id);
 #elif defined(CONFIG_QOSA_QCX216_PLATFORM_FUNC) || defined(CONFIG_QOSA_QCX217_PLATFORM_FUNC) || defined(CONFIG_QOSA_EIGEN718_PLATFORM_FUNC)
     return getaddrinfowithcid(nodename, servname, hints, ai, nw_id);
+#elif defined(CONFIG_QOSA_XY4100_PLATFORM_FUNC)
+    return getaddrinfo_ext(nw_id, nodename, QOSA_NULL, QOSA_NULL, servname, hints, ai);
 #else
     return getaddrinfo(nodename, servname, hints, ai);
 #endif
@@ -321,8 +362,8 @@ int qurl_platform_socket_dns_get(const char *nodename, const char *servname, str
  */
 int qurl_platform_get_last_close_event(int s)
 {
-#ifdef CONFIG_QOSA_LINUX_PLATFORM_FUNC
     QOSA_UNUSED(s);
+#ifdef CONFIG_QOSA_LINUX_PLATFORM_FUNC
     //Linux directly returns 0
     return 0;
 #elif defined(CONFIG_QOSA_EIGEN718_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR1903_PLATFORM_FUNC)

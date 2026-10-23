@@ -132,7 +132,7 @@
 
 /** URL */
 #ifndef QURL_CFG_URL_LEN_MAX
-#define QURL_CFG_URL_LEN_MAX (1024)
+#define QURL_CFG_URL_LEN_MAX (2048)
 #endif /* QURL_CFG_URL_LEN_MAX */
 /** SCHEME */
 #ifndef QURL_CFG_URL_SCHEME_LEN_MAX
@@ -207,7 +207,7 @@
 #ifdef QURL_CFG_PORT_MALLOC_FUNC
 #define qurl_malloc(s) QURL_CFG_PORT_MALLOC_FUNC(s)
 #else
-#define qurl_malloc(s) malloc(s)
+#define qurl_malloc(s) qosa_malloc(s)
 #endif
 #ifdef QURL_CFG_PORT_FREE_FUNC
 #define qurl_free(p) QURL_CFG_PORT_FREE_FUNC(p)
@@ -237,7 +237,7 @@
 #ifdef QURL_CFG_PORT_STRDUP_FUNC
 #define qurl_strdup(x) QURL_CFG_PORT_STRDUP_FUNC(x)
 #else
-#define qurl_strdup(x) strdup(x)
+#define qurl_strdup(x) qosa_strdup(x)
 #endif
 #ifdef QURL_CFG_PORT_STRCHR_FUNC
 #define qurl_strchr(x, y) QURL_CFG_PORT_STRCHR_FUNC(x, y)
@@ -472,7 +472,7 @@
 #else
 #define qurl_inet_ntop(x, y, z, a) inet_ntop(x, y, z, a)
 #endif
-
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
 /** NETWORK PORT */
 #ifdef QURL_CFG_PORT_NW_ACTIVATE_FUNC
 #define qurl_port_nw_activate(x) QURL_CFG_PORT_NW_ACTIVATE_FUNC(x)
@@ -488,6 +488,7 @@
 #define qurl_port_nw_get_ip(x, y, yl, z, zl) QURL_CFG_PORT_NW_GET_IP_FUNC(x, y, yl, z, zl)
 #else
 #define qurl_port_nw_get_ip(x, y, yl, z, zl) qurl_defaule_port_nw_get_ip(x, y, yl, z, zl)
+#endif
 #endif
 
 /** SOCKET PORT */

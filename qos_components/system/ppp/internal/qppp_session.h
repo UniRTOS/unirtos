@@ -14,6 +14,8 @@
 **********************************************************************/
 #ifndef __QPPP_SESSION_H__
 #define __QPPP_SESSION_H__
+
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qppp.h"
 #include "ppp.h"
 
@@ -74,4 +76,5 @@ struct qppp_session* _get_tls_session(qosa_uint8_t simid, qosa_uint8_t pdpid);
 void qppp_core_lock(void);
 void qppp_core_unlock(void);
 
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif  // !__QPPP_SESSION_H__

@@ -18,7 +18,10 @@
 #include <string.h>
 #include <time.h>
 #include <stdlib.h>
+
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
 #include "unistd.h"
+#endif
 
 #if QURL_CFG_APPS_FTP
 

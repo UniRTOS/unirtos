@@ -17,6 +17,7 @@
 #define __MPC_SMS__H__
 
 #include "mpc.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_sms.h"
 #include "ms_sms.h"
 
@@ -469,5 +470,5 @@ int mpc_sms_me_flush(qosa_uint8_t simid, mpc_sms_me_flush_e opt);
  *          - ms_sms layer callback function
  */
 void mpc_sms_register_cb(mpc_sms_cb cb);
-
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif

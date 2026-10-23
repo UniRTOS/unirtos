@@ -18,6 +18,7 @@
 #define __QOSA_USBNET_H__
 
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_modem.h"
 #include "qosa_ip_addr.h"
 #include "qosa_usbnet_config.h"
@@ -369,5 +370,5 @@ qosa_usbnet_err_e qosa_usbnet_set_qdmz(qosa_qdmz_global_cfg_t qdmz_cfg);
  *          - Return QOSA_USBNET_ERR_OK on success, return corresponding error code on failure
  */
 qosa_usbnet_err_e qosa_usbnet_get_qdmz(qosa_uint8_t ip_ver, qosa_usbnet_qdmz_cfg_t* qdmz_cfg);
-
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __QOSA_USBNET_H__ */

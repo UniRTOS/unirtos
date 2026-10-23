@@ -18,6 +18,7 @@
 #define __QOSA_CLAT__H__
 
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_sys.h"
 #include "qosa_at_param.h"
 #include "qosa_ip_addr.h"
@@ -105,5 +106,5 @@ qosa_clat_errcode_e qosa_clat_get_cfg(int profile_id, qosa_clat_config_t *cfg);
  *           - Other: fail
  */
 qosa_clat_errcode_e qosa_clat_set_cfg(int profile_id, qosa_clat_config_t *cfg);
-
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* _QOSA_CLAT_H */

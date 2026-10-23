@@ -246,10 +246,12 @@ static qurl_ecode_t tls_cfg_qurl_to_unirtos(qcm_ssl_config_t *qcm_ssl_cfg_ptr, q
             qcm_ssl_cfg_ptr->ssl_version = QCM_SSL_VERSION_5;
             break;
         }
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
         case QURL_TLS_VERSION_ALL: {
             qcm_ssl_cfg_ptr->ssl_version = QCM_SSL_VERSION_ALL;
             break;
         }
+#endif
         default:
             return QURL_ECODE_PARAM_INVALID;
     }

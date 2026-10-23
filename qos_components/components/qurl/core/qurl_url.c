@@ -99,7 +99,7 @@ static qurl_ecode_t url_junk_scan(const char *part)
     {
         static const char badbytes[] = {
             /* */ 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11,
-            0x12,       0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x7f, 0x00 /* null-terminate */
+            0x12,       0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20, 0x7f, 0x00 /* null-terminate */
         };
         n = qurl_strlen(part);
         nfine = qurl_strcspn(part, badbytes);
@@ -270,6 +270,8 @@ char *qurl_url_dedotdotify(const char *input)
     char       *outptr = QOSA_NULL;
     char       *orgclone = QOSA_NULL;
     char       *queryp = QOSA_NULL;
+
+    QOSA_UNUSED(clen);
 
     if (!out)
     {
@@ -996,7 +998,7 @@ static qurl_ecode_t url_parse(qurl_url_t *uurl_ptr, const char *url_ptr, unsigne
     qurl_url_url_free(uurl_ptr);
     /*3. URL Check*/
     url_len = qurl_strlen(url_ptr);
-    if (url_len >= QURL_CFG_URL_LEN_MAX)
+    if (url_len > QURL_CFG_URL_LEN_MAX)
     {
         qurl_loge("url is too long:[%d][%d]\r\n", QURL_CFG_URL_LEN_MAX, qurl_strlen(url_ptr));
         return QURL_ECODE_URL_TOO_LONG;
@@ -1418,7 +1420,7 @@ qurl_ecode_t qurl_url_getopt(qurl_url_t *uurl_ptr, qurl_url_opt_e opt, char **pa
 
             if (uurl_ptr->scheme && !qurl_strcasecmp("file", uurl_ptr->scheme)) /*File System*/
             {
-#if 0				
+#if 0
 				url_len = qurl_strlen("file://") + qurl_strlen(uurl_ptr->path) + (uurl_ptr->fragment?(1+qurl_strlen(uurl_ptr->fragment)):0);
 				url = qurl_malloc(url_len + 1);
 				if(url != QOSA_NULL)

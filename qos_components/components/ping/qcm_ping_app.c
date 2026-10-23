@@ -19,7 +19,9 @@
 #include "qosa_log.h"
 #include "qosa_asyn_dns.h"
 #include "qcm_socket_adp.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_datacall.h"
+#endif
 #include "qosa_rtc.h"
 #include "qcm_proj_config.h"
 #include "qosa_sockets.h"
@@ -332,10 +334,14 @@ typedef enum
     QCM_PING_RETRY_TIMER_EXP = 1002,
     QCM_PING_USER_STOP = 1003,
     QCM_PING_SOCKET_CLOSE = 1004,
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
     QCM_PING_PDP_ACTIVE_REQ = 1005,
+#endif
     QCM_PING_DNS_PARSE_REQ = 1006,
     QCM_PING_DNS_PARSE_RESP = 1007,  /*!< DNS resolution returned*/
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
     QCM_PING_PDP_ACTIVE_RESP = 1008, /*!< PDP activation result returned*/
+#endif
 } qcm_ping_msg_e;
 
 /**
@@ -356,8 +362,10 @@ typedef struct
 {
     qosa_task_t           ping_task;             /*!< Task handle corresponding to the current session*/
     qosa_uint32_t         session_id;            /*!< Corresponds to the ID sequence of the current session*/
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
     qosa_int32_t          pdp_cid;               /*!< Corresponds to the PDP CID sequence number passed by the user*/
     qosa_int32_t          sim_id;                /*!< Corresponds to SIM card ID*/
+#endif
     qosa_int32_t          sock_hd;               /*!< Corresponds to the socket handle created for UDP*/
     qosa_int32_t          icmp_echo_msg_id;      /*!< Corresponds to the message ID of the ICMP message packet, incrementing progressively*/
     qosa_uint16_t         icmp_echo_req_seq_num; /*!< Corresponds to the sequence number of the ICMP message request*/
@@ -393,6 +401,8 @@ typedef struct
     qosa_uint8_t ping_session_id; /*!< Client ID corresponding to the ping session*/
 } qcm_ping_req_session_id_t;
 
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+  
 /**
  * @struct qcm_ping_pdp_resp_t
  * @brief Result returned when the user PDP is activated
@@ -402,7 +412,7 @@ typedef struct
     qosa_uint8_t            ping_session_id; /*!< ping operation id*/
     qosa_datacall_act_cnf_t act_info;        /*!< PDP activation operation response content*/
 } qcm_ping_pdp_resp_t;
-
+#endif
 /** Maximum number of concurrent ping sessions supported*/
 #define QCM_TCPIP_PING_MAX_SESSION_CNT 3
 
@@ -640,7 +650,7 @@ static void qcm_ping_socket_event_cb(int sock_hd, int event, int code, void *use
         qcm_ping_req_event(QCM_PING_SOCKET_CLOSE, ping_session);
     }
 }
-
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
 /**
  * @brief
  */
@@ -775,7 +785,7 @@ static qcm_ping_error_e qcm_ping_service_data_call(void *argv)
         return result;
     }
 }
-
+#endif
 /**
  * @brief DNS Result Notification Callback Function
  *
@@ -862,10 +872,11 @@ static qcm_ping_error_e qcm_ping_service_dns_parse(void *argv)
     qcm_ping_req_session_id_t *send_ptr = QOSA_NULL;
     qcm_ping_req_session_id_t *req_ptr = QOSA_NULL;
     int                        ip_type = 0;
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
     qosa_datacall_ip_info_t    info = {0};
     qosa_datacall_conn_t       conn = 0;
     qosa_datacall_errno_e      ret = QOSA_DATACALL_OK;
-
+#endif
     send_ptr = (qcm_ping_req_session_id_t *)argv;
     ping_session = qcm_ping_get_session_ptr(send_ptr->ping_session_id);
     qosa_free(send_ptr);
@@ -875,6 +886,7 @@ static qcm_ping_error_e qcm_ping_service_dns_parse(void *argv)
         goto exit;
     }
     QLOGV("host_name :%s", ping_session->host_name);
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
     //Get the datacall IP type to determine whether it is IPv4 or IPv6.
     conn = qosa_datacall_conn_new(ping_session->sim_id, ping_session->pdp_cid, QOSA_DATACALL_CONN_TCPIP);
     ret = qosa_datacall_get_ip_info(conn, &info);
@@ -884,23 +896,44 @@ static qcm_ping_error_e qcm_ping_service_dns_parse(void *argv)
         result = QCM_PING_ERR_PDP_ACTIVE_FAILURE;
         goto exit;
     }
-
+#endif
     //QLOGV("host_name :%s ip_type=%d", ping_session->host_name, info.ip_type);
     //Get whether the user input is of IP type
     ip_type = qcm_socket_checkip_is_ip46(ping_session->host_name);
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
+    if (ip_type == QCM_PF_INET || ip_type == QCM_PF_INET6)
+#else
     if (ip_type == OSA_PF_INET || ip_type == QCM_PF_INET6)
+#endif
     {
         //If it is an IP type and matches the datacall IP type, or is a V4V6 type, proceed directly to the next request action.
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
+        if (ip_type == QCM_PF_INET)
+#else
         if (ip_type == OSA_PF_INET && (info.ip_type == QOSA_PDP_IPV4 || info.ip_type == QOSA_PDP_IPV4V6))
-        {
+#endif
+        {            
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
+            inet_pton(QCM_PF_INET, ping_session->host_name, &ping_session->remote_ip.addr.ipv4_addr);
+            ping_session->remote_ip.ip_vsn = QOSA_IP_V4;
+#else
             inet_pton(OSA_PF_INET, ping_session->host_name, &ping_session->remote_ip.addr.ipv4_addr);
             ping_session->remote_ip.ip_vsn = QOSA_PDP_IPV4;
+#endif     
         }
         //If it is an IPV6 type and matches the datacall IP type, or is a V4V6 type, proceed directly to the next request action.
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
+        else if (ip_type == QCM_PF_INET6)
+#else
         else if (ip_type == QCM_PF_INET6 && (info.ip_type == QOSA_PDP_IPV6 || info.ip_type == QOSA_PDP_IPV4V6))
+#endif
         {
             inet_pton(QCM_PF_INET6, ping_session->host_name, &ping_session->remote_ip.addr.ipv6_addr);
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
+            ping_session->remote_ip.ip_vsn = QOSA_IP_V6;
+#else
             ping_session->remote_ip.ip_vsn = QOSA_PDP_IPV6;
+#endif
         }
         else
         {
@@ -926,8 +959,10 @@ static qcm_ping_error_e qcm_ping_service_dns_parse(void *argv)
 
         //DNS resolution success callback or direct return
         dns_ret = qosa_dns_asyn_getaddrinfo(
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
             ping_session->sim_id,
             ping_session->pdp_cid,
+#endif
             ping_session->host_name,
             &addrinfo_list,
             qcm_ping_dns_result_cb,
@@ -935,6 +970,7 @@ static qcm_ping_error_e qcm_ping_service_dns_parse(void *argv)
         );
         if (dns_ret != QOSA_DNS_RESULT_OK)
         {
+            qosa_free(req_ptr);
             result = QCM_PING_ERR_DNS_FAILURE;  //Report error
         }
     }
@@ -960,8 +996,10 @@ static qcm_ping_error_e qcm_ping_send_icmp_request(void *argv)
     char                       out_buf[256] = {0};
     qcm_ping_session_t        *ping_session = QOSA_NULL;
     qcm_ping_req_session_id_t *send_ptr = QOSA_NULL;
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
     qosa_datacall_ip_info_t     info = {0};
     qosa_datacall_conn_t        conn = 0;
+#endif
 
     send_ptr = (qcm_ping_req_session_id_t *)argv;
     if (send_ptr == QOSA_NULL)
@@ -985,8 +1023,10 @@ static qcm_ping_error_e qcm_ping_send_icmp_request(void *argv)
 
         //Create socket with port number 0
         ping_session->sock_hd = qcm_socket_create(
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
             ping_session->sim_id,
             ping_session->pdp_cid,
+#endif
             ping_session->ai_family,
             QCM_SOCK_RAW,
             ping_session->ai_family == QCM_AF_INET ? QCM_IP_PROTOCOL_ICMP : QCM_IP6_NEXTH_ICMP6,
@@ -1031,13 +1071,14 @@ static qcm_ping_error_e qcm_ping_send_icmp_request(void *argv)
 #endif
 
     // get the local address
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
     conn = qosa_datacall_conn_new(ping_session->sim_id, ping_session->pdp_cid, QOSA_DATACALL_CONN_TCPIP);
     if (QOSA_DATACALL_OK != qosa_datacall_get_ip_info(conn, &info))
     {
         QLOGE("...result=%d simid=%d pdpcid=%d", result, ping_session->sim_id, ping_session->pdp_cid);
         return QCM_PING_ERR_PDP_ACTIVE_FAILURE;
     }
-
+#endif
     //Assemble ICMP packet
     if (ping_session->ai_family == QCM_AF_INET)
     {
@@ -1200,12 +1241,20 @@ static qcm_ping_error_e qcm_ping_dns_response_handler(void *argv)
         if (dns_ptr->info->ai_family == QCM_AF_INET)
         {
             inet_pton(QCM_AF_INET, dns_ptr->info->ip_addr, &ping_session->remote_ip.addr.ipv4_addr);
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
+            ping_session->remote_ip.ip_vsn = QOSA_IP_V4;
+#else
             ping_session->remote_ip.ip_vsn = QOSA_PDP_IPV4;
+#endif     
         }
         else
         {
             inet_pton(QCM_AF_INET6, dns_ptr->info->ip_addr, &ping_session->remote_ip.addr.ipv6_addr);
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
+            ping_session->remote_ip.ip_vsn = QOSA_IP_V6;
+#else
             ping_session->remote_ip.ip_vsn = QOSA_PDP_IPV6;
+#endif
         }
         ping_session->ai_family = dns_ptr->info->ai_family;
 
@@ -1229,6 +1278,8 @@ exit:
  *       - Returns QCM_PING_OK on success
  *       - Returns other on failure
  */
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
+
 static qcm_ping_error_e qcm_ping_datacall_response_handler(void *argv)
 {
     qcm_ping_error_e     result = QCM_PING_OK;
@@ -1269,7 +1320,7 @@ exit:
     qosa_free(pdp_resp_ptr);
     return result;
 }
-
+#endif
 /**
  * @brief ICMP reply function, called when data arrives from the peer server to parse the data, calculate TTL and RTT, and report URC, etc.
  *
@@ -1448,7 +1499,11 @@ static qcm_ping_error_e qcm_ping_read_icmp_reply(void *argv)
     ping_stats.ping_rtt = rtt;
     ping_stats.ping_size = ping_session->user_opts.num_data_bytes;
     ping_stats.ping_ttl = ping_session->user_opts.ttl;
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
+    if (ping_session->remote_ip.ip_vsn == QOSA_IP_V4)
+#else
     if (ping_session->remote_ip.ip_vsn == QOSA_PDP_IPV4)
+#endif
     {
         qcm_inet_ntop(QCM_AF_INET, &ping_session->remote_ip.addr.ipv4_addr, ping_stats.resolved_ip_addr, CONFIG_QOSA_INET6_ADDRSTRLEN);
     }
@@ -1617,8 +1672,11 @@ static void qcm_ping_app_task(void *argv)
     qcm_ping_task_msg_t ping_msg = {0};
     qcm_ping_session_t *ping_session = (qcm_ping_session_t *)argv;
     QLOGV("ping task running");
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
+    qcm_ping_req_event(QCM_PING_DNS_PARSE_REQ, ping_session);
+#else
     qcm_ping_req_event(QCM_PING_PDP_ACTIVE_REQ, ping_session);
-
+#endif
     for (;;)
     {
         qosa_memset(&ping_msg, 0, sizeof(qcm_ping_task_msg_t));
@@ -1633,11 +1691,13 @@ static void qcm_ping_app_task(void *argv)
         QLOGV("enter ping task,msgid   = %d", ping_msg.msgid);
         switch (ping_msg.msgid)
         {
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
             //PDP Request
             case QCM_PING_PDP_ACTIVE_REQ: {
                 result = qcm_ping_service_data_call(ping_msg.argv);
             }
             break;
+#endif     
             //DNS Resolution
             case QCM_PING_DNS_PARSE_REQ: {
                 result = qcm_ping_service_dns_parse(ping_msg.argv);
@@ -1668,10 +1728,12 @@ static void qcm_ping_app_task(void *argv)
                 result = qcm_ping_dns_response_handler(ping_msg.argv);
                 break;
             }
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
             case QCM_PING_PDP_ACTIVE_RESP: {
                 result = qcm_ping_datacall_response_handler(ping_msg.argv);
             }
             break;
+#endif
             default:
                 break;
         }
@@ -1714,8 +1776,13 @@ static void qcm_ping_app_task(void *argv)
  *       - Returns QCM_PING_OK on success
  *       - Returns other on failure
  */
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
+qcm_ping_error_e
+qcm_ping_start(const char *host_name, qcm_ping_config_type *ping_options, qcm_ping_event_cb cb_fun, void *user_param)
+#else
 qcm_ping_error_e
 qcm_ping_start(qosa_int32_t cid, qosa_int32_t sim_id, const char *host_name, qcm_ping_config_type *ping_options, qcm_ping_event_cb cb_fun, void *user_param)
+#endif
 {
     qcm_ping_session_t *ping_session = QOSA_NULL;
     char                thread_name[QOSA_ARRAY_BYTE_32] = {0};
@@ -1736,8 +1803,10 @@ qcm_ping_start(qosa_int32_t cid, qosa_int32_t sim_id, const char *host_name, qcm
 
     //Assign a value to the send request handle
     qosa_memcpy(&(ping_session->user_opts), ping_options, sizeof(qcm_ping_config_type));
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
     ping_session->pdp_cid = cid;
     ping_session->sim_id = sim_id;
+#endif
     ping_session->notify_fcn = cb_fun;
     ping_session->notify_arg = user_param;
     ping_session->host_name = qosa_malloc(qosa_strlen(host_name) + 1);

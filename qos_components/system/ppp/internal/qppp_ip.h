@@ -16,7 +16,7 @@
 #define __QPPP_IP__H__
 
 #include "qosa_def.h"
-
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 /** Macros related to IP addresses used in PPP */
 #define IP_CLASSA_NSHIFT   24
 #define IP_LOOPBACKNET     127
@@ -29,5 +29,5 @@
 
 #define IP_EXPERIMENTAL(a) (((qosa_uint32_t)(a)&0xf0000000UL) == 0xf0000000UL)
 #define IP_BADCLASS(a)     (((qosa_uint32_t)(a)&0xf0000000UL) == 0xf0000000UL)
-
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __QPPP_IP__H__ */

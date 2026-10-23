@@ -3,6 +3,7 @@
 #
 
 menu "UniRTOS AT Standard"
+depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
 
 config QAPP_UNIRTOS_CAMERA_AT_FUNC
     bool "UniRTOS Camera AT function"
@@ -131,7 +132,7 @@ config QAPP_UNIRTOS_UNIFY_AT_FUNC
     default n
 
 config QAPP_UNIRTOS_MQTT_AT_FUNC
-    bool "UniRTOS mqtt std at function"
+    bool "UniRTOS mqtt std at function"    
     select QAPP_UNIRTOS_STD_FUNC
     select QCM_MQTT_FUNC
     select QCM_URC_FUNC
@@ -263,10 +264,12 @@ config QAPP_UNIRTOS_QINDCFG_AT_FUNC
 
 choice QAPP_FOTA_HTTP_BACKEND
     prompt "Select HTTP backend for FOTA"
+    optional
 
 config QAPP_FOTA_USE_QURL_HTTP_FUNC
     bool "FOTA AT Use QURL HTTP"
     select QCM_QURL_HTTP_FUNC
+    default y
 
 config QAPP_FOTA_USE_MINI_HTTP_FUNC
     bool "FOTA AT Use MINI HTTP"
@@ -407,7 +410,7 @@ config QAPP_UNIRTOS_AT_CCLK_CMD
 config QAPP_UNIRTOS_AT_RETSET_CMD
     bool "UniRTOS AT+RETSET CMD"
     select QAPP_UNIRTOS_STD_FUNC
-    default n
+    default y
 
 config QHTTPCFG_CUSTOM_HEADER_EMPTY_SHOW
     bool "The qhttpcfg custom header is displayed when the value is empty"

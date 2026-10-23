@@ -16,6 +16,7 @@
 * </table>
 **********************************************************************/
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_at_sio.h"
 
 /**
@@ -129,3 +130,4 @@ int qppp_set_termframe_flag(qosa_uint8_t flag);
  *         - 0: Configured not to send terminate REQ command
  */
 qosa_uint8_t qppp_get_termframe_flag(void);
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 

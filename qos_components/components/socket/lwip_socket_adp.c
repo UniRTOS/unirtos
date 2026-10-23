@@ -20,10 +20,14 @@
 #include "qosa_log.h"
 #include "qosa_sys.h"
 #include "qosa_queue_list.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_datacall.h"
+#endif
 #include "qcm_proj_config.h"
 #include "qosa_system_config.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_led_event.h"
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -85,8 +89,10 @@ typedef enum
 typedef struct
 {
     int                 num; /*!< The socket fd handle given to the user is actually an array index number.*/
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
     int                 pdpcid;
     int                 sim_id;
+#endif
     int                 socket_fd;  /*!< The actual socket file descriptor handle*/
     int                 family;     /*!< Type information for creating a socket connection QCM_AF_INET  QCM_AF_INET6*/
     int                 type;       /*!< The created socket type QCM_SOCK_DGRAM QCM_SOCK_STREAM QCM_SOCK_RAW*/
@@ -236,9 +242,11 @@ static int qcm_socket_get_new_fd(void)
             }
             qosa_memset(g_socket_array[s], 0, sizeof(qcm_socket_t));
             g_socket_array[s]->num = s;
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #if !(defined(CONFIG_QOSA_OEM_BSQ_FUNC) || defined(CONFIG_QOSA_OEM_ALLIED_FUNC) || defined(CONFIG_QOSA_OEM_GENUS_FUNC) || defined(CONFIG_QOSA_OEM_LT_FUNC))
             QOSA_LED_UPDATE_SOCKET_STATUS(0, s, 1);
 #endif /* !(CONFIG_QOSA_OEM_BSQ_FUNC || CONFIG_QOSA_OEM_ALLIED_FUNC || CONFIG_QOSA_OEM_GENUS_FUNC) || CONFIG_QOSA_OEM_LT_FUNC*/
+#endif
             return s;
         }
     }
@@ -278,9 +286,11 @@ static void qcm_socket_free(int s)
     {
         qosa_free(g_socket_array[s]);
         g_socket_array[s] = QOSA_NULL;
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #if !(defined(CONFIG_QOSA_OEM_BSQ_FUNC) || defined(CONFIG_QOSA_OEM_ALLIED_FUNC) || defined(CONFIG_QOSA_OEM_GENUS_FUNC) || defined(CONFIG_QOSA_OEM_LT_FUNC))
         QOSA_LED_UPDATE_SOCKET_STATUS(0, s, 0);
 #endif /* !(CONFIG_QOSA_OEM_BSQ_FUNC || CONFIG_QOSA_OEM_ALLIED_FUNC || CONFIG_QOSA_OEM_GENUS_FUNC) || CONFIG_QOSA_OEM_LT_FUNC */
+#endif    
     }
 }
 
@@ -486,20 +496,29 @@ void qcm_socket_tcpack_callback(int sockfd, int evt, u16_t len)
  *          - Returns the corresponding socket handle
  *          - Returns a negative value on failure; for specific information, refer to qcm_sock_err_code.
  */
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+int qcm_socket_create(int family, int type, int protocol, int local_port, qosa_bool_t block)
+#else
 int qcm_socket_create(qosa_uint8_t simid, qosa_uint8_t pdpcid, int family, int type, int protocol, int local_port, qosa_bool_t block)
+#endif
 {
     int                     ret = 0;
     int                     s = 0;
     int                     sockfd = -1;
     qcm_socket_t           *sock = QOSA_NULL;
     int                     reuseFlag = 1;
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
     qosa_datacall_ip_info_t info = {0};
     qosa_datacall_conn_t    conn = 0;
+#endif
     int                     flags = 0;
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
     qosa_datacall_errno_e   result = QOSA_DATACALL_OK;
+#endif
 
     qcm_socket_monitor_init_check();
 
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
     //Get local IP address
     qosa_memset(&info, 0, sizeof(qosa_datacall_ip_info_t));
     conn = qosa_datacall_conn_new(simid, pdpcid, QOSA_DATACALL_CONN_TCPIP);
@@ -509,6 +528,7 @@ int qcm_socket_create(qosa_uint8_t simid, qosa_uint8_t pdpcid, int family, int t
         QLOGE("...result=%d simid=%d pdpcid=%d", result, simid, pdpcid);
         return QCM_SOCK_PDP_NO_ACTIVE;
     }
+#endif
 
     //Create socket
 #if QCM_TCPIP_SOCKET_CALL_BACK_ENABLE
@@ -537,8 +557,10 @@ int qcm_socket_create(qosa_uint8_t simid, qosa_uint8_t pdpcid, int family, int t
         goto exit;
     }
     sock->type = type;
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
     sock->pdpcid = pdpcid;
     sock->sim_id = simid;
+#endif
     sock->socket_fd = sockfd;
     sock->family = family;
     sock->state = QCM_SOC_STATE_NONE;
@@ -551,7 +573,11 @@ int qcm_socket_create(qosa_uint8_t simid, qosa_uint8_t pdpcid, int family, int t
     setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &reuseFlag, sizeof(int));
 
     //Bind local IP addresses via simid and pdpcid
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
+    if (sock->family == QCM_AF_INET)
+#else
     if (sock->family == QCM_AF_INET && (info.ip_type == QOSA_PDP_IPV4 || info.ip_type == QOSA_PDP_IPV4V6))
+#endif
     {
         struct sockaddr_in v4_addr;
         qosa_memset(&v4_addr, 0, sizeof(struct sockaddr_in));
@@ -559,33 +585,47 @@ int qcm_socket_create(qosa_uint8_t simid, qosa_uint8_t pdpcid, int family, int t
         v4_addr.sin_family = sock->family;
         if (local_port != 0)
             v4_addr.sin_port = htons(local_port);
-
-        v4_addr.sin_addr = info.ipv4_ip.addr.ipv4_addr;
-
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+         v4_addr.sin_addr = info.ipv4_ip.addr.ipv4_addr;
+#endif
         sock->local_addr.addr.ipv4_addr = v4_addr.sin_addr;
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
+        sock->local_addr.ip_vsn = QOSA_IP_V4;
+#else
         sock->local_addr.ip_vsn = QOSA_PDP_IPV4;
-
+#endif
         ret = bind(sockfd, (struct sockaddr *)&v4_addr, sizeof(struct sockaddr_in));
     }
+#if (LWIP_IPV6)
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
+    else if (sock->family == QCM_AF_INET6)
+#else
     else if (sock->family == QCM_AF_INET6 && (info.ip_type == QOSA_PDP_IPV6 || info.ip_type == QOSA_PDP_IPV4V6))
+#endif
     {
         struct sockaddr_in6 v6_addr;
         qosa_memset(&v6_addr, 0, sizeof(struct sockaddr_in6));
         v6_addr.sin6_family = sock->family;
         if (local_port != 0)
             v6_addr.sin6_port = htons(sock->local_port);
-
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
         v6_addr.sin6_addr = info.ipv6_ip.addr.ipv6_addr;
-
+#endif
         sock->local_addr.addr.ipv6_addr = v6_addr.sin6_addr;
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
+        sock->local_addr.ip_vsn = QOSA_IP_V6;
+#else
         sock->local_addr.ip_vsn = QOSA_PDP_IPV6;
-
+#endif
         ret = bind(sock->socket_fd, (struct sockaddr *)&v6_addr, sizeof(v6_addr));
     }
+#endif
     else
     {
         ret = QCM_SOCK_INVALID_PARAM;
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
         QLOGE("ip type error=%d", info.ip_type);
+#endif
         goto exit;
     }
 
@@ -670,6 +710,7 @@ int qcm_socket_connect(int s, qosa_ip_addr_t *remote_ip, int remote_port)
         server.sin_addr = remote_ip->addr.ipv4_addr;
         ret = connect(sock->socket_fd, (struct sockaddr *)&server, sizeof(struct sockaddr_in));
     }
+#if (LWIP_IPV6)
     else
     {
         struct sockaddr_in6 server;
@@ -681,6 +722,12 @@ int qcm_socket_connect(int s, qosa_ip_addr_t *remote_ip, int remote_port)
 
         ret = connect(sock->socket_fd, (struct sockaddr *)&server, sizeof(struct sockaddr_in6));
     }
+#else
+    else
+    {
+        return QCM_SOCK_INVALID_PARAM;
+    }
+#endif
 
     if (ret == 0)
     {
@@ -1087,7 +1134,9 @@ int qcm_socket_accept(int s, qosa_ip_addr_t *remote_addr, int *remote_port, qosa
     qcm_socket_t       *sock = QOSA_NULL;
     qcm_socket_t       *accept_sock = QOSA_NULL;
     struct sockaddr_in  sa;
+#if (LWIP_IPV6)
     struct sockaddr_in6 sa6;
+#endif
 
     sock = qcm_socket_get_prt(s);
     if (sock == QOSA_NULL)
@@ -1100,12 +1149,19 @@ int qcm_socket_accept(int s, qosa_ip_addr_t *remote_addr, int *remote_port, qosa
         addr_len = sizeof(struct sockaddr_in);
         accept_sockfd = accept(sock->socket_fd, (struct sockaddr *)&sa, (socklen_t *)&addr_len);
     }
+#if (LWIP_IPV6)
     else
     {
         qosa_memset(&sa6, 0, sizeof(struct sockaddr_in6));
         addr_len = sizeof(struct sockaddr_in6);
         accept_sockfd = accept(sock->socket_fd, (struct sockaddr *)&sa6, (socklen_t *)&addr_len);
     }
+#else
+    else
+    {
+        return QCM_SOCK_INVALID_PARAM;
+    }
+#endif
 
     QLOGV("sock->type: %d, kalive_onoff: %d", sock->type, g_socket_system_cfg.kalive_onoff);
     if (sock->type == QCM_SOCK_STREAM && g_socket_system_cfg.kalive_onoff == 1)
@@ -1139,8 +1195,10 @@ int qcm_socket_accept(int s, qosa_ip_addr_t *remote_addr, int *remote_port, qosa
 
         accept_sock->num = accpet_num;
         accept_sock->socket_fd = accept_sockfd;
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
         accept_sock->pdpcid = sock->pdpcid;
         accept_sock->sim_id = sock->sim_id;
+#endif
         accept_sock->family = sock->family;
         accept_sock->type = QCM_SOCK_STREAM;
         accept_sock->state = QCM_SOC_STATE_CONNECT;
@@ -1158,7 +1216,11 @@ int qcm_socket_accept(int s, qosa_ip_addr_t *remote_addr, int *remote_port, qosa
             if (remote_addr != QOSA_NULL)
             {
                 remote_addr->addr.ipv4_addr = sa.sin_addr;
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
+                remote_addr->ip_vsn = QOSA_IP_V4;
+#else
                 remote_addr->ip_vsn = QOSA_PDP_IPV4;
+#endif
             }
 
             //Get the local port of the new connection
@@ -1174,9 +1236,14 @@ int qcm_socket_accept(int s, qosa_ip_addr_t *remote_addr, int *remote_port, qosa
             if (local_addr != QOSA_NULL)
             {
                 local_addr->addr.ipv4_addr = sock->local_addr.addr.ipv4_addr;
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
+                local_addr->ip_vsn = QOSA_IP_V4;
+#else
                 local_addr->ip_vsn = QOSA_PDP_IPV4;
+#endif
             }
         }
+#if (LWIP_IPV6)
         else
         {
             if (remote_port != QOSA_NULL)
@@ -1186,7 +1253,11 @@ int qcm_socket_accept(int s, qosa_ip_addr_t *remote_addr, int *remote_port, qosa
             if (remote_addr != QOSA_NULL)
             {
                 remote_addr->addr.ipv6_addr = sa6.sin6_addr;
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
+                remote_addr->ip_vsn = QOSA_IP_V6;
+#else
                 remote_addr->ip_vsn = QOSA_PDP_IPV6;
+#endif
             }
 
             //Get the local port of the new connection
@@ -1202,10 +1273,15 @@ int qcm_socket_accept(int s, qosa_ip_addr_t *remote_addr, int *remote_port, qosa
             if (local_addr != QOSA_NULL)
             {
                 local_addr->addr.ipv6_addr = sock->local_addr.addr.ipv6_addr;
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
+                local_addr->ip_vsn = QOSA_IP_V6;
+#else
                 local_addr->ip_vsn = QOSA_PDP_IPV6;
+#endif
             }
         }
 
+    #endif
         unir_set_socket2(accept_sock->socket_fd, ql_apptcpip_soc_callback_func, accept_sock);
         //qcm_tcpip_service_new has not been created yet, qcm_socket_register_event has not set sock->event_cb
         //After the client acknowledges, sending data immediately may result in data not being reported.
@@ -1418,6 +1494,7 @@ int qcm_socket_sendto(int s, qosa_ip_addr_t *remote_addr, qosa_uint16_t remote_p
 
         ret = sendto(sock->socket_fd, data, sz, 0, (struct sockaddr *)&sa, sizeof(sa));
     }
+#if (LWIP_IPV6)
     else
     {
         struct sockaddr_in6 sa6;
@@ -1429,6 +1506,12 @@ int qcm_socket_sendto(int s, qosa_ip_addr_t *remote_addr, qosa_uint16_t remote_p
         sa6.sin6_addr = remote_addr->addr.ipv6_addr;
         ret = sendto(sock->socket_fd, data, sz, 0, (struct sockaddr *)&sa6, sizeof(sa6));
     }
+#else
+    else
+    {
+        return QCM_SOCK_INVALID_PARAM;
+    }
+#endif
     sock->last_error = lwip_get_error(sock->socket_fd);
     QLOGV("send to %d bytes to socket, error:%d", ret, sock->last_error);
     if ((ret < 0 && sock->last_error == EWOULDBLOCK) || (ret > 0 && ret < sz))
@@ -1481,7 +1564,9 @@ int qcm_socket_recvfrom(int s, qosa_ip_addr_t *remote_addr, qosa_uint16_t *remot
     int                 ret = 0;
     qcm_socket_t       *sock = QOSA_NULL;
     struct sockaddr_in  sa;
+#if (LWIP_IPV6)
     struct sockaddr_in6 sa6;
+#endif
 
     sock = qcm_socket_get_prt(s);
     if (sock == QOSA_NULL)
@@ -1507,10 +1592,15 @@ int qcm_socket_recvfrom(int s, qosa_ip_addr_t *remote_addr, qosa_uint16_t *remot
         }
         if (remote_addr != QOSA_NULL)
         {
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+            remote_addr->ip_vsn = QOSA_IP_V4;
+#else
             remote_addr->ip_vsn = QOSA_PDP_IPV4;
+#endif
             remote_addr->addr.ipv4_addr = sa.sin_addr;
         }
     }
+#if (LWIP_IPV6)
     else
     {
         qosa_memset(&sa6, 0, sizeof(struct sockaddr_in6));
@@ -1522,10 +1612,20 @@ int qcm_socket_recvfrom(int s, qosa_ip_addr_t *remote_addr, qosa_uint16_t *remot
         }
         if (remote_addr != QOSA_NULL)
         {
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+            remote_addr->ip_vsn = QOSA_IP_V6;
+#else
             remote_addr->ip_vsn = QOSA_PDP_IPV6;
+#endif
             remote_addr->addr.ipv6_addr = sa6.sin6_addr;
         }
     }
+#else
+    else
+    {
+        return QCM_SOCK_INVALID_PARAM;
+    }
+#endif
     sock->last_error = lwip_get_error(sock->socket_fd);
     if ((ret < 0 && sock->last_error == EWOULDBLOCK) || ret > 0)
     {
@@ -2707,12 +2807,25 @@ static void qcm_socket_monitor_task(void *pData)
                 }
             }
         }
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+        if (s_event.event_mask & QL_DS_SENDACK_EVENT)
+        {
+            if ((sock->event_mask & QCM_SOCK_SENDENDACK_EVENT) != 0 && sock->event_cb != QOSA_NULL)
+            {
+                extern int32_t lwip_getAckedSize(int nSocket);
+                QLOGV("QCM_SOCK_SENDENDACK_EVENT here sockfd=%d\n ", sock->socket_fd);
+                int len = lwip_getAckedSize(sock->socket_fd);
+                sock->event_cb(sock->num, QCM_SOCK_SENDENDACK_EVENT, len, sock->user_argv);
+            }
+        }
+#endif
     }
 }
 
 /**
  * @brief Find the corresponding socket to notify the disconnection event.
  */
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 static void qcm_socket_report_network_down_event(qosa_uint8_t simid, qosa_uint8_t pdpid)
 {
     int           index = 0;
@@ -2773,14 +2886,16 @@ static int qcm_socket_nw_pdp_deact_notify(void *user_argv, void *argv)
     qcm_socket_report_network_down_event(notify->simid, notify->pdpid);
     return 0;
 }
+#endif
 
 static void qcm_socket_monitor_init(void)
 {
     int err = 0;
 
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
     qosa_event_notify_register(QOSA_EVENT_NET_PDP_ACT, qcm_socket_pdp_deact_cb, QOSA_NULL);
     qosa_event_notify_register(QOSA_EVENT_NW_PDN_DEACT, qcm_socket_nw_pdp_deact_notify, QOSA_NULL);
-
+#endif
     qosa_msgq_create(&g_sock_monitor_msgq, sizeof(qcm_socket_Event), 30);
 
     err = qosa_task_create(&g_sock_monitor_task, CONFIG_QCM_MONITOR_TASK_STACK_SIZE, QOSA_PRIORITY_ABOVE_NORMAL, "socket", qcm_socket_monitor_task, QOSA_NULL);
@@ -2903,6 +3018,8 @@ void qcm_socket_set_udp_filter_mode(qosa_uint32_t mode)
 {
 #if defined(CONFIG_QOSA_ASR1903_PLATFORM_FUNC) || defined(CONFIG_QOSA_UIS8852_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR1805_PLATFORM_FUNC)
     QOSA_UNUSED(mode);
+#elif (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+    QOSA_UNUSED(mode);
 #else  /* CONFIG_QOSA_ASR1903_PLATFORM_FUNC || CONFIG_QOSA_UIS8852_PLATFORM_FUNC || CONFIG_QOSA_ASR1805_PLATFORM_FUNC */
     unir_set_lwip_udp_filter_mode(mode);
 #endif /* defined(CONFIG_QOSA_ASR1903_PLATFORM_FUNC) || defined(CONFIG_QOSA_UIS8852_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR1805_PLATFORM_FUNC) */
@@ -2913,7 +3030,11 @@ void qcm_socket_set_udp_filter_mode(qosa_uint32_t mode)
  */
 void qcm_socket_get_udp_filter_mode(qosa_uint32_t *mode)
 {
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+    QOSA_UNUSED(mode);
+#else
     *mode = unir_get_lwip_udp_filter_mode();
+#endif
 }
 
 /**

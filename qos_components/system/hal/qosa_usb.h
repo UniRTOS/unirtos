@@ -17,6 +17,7 @@
 #define __QOSA_USB_H__
 
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_sys.h"
 
 /*===========================================================================
@@ -165,5 +166,5 @@ qosa_int32_t qosa_usb_hidx_isconnect(qosa_uint8_t hid_num);
  *          - other: Error code
  */
 qosa_int32_t qosa_usb_config_hid(qosa_usb_hid_mode_e mode);
-
+#endif//!(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __QOSA_USB_H__ */

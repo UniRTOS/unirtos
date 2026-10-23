@@ -17,6 +17,7 @@
 
 #include "qosa_def.h"
 
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #define LOWLEVEL_NOTIFY_CONNECT 1
 
 typedef struct lowlevel_data lowlevel_context_t;
@@ -38,4 +39,5 @@ void                  lowlevel_deinit(struct lowlevel_data* lowlevel_data);
 int                   lowlevel_tunnel_3(struct lowlevel_data* lowlevel_data, qosa_uint8_t* data, qosa_uint32_t len);
 int                   lowlevel_tunnel_4_read(struct lowlevel_data* lowlevel_data, qosa_uint8_t* data, qosa_uint32_t len);
 
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __LOWLEVEL_H__ */

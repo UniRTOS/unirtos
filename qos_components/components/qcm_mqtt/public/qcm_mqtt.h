@@ -163,7 +163,9 @@ typedef enum
     QCM_MQTT_RES_ERROR_STORE_FAIL,                          /*!< Indicates MQTT failed to get receive cache ID. */
     QCM_MQTT_RES_NOT_READ_DATA,                             /*!< Indicates MQTT cache data read failed. */
     QCM_MQTT_RES_ERROR_SUBCRIBE,                            /*!< Indicates MQTT topic subscription failed. */
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
     QCM_MQTT_RES_ERROR_DATACALL,                            /*!< Datacall activation request failed. */
+#endif
     QCM_MQTT_RES_ERROR_SOCKET_CREATE,                       /*!< MQTT SOCKET creation failed. */
     QCM_MQTT_RES_ERROR_TCP_CONNECT,                         /*!< MQTT TCP connection failed. */
     QCM_MQTT_RES_ERROR_CONNECT_TIMEOUT,                     /*!< CONNECT packet no response from server within time. */

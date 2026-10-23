@@ -17,6 +17,7 @@
 #define __MPC_DEV__H__
 
 #include "mpc.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_dev1.h"
 #include "qosa_network.h"
 #include "qosa_network_param.h"
@@ -77,4 +78,5 @@ int mpc_dev_set_airplanecontrol_config(qosa_uint8_t simid, qosa_uint8_t airplane
  */
 int mpc_dev_get_airplanecontrol_config(qosa_uint8_t simid, qosa_dev_airplanecontrol_param_t *config);
 
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __MPC_DEV__H__ */

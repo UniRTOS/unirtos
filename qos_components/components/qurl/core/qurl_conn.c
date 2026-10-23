@@ -262,8 +262,10 @@ static void conn_resolve_cb(void *arg1, void *arg2)
                 }
                 else
                 {  // IPv6
+#if LWIP_IPV6                 
                     struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)rp->ai_addr;
                     addr = &(ipv6->sin6_addr);
+#endif
                 }
                 qurl_inet_ntop(rp->ai_family, addr, ipstr, sizeof(ipstr));
                 qurl_logd("dns success[%d][%s]\n", count, ipstr);
@@ -480,22 +482,29 @@ static qurl_ecode_t conn_single_connect(qurl_conn_t *conn_ptr, qurl_addrinfo_t *
     qurl_sockaddr_ex_t  local_sa = {0};
     qurl_socket_t      *sockfd_ptr = &conn_ptr->temp_sock[tempindex];
     qurl_sockaddr_in_t *sai4 = (qurl_sockaddr_in_t *)&server_sa.addr_u.sas;
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
     qurl_sockaddr_in_t *local_sai4 = (qurl_sockaddr_in_t *)&local_sa.addr_u.sas;
+#endif
 #if QURL_CFG_ENABLE_IPV6
     qurl_sockaddr_in6_t *sai6 = (qurl_sockaddr_in6_t *)&server_sa.addr_u.sas;
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
     qurl_sockaddr_in6_t *local_sai6 = (qurl_sockaddr_in6_t *)&local_sa.addr_u.sas;
 #endif
+#endif
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
     qosa_datacall_ip_info_t info = {0};
     qosa_datacall_conn_t    conn = 0;
-
+#endif
     /*Organize data*/
     server_sa.family = server_ai_ptr->ai_family;
+    qurl_logd("server_ai_ptr->ai_family=%d, AF_INET6=%d,AF_INET=%d,AF_UNSPEC=%d\n",server_ai_ptr->ai_family,AF_INET6,AF_INET,AF_UNSPEC);
     server_sa.socktype = (conn_ptr->trans_type == QURL_CONN_TRANS_TYPE_TCP) ? SOCK_STREAM : SOCK_DGRAM;
-    server_sa.protocol = conn_ptr->trans_type != QURL_CONN_TRANS_TYPE_TCP ? IPPROTO_UDP : server_ai_ptr->ai_protocol;
+    server_sa.protocol = conn_ptr->trans_type != QURL_CONN_TRANS_TYPE_TCP ? IPPROTO_UDP : IPPROTO_TCP;
     local_sa.family = server_ai_ptr->ai_family;
     local_sa.socktype = (conn_ptr->trans_type == QURL_CONN_TRANS_TYPE_TCP) ? SOCK_STREAM : SOCK_DGRAM;
     local_sa.protocol = conn_ptr->trans_type != QURL_CONN_TRANS_TYPE_TCP ? IPPROTO_UDP : server_ai_ptr->ai_protocol;
     /*Need to distinguish between IPv4 and IPv6*/
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
     conn = qosa_datacall_conn_new(0, core_ptr->usr_cfg.nw_id, QOSA_DATACALL_CONN_TCPIP);
     if (QOSA_DATACALL_OK == qosa_datacall_get_ip_info(conn, &info))
     {
@@ -553,7 +562,33 @@ static qurl_ecode_t conn_single_connect(qurl_conn_t *conn_ptr, qurl_addrinfo_t *
         qurl_loge("PDP not activated:%d", core_ptr->usr_cfg.nw_id);
         return QURL_ECODE_NETWORK_ERR;
     }
+#else
+#if QURL_CFG_ENABLE_IPV6
+        if (server_sa.family == AF_INET6)
+        {
+            server_sa.addrlen = sizeof(qurl_sockaddr_in6_t);
+            sai6->sin6_family = AF_INET6;
+            sai6->sin6_port = qurl_htons(conn_ptr->temp_remote_port);
+            sai6->sin6_addr = ((qurl_sockaddr_in6_t *)server_ai_ptr->ai_addr)->sin6_addr;
 
+            
+        }
+        else /* IPV4 */
+#endif
+        if (server_sa.family == AF_INET)
+        {
+            server_sa.addrlen = sizeof(qurl_sockaddr_in_t);
+            sai4->sin_family = AF_INET;
+            sai4->sin_port = qurl_htons(conn_ptr->temp_remote_port);
+            sai4->sin_addr = ((qurl_sockaddr_in_t *)server_ai_ptr->ai_addr)->sin_addr;
+        }
+        else
+        {
+            /*Not supported*/
+            qurl_loge("family:%d not supported", server_sa.family);
+            return QURL_ECODE_CONN_FAMILY_NOT_SUPPORTED;
+        }
+#endif
     /*Create socket*/
     ret = conn_socket(&sockfd, &server_sa);
     if (ret != QURL_OK)
@@ -636,15 +671,17 @@ static qurl_ecode_t conn_single_connect(qurl_conn_t *conn_ptr, qurl_addrinfo_t *
 #endif /* QURL_CFG_PORT_SOCKET_OPT_TCP_KEEPCNT */
     }
 #endif /* QURL_CFG_PORT_SOCKET_OPT_SO_KEEPALIVE */
-
-    /*Bind local*/
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+     /*Bind local*/
     ret = conn_bind(sockfd, &local_sa);
     if (ret != QURL_OK)
     {
         conn_close(sockfd);
         return ret;
     }
-
+#else
+    QOSA_UNUSED(local_sa);
+#endif
     /*Control*/
     ret = conn_nonblock(sockfd, QOSA_TRUE);
     if (ret != QURL_OK)
@@ -906,12 +943,22 @@ static qurl_ecode_t conn_connected_check(qurl_conn_t *conn_ptr, int sock_index, 
                     struct sockaddr_in *ipv4 = (struct sockaddr_in *)conn_ai_ptr->ai_addr;
                     addr = &(ipv4->sin_addr);
                 }
+#if QURL_CFG_ENABLE_IPV6
                 else
                 {  // IPv6
                     struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)conn_ai_ptr->ai_addr;
                     addr = &(ipv6->sin6_addr);
                 }
-                qurl_inet_ntop(conn_ai_ptr->ai_family, addr, ipstr, QURL_INET6_ADDRSTRLEN);
+#else
+                else
+                {
+                    addr = QOSA_NULL;
+                }
+#endif
+                if (addr != QOSA_NULL)
+                {
+                    qurl_inet_ntop(conn_ai_ptr->ai_family, addr, ipstr, QURL_INET6_ADDRSTRLEN);
+                }
 
                 conn_ptr->conn_conn[sock_index].ip_str = ipstr;
             }
@@ -2136,7 +2183,11 @@ qurl_ecode_t qurl_conn_core_resolve(qurl_conn_t *conn_ptr)
         conn_resolve_cb,
         arg_ptr,
         conn_ptr->conn_conn[QURL_SOCKET_INDEX_0].resolve_addrtype,
+    #if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
         core_ptr->usr_cfg.nw_id
+    #else
+        -1
+    #endif
     );
 
     return ret;

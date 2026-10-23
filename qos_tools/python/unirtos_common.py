@@ -8,7 +8,7 @@ import subprocess
 import sys
 
 
-ARM_ARCH_LIST = {"rda_8910_R05", "eigen_718", "qcx216", "qcx217", "ASR"}
+ARM_ARCH_LIST = {"rda_8910_R05", "eigen_718", "qcx216", "qcx217", "ASR","bk7258","bk7238","ecr6600"}
 DEFAULT_BUILD_SUBVER = "V01"
 DEFAULT_BUILD_QINF = "FFF"
 DEFAULT_BUILD_SVN = "01"
@@ -147,7 +147,7 @@ def resolve_toolchain_root() -> Path:
 
 
 def resolve_python(toolchain_root: Path) -> Path:
-    py = toolchain_root / "Python38" / "python.exe"
+    py = toolchain_root / "Python312" / "python.exe"
     if py.exists():
         return py
     return Path(sys.executable)

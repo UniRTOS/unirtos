@@ -17,6 +17,7 @@
 #define __SERIAL_H__
 
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
 #include "qosa_sys.h"
 #include "qosa_device.h"
 
@@ -248,5 +249,5 @@ void rt_hw_serial_isr(struct rt_serial_device* serial, int event);
 int rt_hw_serial_register(struct rt_serial_device* serial, const char* name, qosa_uint32_t flag, void* data);
 
 int rt_hw_serial_event_report_register(struct rt_serial_device* serial, int status, serial_status_monitor_t* arvg);
-
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
 #endif /* __SERIAL_H__ */

@@ -17,6 +17,7 @@
 #define __OBJECT_H__
 
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
 #include "qosa_sys.h"
 #include "qosa_queue_list.h"
 
@@ -128,5 +129,5 @@ int rt_object_get_length(enum rt_object_class_type type);
 struct rt_object_information* rt_object_get_information(enum rt_object_class_type type);
 
 rt_object_t rt_object_type_driver_id(int driver_id, qosa_uint8_t type);
-
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
 #endif /* __OBJECT_H__ */

@@ -15,6 +15,9 @@
 **********************************************************************/
 #ifndef __QOSA_TTS_H__
 #define __QOSA_TTS_H__
+
+#include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_audio.h"
 
 typedef enum
@@ -182,4 +185,6 @@ qosa_aud_errcode_e qosa_tts_param_cfg_set(qosa_tts_config_e type, int val);
  *          - other: Error code
  */
 qosa_aud_errcode_e qosa_tts_resource_init(qosa_int8_t *path_name, qosa_uint8_t *ram_addr);
+
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __QOSA_TTS_H__ */

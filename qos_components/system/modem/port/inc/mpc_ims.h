@@ -17,6 +17,7 @@
 #define __MPC_IMS__H__
 
 #include "mpc.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_ims.h"
 
 typedef struct
@@ -35,4 +36,5 @@ typedef struct
     char         dialnumstr[80];
 } mpc_ims_conn_id_event_ind_t;
 
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __MPC_IMS__H__ */

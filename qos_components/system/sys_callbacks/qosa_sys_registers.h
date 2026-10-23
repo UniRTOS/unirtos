@@ -17,6 +17,7 @@
 #define __QOSA_SYS_REGISTERS_H__
 
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
 #include "qosa_sys.h"
 #include "qosa_at_sio.h"
 #include "qosa_at_param.h"
@@ -84,5 +85,5 @@ typedef void (*qosa_qcm_virt_at_result_func_ptr)(const char *data, qosa_uint32_t
  *
  */
 void qosa_regedit_qcm_virt_at_result_func(qosa_qcm_virt_at_result_func_ptr virt_at_result_func_ptr);
-
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
 #endif /* __QOSA_SYS_REGISTERS_H__ */

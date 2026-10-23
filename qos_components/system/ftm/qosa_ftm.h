@@ -17,6 +17,7 @@
 #define __QOSA_FTM_H__
 
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_sys.h"
 
 /**
@@ -184,5 +185,5 @@ qosa_ftm_err_e qosa_ftm_tx_set(qosa_ftm_tx_config_t *config);
  *       - Return corresponding error code if failed
  */
 qosa_ftm_err_e qosa_ftm_rx_set(qosa_ftm_rx_config_t *config);
-
+#endif//!(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __QOSA_FTM_H__ */

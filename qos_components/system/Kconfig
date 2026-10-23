@@ -10,6 +10,7 @@ config QOSA_FEATURE_ALLOW_CHANGE
 
 config QOSA_OPENCPU_FUNC
     bool "Open cpu funtion support"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_VFS_FILESYSTEM_FUNC
@@ -42,41 +43,50 @@ config QOSA_LOG_DEBUG_FUNC
 
 config QOSA_VSIM_ADAPT_FUNC
     bool "vsim adapt function support"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_DATACALL_FUNC
     bool "Provide PDP management capabilities"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     select QOSA_EVENT_NOTIFY_FUNC
     select QOSA_LINK_LIST_FUNC
     default n
 
 config QOSA_MODEM_DEV_FUNC
     bool "Provide device management capabilities"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_NW_FUNC
     bool "network parameter update and indication report function"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     depends on QOSA_LINK_LIST_FUNC
     default n
 
 config QOSA_IMS_FUNC
     bool "ims parameter update and indication report function"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_USBNET_FUNC
     bool "USBNET(ECM/RNDIS/NCM) function"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_PPP_FUNC
     bool "QPPP function"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_SIM_FUNC
     bool "UniRTOS modem SIM/(U)SIM function support"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_SIM_HAL_SLOT_NUM
     int "sim card number" if QOSA_FEATURE_ALLOW_CHANGE
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default 1
     range 1 2
     help
@@ -84,14 +94,17 @@ config QOSA_SIM_HAL_SLOT_NUM
 
 config QOSA_SMS_FUNC
     bool "UniRTOS modem SMS function support"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_VIRT_AT_FUNC
     bool "UniRTOS virt AT function support"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_DSDS_FUNC
     bool "UniRTOS Dual SIM Dual Standby function support"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 # If using the built-in UniRTOS library, enable the MBEDTLS3_X_X or MBEDTLS2_X_X macro definition.
@@ -126,6 +139,7 @@ config QOSA_LINK_SYSTEM_LIBRARIES_FUNC
 
 config QOSA_UDP_UART_FUNC
     bool "linux udp uart support"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     depends on QOSA_LINUX_PLATFORM_FUNC
     default y
 
@@ -135,14 +149,17 @@ config QOSA_WIFISCAN_FUNC
 
 config QOSA_FTM_FUNC
     bool "ftm function support"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_AT_PARSER_FUNC
     bool "at cmd parser function"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_AT_QGMR_APP
     bool "QGMR with app"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_LPM_FUNC
@@ -151,10 +168,12 @@ config QOSA_LPM_FUNC
 
 config QOSA_CAMERA_FUNC
     bool "CAMERA function"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_LCD_FUNC
     bool "LCD function"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_IIC_FUNC
@@ -188,66 +207,82 @@ config QOSA_FLASH_TEST_FUNC
 
 config QOSA_NBIOT_CUST_FUNC
     bool "NBIOT customized applications"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_TTS_SUPPORT
     bool "UniRTOS TTS support"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_TTS_RESOURCE_TO_FS_SUPPORT
     bool "UniRTOS TTS resource store to fs support"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_CODE_DECODER_SUPPORT
     bool "UniRTOS Code Decoder support"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_SECBOOT_FUNC
     bool "UniRTOS Secboot Func"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_SECBOOT_SUPPORT
     bool "UniRTOS Secboot support"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_DTR_FUNC
     bool "UniRTOS DTR support"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_OEM_LT_FUNC
     bool "UniRTOS OEM LT function support"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_OEM_BSQ_FUNC
     bool "UniRTOS OEM BSQ function support"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_OEM_ALLIED_FUNC
     bool "UniRTOS OEM ALLIED function support"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_OEM_GENUS_FUNC
     bool "UniRTOS OEM GENUS function support"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_CALL_CONTROL_FUNC
     bool "UniRTOS CONTROL CALL Function support"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_VOICE_CALL_FUNC
     bool "UniRTOS VOICE CALL Function support"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_USBHID_FUNC
     bool "UniRTOS Secboot Func"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_CLAT_FUNC
     bool "UniRTOS CLAT Function support"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QOSA_ABNORMAL_BASESTATION_FUNC
     bool "UniRTOS ABNORMAL BASESTATION Function support"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 #################################################################################################################
 #  Platform control related macro definitions                                                                   #                                                  #
@@ -262,8 +297,8 @@ config QOSA_ABNORMAL_BASESTATION_FUNC
 #################################################################################################################
 
 choice
-    prompt "Platform function support" if QOSA_FEATURE_ALLOW_CHANGE
-    default QOSA_LINUX_PLATFORM_FUNC
+    prompt "Platform function support" 
+    default QOSA_BK7258_PLATFORM_FUNC
 
 config QOSA_LINUX_PLATFORM_FUNC
     bool "linux platform function support"
@@ -298,6 +333,15 @@ config QOSA_UIS8852_PLATFORM_FUNC
 
 config QOSA_QT2131_PLATFORM_FUNC
     bool "QT2131 paltform function support"
+
+config QOSA_BK7258_PLATFORM_FUNC
+    bool "BK 7258 platform function support"
+
+config QOSA_BK7238_PLATFORM_FUNC
+    bool "BK 7238 platform function support"
+
+config QOSA_ECR6600_PLATFORM_FUNC
+    bool "ECR6600 platform function support"
 
 endchoice
 

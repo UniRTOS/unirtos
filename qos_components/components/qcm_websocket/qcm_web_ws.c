@@ -17,6 +17,9 @@
 #include "qosa_def.h"
 #include "qosa_log.h"
 #include "qosa_sys.h"
+#if defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)
+#include "qosa_ip_addr.h"
+#endif
 #include "qcm_web_ws.h"
 #include "qcm_websocket.h"
 #include "qcm_web_internal.h"

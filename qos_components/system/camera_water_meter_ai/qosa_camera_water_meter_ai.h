@@ -17,8 +17,9 @@
 #ifndef QOSA_CAMERA_AI_H
 #define QOSA_CAMERA_AI_H
 
-#include "qosa_sys.h"
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+#include "qosa_sys.h"
 #include "qosa_camera_water_meter_ai.h"
 
 /*===========================================================================
@@ -109,5 +110,5 @@ qosa_camera_ai_errcode_e qosa_camera_water_meter_ai_get_version(qosa_uint8_t** v
  * @return qosa_camera_ai_errcode_e Error code indicating the result of the close operation
  */
 qosa_camera_ai_errcode_e qosa_camera_water_meter_ai_close(void);
-
+#endif//!(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* QOSA_CAMERA_AI_H */

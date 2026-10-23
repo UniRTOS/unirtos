@@ -3,6 +3,7 @@
 #
 
 menu "usbnet"
+depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
 
 config QOSA_USBNET_MBIM
     bool "MBIM"

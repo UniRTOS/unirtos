@@ -134,7 +134,11 @@ typedef void (*qcm_ping_event_cb)(qcm_ping_event_type event_id, qcm_ping_error_e
  *       - Success returns QCM_PING_OK
  *       - Failure returns others
  */
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
+qcm_ping_error_e
+qcm_ping_start(const char *host, qcm_ping_config_type *ping_options, qcm_ping_event_cb cb_fcn, void *user_param);
+#else
 qcm_ping_error_e
 qcm_ping_start(qosa_int32_t cid, qosa_int32_t sim_id, const char *host, qcm_ping_config_type *ping_options, qcm_ping_event_cb cb_fcn, void *user_param);
-
+#endif
 #endif /* __QCM_PING_APP_H__ */

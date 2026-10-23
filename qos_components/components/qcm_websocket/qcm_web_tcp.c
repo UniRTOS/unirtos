@@ -674,7 +674,11 @@ void qcm_ws_socket_read(int client_id)
  * @param code event code, provides additional information about the event
  * @param user_argv User-defined parameters, used to pass additional data to the event handler function
  */
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
 static void qcm_ws_client_socket_evt_cb(qosa_int32_t sock_hd, qosa_int32_t event, qosa_int32_t code, void *user_argv)
+#else
+static void qcm_ws_client_socket_evt_cb(int sock_hd, int event, int code, void *user_argv)
+#endif
 {
     qcm_web_soc_event_t *evt = QOSA_NULL;
 
@@ -828,8 +832,10 @@ qcm_web_err_e qcm_ws_tcp_open(qcm_web_msg_t *msg)
     int               sock_hd = 0;             //File descriptor used to identify a TCP socket
     int               event_mask;              //Registered socket event mask
     int               timeout = 0;
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
     qosa_uint32_t     sim_id = 0;              //SIM Card ID
     qosa_uint32_t     pdp_id = 0;              //PDP Context ID
+#endif
 
     QLOGD("enter");
     //Obtain the client ID and retrieve the client pointer based on the ID
@@ -844,11 +850,17 @@ qcm_web_err_e qcm_ws_tcp_open(qcm_web_msg_t *msg)
         QLOGE("ret=%d", ret);
         goto err;
     }
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
     sim_id = cfg_ptr->conn.sim_cid;
     pdp_id = cfg_ptr->conn.pdp_cid;
+#endif
     timeout = cfg_ptr->conn.timeout;
     //Create TCP socket
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
     sock_hd = qcm_socket_create(sim_id, pdp_id, client_ptr->ai_family, QCM_SOCK_STREAM, QCM_TCP_PROTOCOL, 0 /*local_port*/, QOSA_FALSE);
+#else
+    sock_hd = qcm_socket_create(client_ptr->ai_family, QCM_SOCK_STREAM, QCM_TCP_PROTOCOL, 0 /*local_port*/, QOSA_FALSE);
+#endif
     if (sock_hd <= 0)
     {
         //If the socket creation fails, return the connection failure error code.

@@ -1276,7 +1276,7 @@ static void qcm_mqtt_client_timeout_cb(void *argv)
     qcm_mqtt_client_t *client_ptr = (qcm_mqtt_client_t *)argv;
     qcm_mqtt_client_report_clientid(QCM_MQTT_CYCLIC_TIME_EVENT, client_ptr, QCM_MQTT_RES_OK);
 }
-
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
 /**
  * @brief Context: The PDP manager task needs to send a message to the TCP/IP APP task for processing by the APP task.
  */
@@ -1310,7 +1310,7 @@ exit:
     qosa_free(clientid_info_ptr);
     return;
 }
-
+#endif
 /**
  * @brief Check if the corresponding MQTT client is already in a protocol-connected state.
  */
@@ -1420,13 +1420,15 @@ exit:
 static void qcm_mqtt_client_open_handler(void *argv)
 {
     qcm_mqtt_eercode_e    result = QCM_MQTT_RES_OK;
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
     qosa_datacall_errno_e datacall_state = QOSA_DATACALL_OK;
-    ;
+#endif
     qcm_mqtt_open_param_t  *open_param_ptr = (qcm_mqtt_open_param_t *)argv;
     qcm_mqtt_client_t      *client_ptr = QOSA_NULL;
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
     qosa_datacall_ip_info_t info = {0};
     qosa_datacall_conn_t    conn = 0;
-
+#endif
     client_ptr = qcm_mqtt_client_get_ptr(open_param_ptr->client_id);
     if (client_ptr == QOSA_NULL)
     {
@@ -1441,6 +1443,7 @@ static void qcm_mqtt_client_open_handler(void *argv)
 
     qosa_memcpy(client_ptr->server_addr, open_param_ptr->addr, qosa_strlen(open_param_ptr->addr));
     client_ptr->server_port = open_param_ptr->port;
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
     qosa_memset(&info, 0, sizeof(qosa_datacall_ip_info_t));
 
     conn = qosa_datacall_conn_new(client_ptr->user_option.sim_id, client_ptr->user_option.pdp_cid, QOSA_DATACALL_CONN_TCPIP);
@@ -1472,6 +1475,7 @@ static void qcm_mqtt_client_open_handler(void *argv)
         client_ptr->client_state = QCM_MQTT_STATE_DATACALL_ING;
     }
     else
+#endif
     {
         //PDP is activated, determine whether the address version entered by the user is the same as the address version obtained after the current PDP activation.
         int                 server_ip_info = 0;
@@ -1486,17 +1490,33 @@ static void qcm_mqtt_client_open_handler(void *argv)
         }
         else
         {
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
+            if (server_ip_info == QCM_AF_INET6)
+#else
             if ((server_ip_info == QCM_AF_INET6) && ((info.ip_type == QOSA_PDP_IPV6) || (info.ip_type == QOSA_PDP_IPV4V6)))
+#endif
             {
                 client_ptr->ai_family = QCM_AF_INET6;
                 inet_pton(QCM_AF_INET6, client_ptr->server_addr, &client_ptr->server_ip.addr.ipv6_addr);
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
+                client_ptr->server_ip.ip_vsn = QOSA_IP_V6;
+#else
                 client_ptr->server_ip.ip_vsn = QOSA_PDP_IPV6;
+#endif
             }
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
+            else if (server_ip_info == QCM_AF_INET)
+#else
             else if ((server_ip_info == QCM_AF_INET) && ((info.ip_type == QOSA_PDP_IPV4) || (info.ip_type == QOSA_PDP_IPV4V6)))
+#endif
             {
                 client_ptr->ai_family = QCM_AF_INET;
                 inet_pton(QCM_AF_INET, client_ptr->server_addr, &client_ptr->server_ip.addr.ipv4_addr);
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
+                client_ptr->server_ip.ip_vsn = QOSA_IP_V4;
+#else
                 client_ptr->server_ip.ip_vsn = QOSA_PDP_IPV4;
+#endif
             }
             else
             {
@@ -1517,7 +1537,7 @@ exit:
         qcm_mqtt_client_free(client_ptr);
     }
 }
-
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
 /**
  * @brief Process datacall activation status notification. This function handles the MQTT client's data call activation status response. Based on the incoming activation information, it determines
  *        Whether to perform DNS queries or set the client's IP information.
@@ -1617,7 +1637,7 @@ static void qcm_mqtt_client_pdp_deacted_handler(qcm_mqtt_client_t *client_ptr)
     qcm_mqtt_client_close_cause(client_ptr);
     qcm_mqtt_client_free(client_ptr);
 }
-
+#endif
 /**
  * @brief MQTT client DNS query result callback function. This static function serves as the callback entry point after the MQTT client DNS resolution is completed, responsible for handling the DNS query result.
  *
@@ -1688,14 +1708,15 @@ static void qcm_mqtt_client_dns_parse_handler(void *argv)
     callback_ptr->client_id = clientid_info_ptr->client_id;
 
     if (qosa_dns_asyn_getaddrinfo(
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
             client_ptr->user_option.sim_id,
             client_ptr->user_option.pdp_cid,
+#endif
             client_ptr->server_addr,
             &addrinfo_list,
             qcm_mqtt_client_dns_result_cb,
             (void *)callback_ptr
-        )
-        != QOSA_DNS_RESULT_OK)
+        )!= QOSA_DNS_RESULT_OK)
     {
         qosa_free(callback_ptr);
         result = QCM_MQTT_RES_ERROR_DNS; /*! Report ERROR, exit*/
@@ -1746,12 +1767,20 @@ static void qcm_mqtt_client_dns_resp_handler(void *argv)
         if (dns_ptr->info->ai_family == QCM_AF_INET)
         {
             inet_pton(QCM_AF_INET, dns_ptr->info->ip_addr, &client_ptr->server_ip.addr.ipv4_addr);
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+            client_ptr->server_ip.ip_vsn = QOSA_IP_V4;
+#else
             client_ptr->server_ip.ip_vsn = QOSA_PDP_IPV4;
+#endif
         }
         else
         {
             inet_pton(QCM_AF_INET6, dns_ptr->info->ip_addr, &client_ptr->server_ip.addr.ipv6_addr);
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+            client_ptr->server_ip.ip_vsn = QOSA_IP_V6;
+#else
             client_ptr->server_ip.ip_vsn = QOSA_PDP_IPV6;
+#endif
         }
         client_ptr->ai_family = dns_ptr->info->ai_family;
         QLOGV("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!ai_family=%d", dns_ptr->info->ai_family);
@@ -1893,8 +1922,10 @@ static void qcm_mqtt_client_socket_create_handler(void *argv)
     }
 
     sock_hd = qcm_socket_create(
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
         client_ptr->user_option.sim_id,
         client_ptr->user_option.pdp_cid,
+#endif
         client_ptr->ai_family,
         QCM_SOCK_STREAM,
         QCM_TCP_PROTOCOL,
@@ -1912,13 +1943,16 @@ static void qcm_mqtt_client_socket_create_handler(void *argv)
     //qcm_socket_create => socket => lwip_socket => netconn_new_with_proto_and_callback => netconn_alloc
     //In netconn_alloc, conn->last_close_event is set to CLOSE_EVENT_NORMAL, and here the array element g_tcpip_last_close_event corresponding to client_id is also initialized synchronously.
     g_mqtt_last_close_event[client_ptr->client_id] = 0;
-
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
 #ifdef CONFIG_OSA_COMP_MQTT_USE_NET_DOWN_EVENT
     event_mask
         = QCM_SOCK_CONNECT_EVENT | QCM_SOCK_READ_EVENT | QCM_SOCK_WRITE_EVENT | QCM_SOCK_CLOSE_EVENT | QCM_SOCK_SSL_HD_TIMEOUT_EVENT | QCM_SOCK_NET_DOWN_EVENT;
 #else  /* CONFIG_OSA_COMP_MQTT_USE_NET_DOWN_EVENT */
     event_mask = QCM_SOCK_CONNECT_EVENT | QCM_SOCK_READ_EVENT | QCM_SOCK_WRITE_EVENT | QCM_SOCK_CLOSE_EVENT | QCM_SOCK_SSL_HD_TIMEOUT_EVENT;
 #endif /* CONFIG_OSA_COMP_MQTT_USE_NET_DOWN_EVENT */
+#else
+    event_mask = QCM_SOCK_CONNECT_EVENT | QCM_SOCK_READ_EVENT | QCM_SOCK_WRITE_EVENT | QCM_SOCK_CLOSE_EVENT | QCM_SOCK_SSL_HD_TIMEOUT_EVENT;
+#endif
     qcm_socket_register_event(sock_hd, event_mask, qcm_mqtt_client_socket_evt_cb, (void *)client_ptr);
 
     socket_ret = qcm_socket_connect(sock_hd, &client_ptr->server_ip, client_ptr->server_port);
@@ -2772,11 +2806,13 @@ static void qcm_mqtt_client_socket_event_handler(void *argv)
     {
         QLOGV("QCM_SOCK_SENDENDACK_EVENT");
     }
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
     else if (soc_event->event_mask & QCM_SOCK_NET_DOWN_EVENT)
     {
         QLOGV("QCM_SOCK_NET_DOWN_EVENT");
         qcm_mqtt_client_pdp_deacted_handler(client_ptr);
     }
+#endif
     MQTT_FREE_PTR(soc_event);
 }
 
@@ -3508,12 +3544,12 @@ static void qcm_mqtt_task_process_handler(void *argv)
             }
             break;
 #endif
-
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
             case QCM_MQTT_DATACALL_RESP_EVENT: {
                 qcm_mqtt_client_datacall_resp_handler(event_info.argv);
             }
             break;
-
+#endif
             case QCM_MQTT_DNS_REQUEST_EVENT: {
                 qcm_mqtt_client_dns_parse_handler(event_info.argv);
             }
@@ -3733,8 +3769,10 @@ qcm_mqtt_eercode_e qcm_mqtt_client_default_config(qcm_mqtt_config_t *config_ptr)
     qosa_memset(config_ptr, 0, sizeof(qcm_mqtt_config_t));
 
     config_ptr->version = QCM_MQTT_DEFAULT_VERSION;
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
     config_ptr->pdp_cid = QCM_MQTT_DEFAULT_PDP_CID;
     config_ptr->sim_id = QCM_MQTT_DEFAULT_SIM_ID;
+#endif
     config_ptr->clean_session = QCM_MQTT_DEFAULT_CLEAN_SESSION;
     config_ptr->kalive_time = QCM_MQTT_DEFAULT_KALIVE_TIME;
     config_ptr->delivery_time = QCM_MQTT_DEFAULT_DELIVERY_TIME;
@@ -3828,8 +3866,10 @@ qcm_mqtt_eercode_e qcm_mqtt_client_init(qosa_uint8_t client_id, qcm_mqtt_config_
     else
     {
         client_ptr->user_option.version = config_ptr->version;
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
         client_ptr->user_option.pdp_cid = config_ptr->pdp_cid;
         client_ptr->user_option.sim_id = config_ptr->sim_id;
+#endif
         client_ptr->user_option.clean_session = config_ptr->clean_session;
         client_ptr->user_option.kalive_time = config_ptr->kalive_time;
         client_ptr->user_option.delivery_time = config_ptr->delivery_time;

@@ -18,6 +18,7 @@
 #define __QOSA_IMS_H__
 
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_modem.h"
 
 #define QOSA_ERRCODE_IMS_BASE            (QOSA_COMPONENT_IMS << 16)
@@ -79,5 +80,5 @@ typedef struct
     qosa_uint8_t type;           /*!< Type of address octet in integer format (refer 3GPP TS 24.008 subclause 10.5.4.7) */
     char         dialnumstr[80]; /*!< phone number of format specified by <type> */
 } qosa_ims_conn_id_event_t;
-
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __QOSA_IMS_H__ */

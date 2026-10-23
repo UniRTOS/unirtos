@@ -18,6 +18,7 @@
 #define __QOSA_SIM_H__
 
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_sim_config.h"
 #include "qosa_modem.h"
 
@@ -1592,5 +1593,5 @@ qosa_sim_err_e qosa_sim_get_simwprotect_mode(qosa_uint8_t simid, sim_callback_pt
  */
 qosa_sim_err_e qosa_sim_set_simwprotect_mode(qosa_uint8_t simid, qosa_sim_simwprotect_t simwprotect_cfg, sim_callback_ptr cb, void *ctx);
 
-
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __QOSA_SIM_H__ */

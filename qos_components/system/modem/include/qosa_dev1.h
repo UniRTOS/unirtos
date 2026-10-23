@@ -18,6 +18,7 @@
 #define __QOSA_DEV1_H__
 
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_sim_config.h"
 #include "qosa_modem.h"
 
@@ -155,5 +156,5 @@ qosa_dev1_error_e qosa_dev_set_airplanecontrol_config(qosa_uint8_t simid, qosa_u
  * @return qosa_dev1_error_e
  */
 qosa_dev1_error_e qosa_dev_get_airplanecontrol_config(qosa_uint8_t simid, qosa_dev_airplanecontrol_param_t *config);
-
+#endif//!(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __QOSA_DEV1_H__ */

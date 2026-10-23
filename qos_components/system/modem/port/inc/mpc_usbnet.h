@@ -17,7 +17,7 @@
 #define __MPC_USBNET__H__
 
 #include "mpc.h"
-
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_usbnet.h"
 
 /**
@@ -193,5 +193,5 @@ int mpc_datacall_get_qdmz(qosa_uint8_t ip_ver, qosa_usbnet_qdmz_cfg_t* cfg);
  * @return int
  */
 int mpc_datacall_set_qdmz(qosa_qdmz_global_cfg_t cfg);
-
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __MPC_USBNET__H__ */

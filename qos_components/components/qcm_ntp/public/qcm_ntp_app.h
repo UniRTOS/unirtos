@@ -32,8 +32,10 @@ typedef int qcm_ntp_client_id;
  */
 typedef struct
 {
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
     qosa_uint8_t  sim_id;            /*!< Corresponding SIM card ID sequence number */
     qosa_uint8_t  pdp_id;            /*!< Corresponding PDP activation scenario sequence number */
+#endif
     qosa_uint32_t num_data_bytes;    /*!< Length of NTP sending data packet */
     qosa_bool_t   sync_local_time;   /*!< Whether to automatically set the synchronized time as local time */
     qosa_uint8_t  retry_cnt;         /*!< NTP data sending retry count */

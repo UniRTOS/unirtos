@@ -1,0 +1,36 @@
+set(incs .)
+
+set(srcs)
+
+if (CONFIG_ADK_MIX_ALGORITHM)
+
+list(APPEND srcs
+		mix_algorithm.c
+	)
+
+if (CONFIG_ADK_MIX_ALGORITHM_TEST)
+	list(APPEND srcs
+		mix_algorithm_test.c
+	)
+endif()
+
+endif()
+
+set(MIX_ALGORITHM_SRCS)
+foreach(source ${srcs})
+    get_filename_component(source_abs "${source}" ABSOLUTE BASE_DIR "${CMAKE_CURRENT_LIST_DIR}")
+    list(APPEND MIX_ALGORITHM_SRCS "${source_abs}")
+endforeach()
+
+set(MIX_ALGORITHM_INCS)
+foreach(include_dir ${incs})
+    get_filename_component(include_abs "${include_dir}" ABSOLUTE BASE_DIR "${CMAKE_CURRENT_LIST_DIR}")
+    list(APPEND MIX_ALGORITHM_INCS "${include_abs}")
+endforeach()
+
+if(srcs)
+    add_component_static_lib(mix_algorithm
+        SRCS ${MIX_ALGORITHM_SRCS}
+        INCS ${MIX_ALGORITHM_INCS}
+    )
+endif()

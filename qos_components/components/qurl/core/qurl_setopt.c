@@ -309,6 +309,7 @@ qurl_ecode_t qurl_setopt_for_core(qurl_core_ctrl_t *core_ptr, qurl_opt_e opt, va
             }
             break;
         }
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
         case QURL_OPT_NETWORK_ID: {
             long nw_id = 0;
 
@@ -316,6 +317,7 @@ qurl_ecode_t qurl_setopt_for_core(qurl_core_ctrl_t *core_ptr, qurl_opt_e opt, va
             core_ptr->usr_cfg.nw_id = nw_id;
             break;
         }
+#endif
         case QURL_OPT_PORT: {
             long port = 0;
 

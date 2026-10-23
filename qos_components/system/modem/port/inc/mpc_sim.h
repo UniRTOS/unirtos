@@ -17,6 +17,7 @@
 #define __MPC_SIM__H__
 
 #include "mpc.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_sim.h"
 
 /** Error code conversion, add corresponding function when adapting to platform, 0 means success */
@@ -587,4 +588,5 @@ int mpc_sim_get_simwprotect_mode(qosa_uint8_t simid, mpc_cb_t cb);
  */
 int mpc_sim_set_simwprotect_mode(qosa_uint8_t simid, qosa_uint8_t enable, qosa_uint8_t bit_map, mpc_cb_t cb);
 
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif

@@ -232,10 +232,13 @@ static inline unsigned char dbuf_node_is_empty(qurl_dbuf_node_t *node_ptr)
     return (node_ptr->valid_size == 0);
 }
 
+#if 0
+// UNUSED
 static inline unsigned char dbuf_node_is_full(qurl_dbuf_node_t *node_ptr)
 {
     return (node_ptr->valid_size == node_ptr->total_size);
 }
+#endif
 
 static int dbuf_node_delete_list_cmp_cb(void *node_ptr, void *arg)
 {

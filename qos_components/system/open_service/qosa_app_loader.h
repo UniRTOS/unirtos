@@ -18,7 +18,7 @@
 #define __QOSA_APP_LOADER_H__
 
 #include "qosa_def.h"
-
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -111,5 +111,6 @@ void qosa_sys_jump_app_startup(void);
 extern "C" }
 #endif
 
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif
 

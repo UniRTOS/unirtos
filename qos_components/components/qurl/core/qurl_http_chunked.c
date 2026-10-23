@@ -175,12 +175,12 @@ qurl_ecode_t qurl_http_chunked_read_body(qurl_conn_t *conn_ptr)
                     if ((*buf_ptr == 0x0a) || (*buf_ptr == 0x0d))
                     {
                         /*Received*/
-                        if ((*buf_ptr == '\r'))
+                        if (*buf_ptr == '\r')
                         {
                             buf_len--;
                             buf_ptr++;
                         }
-                        if ((*buf_ptr == '\n'))
+                        if (*buf_ptr == '\n')
                         {
                             buf_len--;
                             buf_ptr++;

@@ -20,7 +20,7 @@
 #include <stdbool.h>
 
 #include "qosa_def.h"
-
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 typedef uint8_t  qosa_uint8_t;
 typedef uint16_t qosa_uint16_t;
 typedef uint32_t qosa_uint32_t;
@@ -80,5 +80,5 @@ qosa_uint32_t _ppp_ntohl(qosa_uint32_t x);
     do {                                                                                                                                                       \
         QOSA_ASSERT((x));                                                                                                                                      \
     } while (0)
-
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif  //__UNIRTOS_PLATFORM_H__

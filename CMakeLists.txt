@@ -1,6 +1,6 @@
 # CMakeList.txt: CMake project for new_QS SDK
 #
-cmake_minimum_required (VERSION 3.8)
+cmake_minimum_required (VERSION 3.18)
 
 # If supported, enable hot reload for MSVC compiler.
 if (POLICY CMP0141)
@@ -24,6 +24,16 @@ set(UNIRTOS_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(build_project $ENV{build_project})
 # Platform name Unisoc
 set(build_arch $ENV{build_arch})
+function(unirtos_is_wifi_kernel arch output_var)
+    if("${arch}" STREQUAL "bk7258" OR "${arch}" STREQUAL "bk7238" OR "${arch}" STREQUAL "ecr6600")
+        set(${output_var} TRUE PARENT_SCOPE)
+    else()
+        set(${output_var} FALSE PARENT_SCOPE)
+    endif()
+endfunction()
+
+unirtos_is_wifi_kernel("${build_arch}" UNIRTOS_IS_WIFI_KERNEL)
+
 set(COMPILER_PATH $ENV{COMPILER_PATH})
 # Version name
 set(build_version $ENV{build_version})
@@ -42,6 +52,7 @@ if(DEFINED ENV{UNIRTOS_OUTPUT_ROOT} AND NOT "$ENV{UNIRTOS_OUTPUT_ROOT}" STREQUAL
 else()
     set(UNIRTOS_BUILD_OUT ${UNIRTOS_DIR}/qos_build)
 endif()
+set(OUTPUT_RELEASE_DIR "${UNIRTOS_BUILD_OUT}/release")
 
 set(CMAKE_SYSTEM_NAME           Generic)
 set(CMAKE_SYSTEM_PROCESSOR          ARM)
@@ -49,7 +60,11 @@ set(CMAKE_SYSTEM_PROCESSOR          ARM)
 set(CMAKE_C_COMPILER   $ENV{COMPILER_CC})
 set(CMAKE_CXX_COMPILER $ENV{COMPILER_CXX})
 set(CMAKE_READELF      $ENV{COMPILER_READELF})
-
+set(CMAKE_OBJCOPY      $ENV{COMPILER_OBJCOPY})
+set(CMAKE_READELF      $ENV{COMPILER_READELF})
+set(CMAKE_NM           $ENV{COMPILER_NM})
+set(CMAKE_OBJDUMP      $ENV{COMPILER_OBJDUMP})
+set(CMAKE_SIZE         $ENV{COMPILER_SIZE})
 # Open detailed compilation information
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
@@ -57,6 +72,10 @@ message("========COMPILER_PATH: ${COMPILER_PATH}")
 message("========CMAKE_C_COMPILER: ${CMAKE_C_COMPILER}")
 message("========CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 message("========CMAKE_READELF: ${CMAKE_READELF}")
+message("========CMAKE_OBJCOPY: ${CMAKE_OBJCOPY}")
+message("========CMAKE_NM: ${CMAKE_NM}")
+message("========CMAKE_OBJDUMP: ${CMAKE_OBJDUMP}")
+message("========CMAKE_SIZE: ${CMAKE_SIZE}")
 
 # Disable compiler checking, don't detect compiler by compiling a program, cross-compilation cannot successfully compile a program with default compilation parameters
 set(CMAKE_C_COMPILER_FORCED   1)
@@ -76,7 +95,7 @@ if(Python_FOUND)
 else()
     message("Python not found. Use local python env ")
     # If system doesn't have it, use the built-in program
-    set(py_exe ${python_local}/Python38/python.exe)
+    set(py_exe ${python_local}/Python312/python.exe)
 endif()
 
 # Load rule directory
@@ -117,7 +136,7 @@ if(NOT DEFINED UNIRTOS_EXTERNAL_APP_DIR)
         set(UNIRTOS_EXTERNAL_APP_DIR "$ENV{UNIRTOS_EXTERNAL_APP_DIR}")
     endif()
 endif()
-
+message(STATUS "UNIRTOS_EXTERNAL_APP_DIR=$ENV{UNIRTOS_EXTERNAL_APP_DIR}")
 if(NOT DEFINED UNIRTOS_EXTERNAL_APP_NAME)
     if(DEFINED ENV{UNIRTOS_EXTERNAL_APP_NAME} AND NOT "$ENV{UNIRTOS_EXTERNAL_APP_NAME}" STREQUAL "")
         set(UNIRTOS_EXTERNAL_APP_NAME "$ENV{UNIRTOS_EXTERNAL_APP_NAME}")
@@ -361,7 +380,9 @@ include(${QL_KERNEL_DIR}/${build_arch}/scripts/toolchain.cmake)
 message("build_arch version: ${build_arch}")
 message("build_project version: ${build_project}")
 message("build_project version: ${SRC_CONFIG}")
-message("MODEM_SRC_CONFIG: ${MODEM_SRC_CONFIG}")
+if(NOT UNIRTOS_IS_WIFI_KERNEL)
+    message("MODEM_SRC_CONFIG: ${MODEM_SRC_CONFIG}")
+endif()
 message("SYSTEM_SRC_CONFIG version: ${SYSTEM_SRC_CONFIG}")
 message("CHECK_CONFIG: ${CHECK_CONFIG}")
 
@@ -399,11 +420,19 @@ endif()
 
 # Process config files:
 # 1. Merge system.config and modem.config to generate capability check.config
-execute_process(
-    COMMAND ${py_exe} ${tools_dir}/python/merge_files.py ${SYSTEM_SRC_CONFIG} ${MODEM_SRC_CONFIG} ${CHECK_CONFIG}
-    WORKING_DIRECTORY ${UNIRTOS_DIR}
-    RESULT_VARIABLE MERGE_CHECK_CONFIG_RET
-)
+if(UNIRTOS_IS_WIFI_KERNEL)
+    execute_process(
+        COMMAND ${py_exe} ${tools_dir}/python/merge_files.py ${SYSTEM_SRC_CONFIG} ${CUSTOMER_SRC_CONFIG} ${CHECK_CONFIG}
+        WORKING_DIRECTORY ${UNIRTOS_DIR}
+        RESULT_VARIABLE MERGE_CHECK_CONFIG_RET
+    )
+else()
+    execute_process(
+        COMMAND ${py_exe} ${tools_dir}/python/merge_files.py ${SYSTEM_SRC_CONFIG} ${MODEM_SRC_CONFIG} ${CHECK_CONFIG}
+        WORKING_DIRECTORY ${UNIRTOS_DIR}
+        RESULT_VARIABLE MERGE_CHECK_CONFIG_RET
+    )
+endif()
 if(NOT MERGE_CHECK_CONFIG_RET EQUAL 0)
     message(FATAL_ERROR "Failed to generate check.config from system/modem config files")
 endif()
@@ -473,16 +502,29 @@ if(NOT COPY_TARGET_CONFIG_RET EQUAL 0)
 endif()
 
 # Monitor file changes, if files change, rebuild file files during cmake generation
-set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
-    ${EFFECTIVE_CONFIG}
-    ${TARGET_CONFIG}
-    ${CHECK_CONFIG}
-    ${SRC_CONFIG}
-    ${SYSTEM_SRC_CONFIG}
-    ${MODEM_SRC_CONFIG}
-    ${SELECTED_APP_DEMO_CONFIGURE_DEPENDS}
-    ${EXTERNAL_APP_DEPEND_CONFIGS}
-)
+if(UNIRTOS_IS_WIFI_KERNEL)
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+        ${EFFECTIVE_CONFIG}
+        ${TARGET_CONFIG}
+        ${CHECK_CONFIG}
+        ${SRC_CONFIG}
+        ${SYSTEM_SRC_CONFIG}
+        ${CUSTOMER_SRC_CONFIG}
+        ${SELECTED_APP_DEMO_CONFIGURE_DEPENDS}
+        ${EXTERNAL_APP_DEPEND_CONFIGS}
+    )
+else()
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+        ${EFFECTIVE_CONFIG}
+        ${TARGET_CONFIG}
+        ${CHECK_CONFIG}
+        ${SRC_CONFIG}
+        ${SYSTEM_SRC_CONFIG}
+        ${MODEM_SRC_CONFIG}
+        ${SELECTED_APP_DEMO_CONFIGURE_DEPENDS}
+        ${EXTERNAL_APP_DEPEND_CONFIGS}
+    )
+endif()
 set(KCONFIG_DEP ${BINARY_TOP_DIR}/kconfig_dep.cmake)
 execute_process(
     COMMAND ${py_exe} ${tools_dir}/python/cmakedep.py ${KCONFIG_DEP}
@@ -533,9 +575,13 @@ include_directories(${QL_COMPONENTS_DIR}/system/rt_drivers/serial)
 include_directories(${QL_COMPONENTS_DIR}/system/fota)
 include_directories(${QL_COMPONENTS_DIR}/system/ftm)
 include_directories(${QL_COMPONENTS_DIR}/system/hal)
+if(UNIRTOS_IS_WIFI_KERNEL)
+    include_directories(${QL_COMPONENTS_DIR}/system/wlan)
+else()   
+    include_directories(${QL_COMPONENTS_DIR}/system/modem/internal_inc)
+    include_directories(${QL_COMPONENTS_DIR}/system/modem/port/inc)
+endif()
 include_directories(${QL_COMPONENTS_DIR}/system/modem/include)
-include_directories(${QL_COMPONENTS_DIR}/system/modem/internal_inc)
-include_directories(${QL_COMPONENTS_DIR}/system/modem/port/inc)
 include_directories(${QL_COMPONENTS_DIR}/system/nvm)
 include_directories(${QL_COMPONENTS_DIR}/system/public_comp/cJSON)
 include_directories(${QL_COMPONENTS_DIR}/system/public_comp/event_notify)
@@ -559,7 +605,11 @@ include_directories(${QL_COMPONENTS_DIR}/system/secboot)
 include_directories(${QL_COMPONENTS_DIR}/system/vsim_adapt)
 include_directories(${QL_COMPONENTS_DIR}/system/version)
 include_directories(${QL_DEMO_DIR}/app_init)
-
+if(UNIRTOS_IS_WIFI_KERNEL)
+    include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/unirtos/app_start)
+    include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/unirtos/generated)
+    include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/unirtos/system/vfs)
+endif()
 # Conditional include paths for menuconfig-driven component targets (global scope)
 # Auto-generated from all CONFIG_QCM_* symbols defined in kernel.cmake and qos_components/components/CMakeLists.txt
 if(CONFIG_QCM_FILE_API_FUNC)
@@ -643,6 +693,12 @@ endif()
 if(CONFIG_QCM_QVSIM_FUNC)
     include_directories(${UNIRTOS_COMPONENTS_DIR}/qvsim/public)
 endif()
+if(CONFIG_QCM_MONGOOS_LIB)
+    include_directories(${UNIRTOS_COMPONENTS_DIR}/mongoos-7.10/public)
+endif()
+if(CONFIG_QCM_LLM_PROXY)
+    include_directories(${UNIRTOS_COMPONENTS_DIR}/qcm_llm_proxy/public)
+endif()
 if(CONFIG_QCM_MBEDTLS_LIBRARY_FUNC)
     if(CONFIG_QCM_MBEDTLS_4_LIBRARY_FUNC)
         include_directories(${UNIRTOS_COMPONENTS_DIR}/mbedtls/mbedtls4/include)
@@ -656,7 +712,56 @@ endif()
 if(CONFIG_QCM_UTILS_XMODEM_FUNC)
     include_directories(${UNIRTOS_COMPONENTS_DIR}/utils/xmodem/public)
 endif()
+if(UNIRTOS_IS_WIFI_KERNEL)
+    if ("${build_arch}" STREQUAL "bk7258")	
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_kernel/ap/config)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_kernel/ap/include)	
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/lwip_intf_v2_1/lwip-2.1.2/src)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/lwip_intf_v2_1/lwip-2.1.2/src/include)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/lwip_intf_v2_1/lwip-2.1.2/port)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/lwip_intf_v2_1/lwip-2.1.2/src/include/netif)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/lwip_intf_v2_1/lwip-2.1.2/src/include/lwip)
 
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/psa_mbedtls/mbedtls_port/inc)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/psa_mbedtls/mbedtls_port/mbedtls/include)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/psa_mbedtls/mbedtls_port/mbedtls/library)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/psa_mbedtls/mbedtls_port/configs)
+
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/psa_mbedtls/mbedtls/include)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/psa_mbedtls/mbedtls/library)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/psa_mbedtls/mbedtls/tests/src)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/psa_mbedtls/mbedtls/tests/include)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/cJSON)
+    endif()
+
+    if ("${build_arch}" STREQUAL "bk7238")
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/lwip_intf/dhcpd)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/lwip_intf/lwip-2.0.2/src)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/lwip_intf/lwip-2.0.2/src/include)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/lwip_intf/lwip-2.0.2/port)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/lwip_intf/lwip-2.0.2/port/arch)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/lwip_intf/lwip-2.0.2/src/include/netif)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/lwip_intf/lwip-2.0.2/src/include/lwip)
+
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/mbedtls/mbedtls-2.27.0/include)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/mbedtls/mbedtls-2.27.0/include/mbedtls)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/mbedtls/mbedtls-2.27.0/library)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/mbedtls/mbedtls_port/inc)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/mbedtls/mbedtls_ui)
+    endif()
+
+    if ("${build_arch}" STREQUAL "ecr6600")
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/lwip/contrib/port)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/lwip/contrib/port/arch)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/lwip/contrib/port/netif)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/lwip/lwip-2.1.0/src)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/lwip/lwip-2.1.0/src/apps)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/lwip/lwip-2.1.0/src/include)
+
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/mbedtls/mbedtls/include)
+        include_directories(${QL_KERNEL_DIR}/${build_arch}/arch_prj/ql_components/mbedtls/port/include/mbedtls)
+    endif()
+endif()
 message("out_inc_dir=${out_inc_dir}")
 
 include(cmake/build_config_summary.cmake)
@@ -701,54 +806,66 @@ add_subdirectory_if_exist(qos_applications)
 set(target all_apps_libs)
 set(all_apps_libs_out ${out_unir_lib_dir}/all_apps_libs.ld)
 get_property(apps_libraries GLOBAL PROPERTY apps_libraries)
+
+
 get_property(firmware_link_libraries GLOBAL PROPERTY firmware_link_libraries)
 set(all_app_side_libraries ${apps_libraries} ${firmware_link_libraries})
 message(STATUS "[firmware-link] app libraries: ${apps_libraries}")
 message(STATUS "[firmware-link] external firmware libraries: ${firmware_link_libraries}")
+
+
 # Use python script to aggregate global libs together
 add_custom_command(OUTPUT ${all_apps_libs_out}
     COMMAND ${py_exe} ${tools_dir}/python/groupgen.py --base ${BINARY_TOP_DIR} ${all_apps_libs_out} ${all_app_side_libraries}
     DEPENDS ${groupgen_py} ${all_app_side_libraries}
     WORKING_DIRECTORY ${BINARY_TOP_DIR}
 )
+
 add_custom_target(build_${target} DEPENDS ${all_apps_libs_out})
 add_library(${target} STATIC IMPORTED GLOBAL)
 set_target_properties(${target} PROPERTIES IMPORTED_LOCATION ${all_apps_libs_out})
 add_dependencies(${target} build_${target})
 
 #message("build link ----------------------MY_LINK_LIBRARIES=${MY_LINK_LIBRARIES}")
-
-target_link_libraries(ap_application PRIVATE -Wl,--whole-archive all_apps_libs -Wl,--no-whole-archive)
-# Unify the collection of all libraries that need to be linked.
-set(virt_libs "${CMAKE_CURRENT_SOURCE_DIR}/qos_kernel/${chip}/com_libs/libvirt_func.a")
-if(components_libraries)
-    set(ALL_LIBRARIES ${MY_LINK_LIBRARIES} ${components_libraries} ${virt_libs})
+if(UNIRTOS_IS_WIFI_KERNEL)
+    target_link_libraries(app PRIVATE -Wl,--whole-archive all_apps_libs -Wl,--no-whole-archive)
+    set(ALL_LIBRARIES ${MY_LINK_LIBRARIES})
+    if(components_libraries)
+        list(APPEND ALL_LIBRARIES ${components_libraries})
+    endif()
+    
+    build_and_pack_firmware()
 else()
-    set(ALL_LIBRARIES ${MY_LINK_LIBRARIES} ${virt_libs})
+    target_link_libraries(ap_application PRIVATE -Wl,--whole-archive all_apps_libs -Wl,--no-whole-archive)
+
+    set(virt_libs "${CMAKE_CURRENT_SOURCE_DIR}/qos_kernel/${chip}/com_libs/libvirt_func.a")
+    if(components_libraries)
+        set(ALL_LIBRARIES ${MY_LINK_LIBRARIES} ${components_libraries} ${virt_libs})
+    else()
+        set(ALL_LIBRARIES ${MY_LINK_LIBRARIES} ${virt_libs})
+    endif()
+
+    # This needs to be modified to search for the lib library in a loop to avoid undefined references during linking.
+
+    target_link_libraries(ap_application  PRIVATE -Wl,--start-group ${ALL_LIBRARIES} -Wl,--end-group)
+
+    add_custom_target(app_pac ALL)
+    # Each platform adds corresponding functions
+    # Copy ld file to specified location
+    ldscript_copy(ap_application EXCLUDE_FROM_ALL ${ARGN} OUTPUT_DIR ${BINARY_BIN_DIR})
+    # Generate app
+    add_appimg(${target} EXCLUDE_FROM_ALL ${ARGN} OUTPUT_DIR ${BINARY_BIN_DIR})
+    # Package
+    pack_firmware(${target} EXCLUDE_FROM_ALL ${ARGN} OUTPUT_DIR ${FIRMWARE_DIR})
+
+    # Print Flash and RAM usage
+    if(NOT CMAKE_SIZE)
+        set(CMAKE_SIZE "${COMPILER_PATH}/bin/arm-none-eabi-size")
+    endif()
+
+    add_custom_command(TARGET ap_application POST_BUILD
+        COMMAND ${CMAKE_SIZE} $<TARGET_FILE:ap_application>
+        COMMENT "Flash and RAM usage for ap_application:"
+    )
 endif()
-
-
-# This needs to be modified to search for the lib library in a loop to avoid undefined references during linking.
-target_link_libraries(ap_application  PRIVATE -Wl,--start-group ${ALL_LIBRARIES} -Wl,--end-group)
-
-
-add_custom_target(app_pac ALL)
-# Each platform adds corresponding functions
-# Copy ld file to specified location
-ldscript_copy(ap_application EXCLUDE_FROM_ALL ${ARGN} OUTPUT_DIR ${BINARY_BIN_DIR})
-# Generate app
-add_appimg(${target} EXCLUDE_FROM_ALL ${ARGN} OUTPUT_DIR ${BINARY_BIN_DIR})
-# Package
-pack_firmware(${target} EXCLUDE_FROM_ALL ${ARGN} OUTPUT_DIR ${FIRMWARE_DIR})
-
-# Print Flash and RAM usage
-if(NOT CMAKE_SIZE)
-    set(CMAKE_SIZE "${COMPILER_PATH}/bin/arm-none-eabi-size")
-endif()
-
-add_custom_command(TARGET ap_application POST_BUILD
-    COMMAND ${CMAKE_SIZE} $<TARGET_FILE:ap_application>
-    COMMENT "Flash and RAM usage for ap_application:"
-)
-
 endif()

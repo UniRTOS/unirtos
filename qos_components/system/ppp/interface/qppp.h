@@ -16,6 +16,7 @@
 #define __QPPP__H__
 
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_watermark.h"
 
 #define QPPP_TERMINAL_NEED_TERM QOSA_TRUE
@@ -52,4 +53,5 @@ typedef struct qppp_job_s
 qosa_bool_t  qppp_createjob(qppp_job_t* job);
 void         qppp_terminaljob(qosa_uint8_t simid, qosa_uint8_t pdpid, qosa_bool_t need_term);
 qosa_uint8_t qppp_get_status(qosa_uint8_t simid, qosa_uint8_t pdpid);
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __QPPP__H__ */

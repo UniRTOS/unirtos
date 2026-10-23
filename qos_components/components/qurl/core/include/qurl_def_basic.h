@@ -121,7 +121,9 @@ struct qurl_sockaddr_ex_s
     {
         struct sockaddr         sa;
         struct sockaddr_in      sai;
+#if LWIP_IPV6
         struct sockaddr_in6     sai6;
+#endif
         struct sockaddr_storage sas;
     } addr_u;
 };

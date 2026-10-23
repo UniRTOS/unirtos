@@ -36,7 +36,11 @@
 #include "qosa_queue_list.h"
 #include "qosa_sys.h"
 #include "qosa_asyn_dns.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_datacall.h"
+#else
+#include "qosa_ip_addr.h"
+#endif
 #include "qcm_mqtt_config.h"
 #include "qcm_mqtt.h"
 #include "qosa_log.h"

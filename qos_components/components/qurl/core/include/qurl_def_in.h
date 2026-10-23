@@ -101,10 +101,10 @@ struct qurl_core_usr_cfg_s
 {
     /*Controls Related*/
     unsigned long thread_id; /*!< User-specified bindable thread ID*/
-
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
     /*Network Configuration*/
     int nw_id; /*!< Network ID, < 0 indicates not specified*/
-
+#endif
     /*Transport Protocol Configuration*/
     unsigned short port; /*!< Specify the port number*/
 

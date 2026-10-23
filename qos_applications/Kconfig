@@ -7,6 +7,7 @@ menu "UniRTOS Applications"
 
 config QAPP_UNIRTOS_STD_FUNC
     bool "Standard AT command implementation"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     select QOSA_AT_PARSER_FUNC
 
 orsource "unirtos_std/Kconfig"

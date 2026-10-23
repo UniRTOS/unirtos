@@ -18,6 +18,8 @@
 #define __MODEM_SENDER_RECYCLE__H__
 
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+
 #include "qosa_sys.h"
 
 /** Application layer receives cnf signal and transfers it to the target thread for processing */
@@ -35,5 +37,7 @@ typedef void (*ms_sender_recycle_callback_ptr)(void* cnf_sig);
 qosa_common_error_e qosa_ms_register_recycle(qosa_task_t taskid, ms_sender_recycle_callback_ptr callback);
 
 qosa_common_error_e qosa_ms_cnf_signal_parsing(void* cnf_signal);
+
+#endif//!(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 
 #endif /*__MODEM_SENDER_RECYCLE__H__ */

@@ -20,7 +20,9 @@
 #include "qosa_def.h"
 #include "qosa_sys.h"
 #include "qcm_proj_config.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
 #include "qosa_datacall.h"
+#endif
 #include "qosa_queue_list.h"
 #include "qcm_websocket.h"
 #include "qcm_web_ws.h"

@@ -17,6 +17,7 @@
 #include "qosa_def.h"
 #include "qosa_log.h"
 #include "qosa_queue_list.h"
+#include "qosa_virtual_file.h"
 #include "qosa_asyn_dns.h"
 #include "qosa_sys.h"
 #include "qcm_socket_adp.h"
@@ -25,7 +26,6 @@
 #include "qcm_web_internal.h"
 #include "qcm_web_tcp.h"
 #include "qcm_proj_config.h"
-#include "qosa_virtual_file.h"
 
 /************************************************************************/
 #define QOS_LOG_TAG LOG_TAG_WEB_API
@@ -185,8 +185,10 @@ static qcm_web_err_e qcm_ws_config_init(int config_id)
     qosa_mutex_lock(g_ws_cfg[config_id]->lock, QOSA_WAIT_FOREVER);
     cfg_ptr = &g_ws_cfg[config_id]->config;
     //Initialize the allocated memory and set default parameters.
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
     cfg_ptr->conn.pdp_cid = 1;
     cfg_ptr->conn.sim_cid = 0;
+#endif
     cfg_ptr->conn.url = QOSA_NULL;
     cfg_ptr->conn.url_len = 0;
     cfg_ptr->conn.url_ex = QCM_WEB_URL_EX_DISABLE;
@@ -1151,6 +1153,7 @@ int qcm_ws_msg_send_2(int msg_id, int param1, int param2, void *argv)
     return ret;  //Send successful, return result
 }
 
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
 /**
  * @brief Network activation callback function
  *
@@ -1401,7 +1404,7 @@ err:
     qcm_ws_msg_send(QCM_WEB_MSG_TCP_OPEN_CNF, client_id, QOSA_NULL);
     return ret;
 }
-
+#endif
 /**
  * @brief OSA Web Client DNS Query Result Callback Function
  *
@@ -1490,8 +1493,10 @@ static qcm_web_err_e qcm_ws_dns_request(qcm_web_msg_t *msg)
     param_ptr->client_id = client_id;  //Set client ID
     //Asynchronously obtain address information
     ret = qosa_dns_asyn_getaddrinfo(
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
         g_ws_cfg[client_id]->config.conn.sim_cid,
         g_ws_cfg[client_id]->config.conn.pdp_cid,
+#endif
         client_ptr->url.host,
         &addrinfo_list,
         qcm_ws_client_dns_result_cb,
@@ -1557,14 +1562,22 @@ static qcm_web_err_e qcm_ws_dns_response(qcm_web_msg_t *msg)
         {
             //Processing IPv4 Addresses
             inet_pton(AF_INET, info_ptr->ip_addr, &client_ptr->remote_ip.addr.ipv4_addr);
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
             client_ptr->remote_ip.ip_vsn = QOSA_PDP_IPV4;
+#else
+            client_ptr->remote_ip.ip_vsn = QOSA_IP_V4;
+#endif
             client_ptr->ai_family = AF_INET;
         }
         else
         {
             //Processing IPv6 Addresses
             inet_pton(AF_INET6, info_ptr->ip_addr, &client_ptr->remote_ip.addr.ipv6_addr);
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
             client_ptr->remote_ip.ip_vsn = QOSA_PDP_IPV6;
+#else
+            client_ptr->remote_ip.ip_vsn = QOSA_IP_V6;
+#endif
             client_ptr->ai_family = AF_INET6;
         }
         //Release DNS address memory
@@ -1850,13 +1863,15 @@ static void qcm_ws_client_thread(void *argv)
         qosa_mutex_lock(g_ws_service.lock, QOSA_WAIT_FOREVER);  //Acquire mutex
         switch (msg.msgid)                                      //Call the corresponding handler function based on the message ID
         {
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
             case QCM_WEB_MSG_NET_REQUEST:
                 qcm_ws_net_request(&msg);
                 break;
             case QCM_WEB_MSG_NET_RESPONSE:
                 qcm_ws_net_response(&msg);
                 break;
-            case QCM_WEB_MSG_DNS_REQUEST:
+#endif
+                case QCM_WEB_MSG_DNS_REQUEST:
                 qcm_ws_dns_request(&msg);
                 break;
             case QCM_WEB_MSG_DNS_RESPONSE:
@@ -2063,6 +2078,7 @@ qcm_web_err_e qcm_ws_cfg_set(int config_id, qcm_web_cfg_e opt_tag, void *ptr, in
     QLOGD("opt_tag=%d,%d", opt_tag, config_id);
     switch (opt_tag)
     {
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
         //Set different configuration parameters based on option labels
         case QCM_WEB_CFG_CONN_PDPCID:
             err = qcm_ws_setopt_int(&cfg_ptr->conn.pdp_cid, value, 0, QCM_WEB_CFG_CONN_PDP_CID_MAX);
@@ -2070,6 +2086,7 @@ qcm_web_err_e qcm_ws_cfg_set(int config_id, qcm_web_cfg_e opt_tag, void *ptr, in
         case QCM_WEB_CFG_CONN_SIMCID:
             err = qcm_ws_setopt_int(&cfg_ptr->conn.sim_cid, value, 0, QCM_WEB_CFG_CONN_SIM_CID_MAX);
             break;
+#endif
         case QCM_WEB_CFG_CONN_SSL_CTX_ID:
             err = qcm_ws_setopt_int(&cfg_ptr->conn.ssl_ctx_id, value, QCM_WEB_CFG_CONN_SSL_ID_MIN, QCM_WEB_CFG_CONN_SSL_ID_MAX);
             break;
@@ -2187,6 +2204,7 @@ qcm_web_err_e qcm_ws_cfg_get(int config_id, qcm_web_cfg_e opt_tag, qcm_web_cfg_t
     cfg_ptr = &g_ws_cfg[config_id]->config;
     switch (opt_tag)  //Process different configuration items based on option labels
     {
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
         //Based on the different option tags, obtain the corresponding configuration values and store them in the respective parameter pointers.
         case QCM_WEB_CFG_CONN_PDPCID:
             err = qcm_ws_getopt_int(&cfg->int_value, cfg_ptr->conn.pdp_cid);
@@ -2194,6 +2212,7 @@ qcm_web_err_e qcm_ws_cfg_get(int config_id, qcm_web_cfg_e opt_tag, qcm_web_cfg_t
         case QCM_WEB_CFG_CONN_SIMCID:
             err = qcm_ws_getopt_int(&cfg->int_value, cfg_ptr->conn.sim_cid);
             break;
+#endif
         case QCM_WEB_CFG_CONN_SSL_CTX_ID:
             err = qcm_ws_getopt_int(&cfg->int_value, cfg_ptr->conn.ssl_ctx_id);
             break;
@@ -2468,9 +2487,12 @@ qcm_web_err_e qcm_ws_open_proc(qcm_web_open_t *open_t)
     //Set SSL configuration
     g_ws_client[open_t->client_id]->ssl_config = g_ws_cfg[open_t->config_id]->config.conn.ssl_config;
 #endif
-
-    //Send network request message
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
     ret = qcm_ws_msg_send(QCM_WEB_MSG_NET_REQUEST, open_t->client_id, QOSA_NULL);
+#else
+    //Send network request message
+    ret = qcm_ws_msg_send(QCM_WEB_MSG_DNS_REQUEST, open_t->client_id, QOSA_NULL);
+#endif
     return ret;  //Returns the final operation result
 }
 

@@ -10,7 +10,8 @@
  *  @LOG Change Log: -----
  **********************************************************
  */
-
+#include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
 #include "qurl_network.h"
 #include "qurl_log.h"
 #include "qurl_platform_port.h"
@@ -170,3 +171,4 @@ int qurl_nw_get_ip(qurl_core_ctrl_t *core_ptr)
 
     return ret;
 }
+#endif

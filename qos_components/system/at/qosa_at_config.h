@@ -17,6 +17,8 @@
 #define __AT_CONFIG_H__
 
 #include "qosa_def.h"
+
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
 #include "qosa_at_sio.h"
 /**
  * @brief AT device configuration item enumeration type
@@ -138,5 +140,5 @@ qosa_uint32_t qosa_at_uart_config_get(qosa_at_dev_type_e dev_port, qosa_at_uart_
  *       - Return whether the configuration is successful.
  */
 qosa_bool_t qosa_at_uart_config_set(qosa_at_dev_type_e dev_port, qosa_at_uart_cfg_e config, qosa_uint32_t value);
-
+#endif//!(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __AT_CONFIG_H__ */

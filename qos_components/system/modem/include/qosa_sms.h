@@ -18,6 +18,7 @@
 #define __QOSA_SMS_H__
 
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_modem.h"
 
 /** SMS component error code base value, used to generate SMS-related error codes */
@@ -953,5 +954,5 @@ qosa_sms_err_e qosa_sms_set_charset(qosa_uint8_t charset);
  *      (Each UCS-2 character requires 4 hexadecimal digits + null terminator)
  */
 qosa_sms_err_e qosa_sms_utf8_to_ucs2(const char* utf8_txt, char* ucs2_character, qosa_size_t buffer_size);
-
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __QOSA_SMS_H__ */

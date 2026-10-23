@@ -17,6 +17,9 @@
 #define __QOSA_FACTORY_H__
 
 #include "qosa_def.h"
+
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+
 #include "qosa_sys.h"
 #include "qosa_dev.h"
 
@@ -86,4 +89,5 @@ qosa_dev_error_e qosa_dev_set_sn2(char *sn2_str);
  */
 qosa_dev_error_e qosa_dev_set_prod_mode(qosa_bool_t prod_mode);
 
+#endif//!(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __QOSA_FACTORY_H__ */

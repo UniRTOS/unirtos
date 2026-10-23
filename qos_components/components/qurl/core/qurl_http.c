@@ -1431,11 +1431,11 @@ static qurl_ecode_t http_read_headers(qurl_conn_t *conn_ptr)
         /*First, check if the parsing is at the end of the response header: the boundary between the response header and the body.*/
         if ((*start_ptr == 0x0a) || (*start_ptr == 0x0d))
         {
-            if ((*start_ptr == '\r'))
+            if (*start_ptr == '\r')
             {
                 start_ptr++;
             }
-            if ((*start_ptr == '\n'))
+            if (*start_ptr == '\n')
             {
                 start_ptr++;
             }

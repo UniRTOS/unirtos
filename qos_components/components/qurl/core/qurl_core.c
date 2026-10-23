@@ -139,7 +139,9 @@ qurl_ecode_t qurl_core_sec_free(int index)
 
 static void core_default_usr_cfg(qurl_core_ctrl_t *core_ptr)
 {
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
     core_ptr->usr_cfg.nw_id = -1; /*Default not specified*/
+#endif
 
     core_ptr->usr_cfg.port = 0;   /*Default not specified*/
 
@@ -788,12 +790,17 @@ static qurl_ecode_t core_perform(qurl_core_ctrl_t *core_ptr)
                 if (ret == QURL_OK)
                 {
                     /*Activate network*/
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
                     core_state_change(core_ptr, QURL_STATE_NETWORK);
+#else
+                    core_state_change(core_ptr, QURL_STATE_CONNECTION);
+#endif
                     continue_flag = 1;
                 }
 
                 break;
             }
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
             case QURL_STATE_NETWORK: {
                 int activated = 0;
                 qurl_logd("state:[NETWORK]\r\n");
@@ -831,6 +838,7 @@ static qurl_ecode_t core_perform(qurl_core_ctrl_t *core_ptr)
 
                 break;
             }
+#endif
             // case QURL_STATE_CONNECT_PEND:
             // {
             //// No connection, waiting for a connection
@@ -1250,14 +1258,14 @@ static qurl_ecode_t core_perform(qurl_core_ctrl_t *core_ptr)
                     core_state_change(core_ptr, QURL_STATE_TRANS_DONE);
                     continue_flag = 1;
                 }
-
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
                 //Platform differences, cfun0, lwip socket does not necessarily return an error, GET/PUT may block until timeout, used here to determine if the network is normal, advantage: data is fully output before exiting
                 if (!qurl_nw_is_activated(core_ptr))
                 {
                     ret = QURL_ECODE_NETWORK_ERR;
                     continue_flag = 0;
                 }
-
+#endif
                 break;
             }
             case QURL_STATE_TRANS_TOOFAST: {
@@ -1703,7 +1711,7 @@ qurl_ecode_t qurl_core_reset(qurl_core_t core)
     return ret;
 }
 
-qurl_ecode_t qurl_core_setopt(qurl_core_t core, qurl_opt_e opt, ...)
+qurl_ecode_t qurl_core_setopt(qurl_core_t core, int opt, ...)
 {
     qurl_ecode_t      ret = QURL_OK;
     qurl_core_ctrl_t *core_ctrl_ptr = (qurl_core_ctrl_t *)core;
@@ -1736,7 +1744,7 @@ qurl_ecode_t qurl_core_setopt(qurl_core_t core, qurl_opt_e opt, ...)
     return ret;
 }
 
-qurl_ecode_t qurl_core_getinfo(qurl_core_t core, qurl_info_e opt, ...)
+qurl_ecode_t qurl_core_getinfo(qurl_core_t core, int opt, ...)
 {
     qurl_ecode_t      ret = QURL_OK;
     qurl_core_ctrl_t *core_ctrl_ptr = (qurl_core_ctrl_t *)core;

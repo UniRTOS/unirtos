@@ -18,6 +18,7 @@
 #define __QOSA_VOICE_CALL__H__
 
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_sys.h"
 
 /**
@@ -32,5 +33,5 @@ int qosa_start_voice_call(const char *phone_number);
 int qosa_stop_voice_call(qosa_uint8_t  simid);
 
 int qosa_answer_call(void);
-
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __QOSA_VOICE_CALL__H__ */

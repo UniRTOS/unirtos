@@ -16,7 +16,7 @@
 #define __QPPP_MSG__H__
 
 #include "qosa_def.h"
-
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 /* unir ppp inter msg */
 #define QPPP_MSG_TUNNEL_1_PACKET_IND 201
 #define QPPP_MSG_TUNNEL_4_PACKET_IND 204
@@ -50,4 +50,5 @@ struct qppp_msg
 
 void qppp_send_msg(struct qppp_msg* msg);
 
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif

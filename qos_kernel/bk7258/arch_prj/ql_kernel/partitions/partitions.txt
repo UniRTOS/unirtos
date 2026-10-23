@@ -1,0 +1,14 @@
+Name                              Offset            Size    
+------------------------------------------------------------
+primary_bootloader              0x00000000          68K     
+primary_cp_app                  0x00011000         1428K    
+primary_ap_app                  0x00176000         2856K    
+ota                             0x00440000         2684K    
+littlefs                        0x006df000         1024K    
+usr_config                      0x007df000          68K     
+quec_nvmem                      0x007f0000          32K     
+quec_factory                    0x007f8000           8K     
+easyflash                       0x007fa000           8K     
+easyflash_ap                    0x007fc000           8K     
+sys_rf                          0x007fe000           4K     
+sys_net                         0x007ff000           4K     

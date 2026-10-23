@@ -18,6 +18,9 @@
 #include "qcm_proj_config.h"
 #include "qosa_def.h"
 #include "qosa_sys.h"
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+#include "qosa_ip_addr.h"
+#endif
 //#include "qosa_datacall.h"
 #include "qosa_sockets.h"
 #include "qcm_proj_config.h"
@@ -77,8 +80,7 @@ typedef enum
     QCM_TCP_WINDOWS_SCALING_OPT = 5, /*!< Used to modify TCP Windows scale factor of system protocol stack */
     QCM_TCP_RETRY_TIME_OPT = 6,      /*!< Configure TCP retransmission interval time, must be configured together with QCM_TCP_MAX_BACKOFFS */
     QCM_TCP_RETRY_COUNT_OPT = 7,     /*!< Configure TCP retransmission count, must be configured together with QCM_TCP_RETRY_TIME_OPT */
-    QCM_TCP_DELAY_ACK_OPT
-        = 8, /*!< TCP protocol layer delayed sending, preventing TCP internal delay waiting for data packet sending, but still cannot completely avoid */
+    QCM_TCP_DELAY_ACK_OPT = 8, /*!< TCP protocol layer delayed sending, preventing TCP internal delay waiting for data packet sending, but still cannot completely avoid */
     QCM_TCP_TIMEWAIT_FAST_RELEASE_OPT = 9, /*!< Control underlying TCP close time wait state fast release action */
     QCM_TCP_RECV_WINDOWS_OPT = 10,         /*!< TCP protocol layer receive window size */
     QCM_TCP_SEND_WINDOWS_OPT = 11,         /*!< TCP protocol layer send window size */
@@ -151,7 +153,7 @@ typedef struct
 /** Same as AF_INET */
 #define QCM_AF_INET                   2
 /** Same as PF_INET */
-#define OSA_PF_INET                   QCM_AF_INET
+#define QCM_PF_INET                   QCM_AF_INET
 /** Same as AF_INET6 */
 #define QCM_AF_INET6                  10
 /** Same as PF_INET6 */
@@ -176,11 +178,16 @@ typedef struct
 /** TCP windows maximum value */
 #define QCM_TCPIP_TCP_WINDOW_SIZE_MAX 100
 
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+#define QCM_TCPIP_SOCKET_CALL_BACK_ENABLE 0
+#else
 #define QCM_TCPIP_SOCKET_CALL_BACK_ENABLE 1
-
+#endif
 /** Socket callback function switch */
 #if defined(CONFIG_QOSA_ASR1903_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR160X_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR1805_PLATFORM_FUNC)
 #define qcm_socket_with_call_back(family, type, protocol, qcm_socket_tcpack_callback) lwip_socket_with_callback(family, type, protocol, qcm_socket_tcpack_callback)
+#elif (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+#define qcm_socket_with_call_back(family, type, protocol, qcm_socket_tcpack_callback) 
 #else /* CONFIG_QOSA_ASR1903_PLATFORM_FUNC || CONFIG_QOSA_ASR160X_PLATFORM_FUNC || CONFIG_QOSA_ASR1805_PLATFORM_FUNC */
 #define qcm_socket_with_call_back(family, type, protocol, qcm_socket_tcpack_callback) lwip_socket_with_call_back(family, type, protocol, qcm_socket_tcpack_callback)
 #endif /* CONFIG_QOSA_ASR1903_PLATFORM_FUNC || CONFIG_QOSA_ASR160X_PLATFORM_FUNC || CONFIG_QOSA_ASR1805_PLATFORM_FUNC */
@@ -222,8 +229,11 @@ typedef void (*qcm_socket_event_cb)(int sock_hndl, int event, int code, void *us
  *          - Returns corresponding socket handle
  *          - Returns negative value on failure, refer to qcm_sock_err_code for specific information
  */
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+int qcm_socket_create(int family, int type, int protocol, int local_port, qosa_bool_t block);
+#else
 int qcm_socket_create(qosa_uint8_t simid, qosa_uint8_t pdpcid, int family, int type, int protocol, int local_port, qosa_bool_t block);
-
+#endif
 /**
  * @brief This function is used to perform socket connection action, should be executed after successful DNS resolution
  *

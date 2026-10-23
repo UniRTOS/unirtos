@@ -125,7 +125,13 @@ if(CONFIG_QOSA_OPENCPU_FUNC)
 add_subdirectory_if_exist(qcm_app_init)
 endif()
 
+if(CONFIG_QCM_MONGOOS_LIB)
+    add_subdirectory_if_exist(mongoos-7.10)
+endif()
 
+if(CONFIG_QCM_LLM_PROXY)
+    add_subdirectory_if_exist(qcm_llm_proxy)
+endif()
 
 # Virtual function Make sure to put it at the end.
 add_subdirectory_if_exist(virt_func)

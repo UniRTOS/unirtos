@@ -17,6 +17,7 @@
 #define __QOSA_SYS_CALLBACKS_H__
 
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
 #include "qosa_sys.h"
 #include "qosa_at_sio.h"
 #include "qosa_at_param.h"
@@ -67,5 +68,5 @@ void qosa_run_qcm_urc_config_get_opt_func(qosa_urc_cfg_opt_e urc_cfg_opt, void *
  *
  */
 void qosa_virt_at_result_func(const char *data, qosa_uint32_t size);
-
+#endif//!(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
 #endif /* __QOSA_SYS_CALLBACKS_H__ */

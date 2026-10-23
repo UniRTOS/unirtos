@@ -17,6 +17,9 @@
 #define __MPC_NETWORK__H__
 
 #include "mpc.h"
+
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+
 #include "qosa_network.h"
 #include "qosa_network_param.h"
 
@@ -918,5 +921,7 @@ int mpc_nw_get_autoapn_param(qosa_uint8_t simid, qosa_bool_t *enable);
  * @return int
  */
 int mpc_nw_set_autoapn_param(qosa_uint8_t simid, qosa_bool_t enable);
+
+#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 
 #endif /* __MPC_NETWORK__H__ */

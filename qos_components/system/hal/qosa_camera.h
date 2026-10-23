@@ -17,6 +17,7 @@
 #define __QOSA_CAMERA_H__
 
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_sys.h"
 #include "qosa_iic.h"
 
@@ -341,4 +342,5 @@ qosa_camera_error_e qosa_camera_convert_to_jpeg(
  * @return qosa_camera_error_e Return operation result status code
  */
 qosa_camera_error_e qosa_camera_get_suggest_length_for_jpeg(qosa_uint8_t quality, qosa_uint32_t uInWidth, qosa_uint32_t uInHeight, qosa_uint32_t *pOutLength);
+#endif
 #endif /* __QOSA_CAMERA_H__ */

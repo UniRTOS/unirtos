@@ -18,6 +18,7 @@
 #define __MPC_CLAT__H__
 
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_sys.h"
 #include "qosa_clat.h"
 
@@ -25,4 +26,5 @@ typedef struct qosa_clat_config qosa_clat_config_t;
 qosa_nvm_error_e                mpc_clat_set_config(int profile_id, qosa_clat_config_t *cfg);
 qosa_common_error_e             mpc_clat_get_config(int profile_id, qosa_clat_config_t *cfg);
 
+#endif//!(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif

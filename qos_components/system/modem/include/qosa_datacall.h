@@ -18,6 +18,7 @@
 #define __QOSA_DATACALL_H__
 
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_datacall_config.h"
 #include "qosa_modem.h"
 #include "qosa_ip_addr.h"
@@ -880,4 +881,5 @@ qosa_datacall_errno_e qosa_datacall_set_pdpreact_mode(qosa_uint8_t simid, qosa_b
  *       - Returns other values on failure
  */
 qosa_datacall_errno_e qosa_datacall_get_pdpreact_mode(qosa_uint8_t simid, qosa_bool_t *enable);
+#endif//!(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __QOSA_DATACALL_H__ */

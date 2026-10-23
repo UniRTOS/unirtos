@@ -17,6 +17,9 @@
 #define __AT_TASK_H__
 
 #include "qosa_def.h"
+
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+
 #include "qosa_sys.h"
 #include "qosa_queue_list.h"
 
@@ -220,5 +223,5 @@ void qosa_center_send_cmd(qosa_center_cmd_event_enum_e cmd, void *user_data_prt)
 *
 */
 qosa_center_cmd_handler_ptr qosa_center_set_cmd_handler(qosa_center_cmd_event_enum_e cmd, qosa_center_cmd_handler_ptr cmd_handler);
-
+#endif//!(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* __AT_TASK_H__ */

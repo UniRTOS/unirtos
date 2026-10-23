@@ -3,6 +3,7 @@
 #
 
 menu "network"
+depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
 
 config QOSA_NW_GSM_SUPPORT
     bool "whether support GSM or not"
@@ -132,7 +133,7 @@ config QOSA_OPER_CN_AREA
     help
         Region Division Operator Asia including India
 config QOSA_OPER_GL_AREA
-    bool "GLOBAL OPER  Operator "
+    bool "GLOBAL OPER  Operator"
     default n
     help
         Enable global operator area configuration for QOSA,This allows the modem to use global network/PLMN settings.

@@ -17,8 +17,9 @@
 #ifndef QOSA_CAM_DECODER_H
 #define QOSA_CAM_DECODER_H
 
-#include "qosa_sys.h"
 #include "qosa_def.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+#include "qosa_sys.h"
 #include "qosa_camera.h"
 
 /*===========================================================================
@@ -160,5 +161,5 @@ qosa_decoder_errcode_e qosa_get_decoder_version(qosa_uint8_t *version);
  *          - other: Error code
  */
 qosa_decoder_errcode_e qosa_set_decode_mirror(qosa_decode_mode_e decode_mode);
-
+#endif//!(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #endif /* QOSA_CAM_DECODER_H */

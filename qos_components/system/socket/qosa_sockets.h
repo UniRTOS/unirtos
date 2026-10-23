@@ -78,5 +78,14 @@
 #include "soc_socket.h"
 
 #endif
-
+#if defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)
+#include "lwip/netif.h"
+// #include "lwip/sockets.h"
+#include "lwip/inet.h"
+#include "lwip/api.h"
+#include "lwip/netdb.h"
+#include "lwip/tcp.h"
+#include "lwip/udp.h"
+#include "lwip/raw.h"
+#endif
 #endif /* __QOSA_SOCKETS_H__ */

@@ -21,6 +21,15 @@
 #include "qosa_sys.h"
 #include "qosa_sockets.h"
 
+#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
+typedef enum
+{
+    QOSA_IP_INVALID = 0, /*!< Invalid IP type */
+    QOSA_IP_V4 = 1,    /*!< IPv4 type */
+    QOSA_IP_V6 = 2,    /*!< IPv6 type */
+    QOSA_IP_V4V6 = 3   /*!< IPv4v6 dual stack type */
+} qosa_ip_type_e;
+#endif
 /**
  * @struct qosa_ip_addr_t
  * @brief Used to save IP address status information

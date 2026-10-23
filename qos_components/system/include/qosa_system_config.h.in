@@ -441,4 +441,17 @@
  */
 #cmakedefine CONFIG_QOSA_UIS8852_PLATFORM_FUNC
 
+/**
+ * bk7258 platform function support
+ */
+#cmakedefine CONFIG_QOSA_BK7258_PLATFORM_FUNC
+/**
+ * bk7238 platform function support
+ */
+#cmakedefine CONFIG_QOSA_BK7238_PLATFORM_FUNC
+/**
+ * ecr6600 platform function support
+ */
+#cmakedefine CONFIG_QOSA_ECR6600_PLATFORM_FUNC
+
 #endif /* _QOSA_SYSTEM_CONFIG_H_ */

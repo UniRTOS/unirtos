@@ -75,6 +75,7 @@ config QCM_LBS_FUNC
 
 config QCM_MMS_FUNC
     bool "Enable MMS function"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     select QCM_SOCKET_ADP_FUNC
     select QCM_FILE_API_FUNC
     default n
@@ -92,6 +93,7 @@ config QCM_MQTT5_FUNC
 
 config QCM_FILE_SFS_FUNC
     bool "Enable file SFS (SFS:) function"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     select QCM_FILE_API_FUNC
     select QOSA_SSL_FUNC
     default n
@@ -103,6 +105,7 @@ config QCM_NTP_FUNC
 
 config QCM_SBFOTA_FUNC
     bool "Enable SBFOTA function"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     select QCM_SOCKET_ADP_FUNC
     select QCM_UTILS_UTF8_FUNC
     select QCM_UTILS_UTILS_FUNC
@@ -151,10 +154,12 @@ config QCM_LWM2M_FOTA_FUNC
 
 config QCM_URC_FUNC
     bool "Enable URC function"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 
 config QCM_UART_LOG_FUNC
     bool "Enable UART log function"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
 	
 config QCM_SPI_NOR_FUNC
@@ -164,6 +169,7 @@ config QCM_SPI_NOR_FUNC
 
 config QCM_DMHTTP_FUNC
     bool "Enable CMCC device management function"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     select QCM_QURL_FUNC
     select QCM_FILE_API_FUNC
     select QCM_UTILS_BASE64_FUNC
@@ -172,11 +178,13 @@ config QCM_DMHTTP_FUNC
 
 config QCM_VIRT_AT_FUNC
     bool "Enable virtual AT function"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     select QOSA_VIRT_AT_FUNC
     default n
 
 config QCM_QVSIM_FUNC
     bool "Enable QVSIM function"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     select QCM_FILE_API_FUNC
     select QCM_SOCKET_ADP_FUNC
     select QCM_QURL_FUNC
@@ -199,6 +207,7 @@ config QCM_AUDIO_AMR_FUNC
 
 config QCM_ESIM_FUNC
     bool "Enable eSIM function"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     select QCM_UTILS_UTILS_FUNC
     select QCM_QURL_FUNC
     default n
@@ -226,10 +235,18 @@ config QCM_MBEDTLS_CONFIG_FILE
 
 config QCM_GNSS_FUNC
     bool "Enable GNSS function"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     select QCM_QURL_FUNC
     select QCM_NTP_FUNC
     default n
 
+config QCM_MONGOOS_LIB
+    bool "mongoos library support"
+    default n
+
+config QCM_LLM_PROXY
+    bool "llm proxy support"
+    default n
 
 orsource "comp_config.Kconfig"
 endmenu

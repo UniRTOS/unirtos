@@ -15,18 +15,27 @@
 #define QURL_PLATFORM_CONFIG_H
 
 /** Platform side adds header file*/
+#include "qosa_virtual_file.h"
+#ifndef CONFIG_QOSA_QT2131_PLATFORM_FUNC
+// open_source/lwip/lwip_v2.1.3/src/include/lwip/inet.h
+// open_source/musl/musl_1.2.3/include/netinet/in.h
+// drivers/chips/cat1/opensource_adapter/lwip_adapter/public/soc_socket.h
+
+// The above-mentioned files in xqd have conflicts due to redefinition.
 #include <netdb.h>
+#endif /* CONFIG_QOSA_QT2131_PLATFORM_FUNC */
 #include <errno.h>
 #include "qosa_def.h"
 #include "qosa_sys.h"
 #include "qosa_log.h"
 #include "qosa_rtc.h"
 #include "qosa_errno.h"
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
 #include "qosa_datacall.h"
+#else
+#include "qosa_ip_addr.h"
+#endif
 #include "qcm_proj_config.h"
-#ifdef CONFIG_QOSA_VFS_FILESYSTEM_FUNC
-#include "qosa_virtual_file.h"
-#endif /* CONFIG_QOSA_VFS_FILESYSTEM_FUNC */
 
 #include "qosa_sockets.h"
 
@@ -39,7 +48,11 @@
 #define QURL_CFG_EVENT_CODE_BASIC_NUM (0x80020000)
 
 /*Protocol Family*/
+#if defined(LWIP_IPV6)
+#define QURL_CFG_ENABLE_IPV6          LWIP_IPV6
+#else
 #define QURL_CFG_ENABLE_IPV6          1
+#endif
 
 /*IPV6 Address*/
 #define QURL_IN6ADDR_ANY_INIT                                                                                                                                  \
@@ -132,13 +145,28 @@
 #define QURL_CFG_PORT_EVENT_SEND_FUNC                  qurl_platform_event_send
 #define QURL_CFG_PORT_GET_THREAD_ID_FUNC               qurl_platform_get_pthread_id
 #define QURL_CFG_PORT_TIME_NOW_FUNC                    qurl_platform_time_now
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
 /** NETWORK: Description, FUNC has format type requirements*/
 #define QURL_CFG_PORT_NW_ACTIVATE_FUNC                 qurl_platform_nw_activate
 #define QURL_CFG_PORT_NW_IS_ACTIVATED_FUNC             qurl_platform_nw_is_activated
 #define QURL_CFG_PORT_NW_GET_IP_FUNC                   qurl_platform_nw_get_ip
+#endif
 /** SOCKET: Description, FUNC has format type requirements*/
 #define QURL_CFG_PORT_SOCKET_RESOLVE_FUNC              qurl_platform_socket_dns_get
 #define QURL_CFG_PORT_SOCKET_ADDRINFO_FREE_FUNC        freeaddrinfo
+
+#ifdef CONFIG_QOSA_QT2131_PLATFORM_FUNC
+#define QURL_CFG_PORT_SOCKET_SOCKET_FUNC               uapi_lwip_socket
+#define QURL_CFG_PORT_SOCKET_BIND_FUNC                 uapi_lwip_bind
+#define QURL_CFG_PORT_SOCKET_LISTEN_FUNC               uapi_lwip_listen
+#define QURL_CFG_PORT_SOCKET_ACCEPT_FUNC               uapi_lwip_accept
+#define QURL_CFG_PORT_SOCKET_CONNECT_FUNC              uapi_lwip_connect
+#define QURL_CFG_PORT_SOCKET_READ_FUNC                 uapi_lwip_read
+#define QURL_CFG_PORT_SOCKET_WRITE_FUNC                uapi_lwip_write
+#define QURL_CFG_PORT_SOCKET_SELECT_FUNC               uapi_lwip_select
+#define QURL_CFG_PORT_SOCKET_CLOSE_FUNC                uapi_lwip_close
+#define QURL_CFG_PORT_SOCKET_SETSOCKOPT_FUNC           uapi_lwip_setsockopt
+#else /* CONFIG_QOSA_QT2131_PLATFORM_FUNC */
 #define QURL_CFG_PORT_SOCKET_SOCKET_FUNC               socket
 #define QURL_CFG_PORT_SOCKET_BIND_FUNC                 bind
 #define QURL_CFG_PORT_SOCKET_LISTEN_FUNC               listen
@@ -149,6 +177,8 @@
 #define QURL_CFG_PORT_SOCKET_SELECT_FUNC               select
 #define QURL_CFG_PORT_SOCKET_CLOSE_FUNC                close
 #define QURL_CFG_PORT_SOCKET_SETSOCKOPT_FUNC           setsockopt
+#endif /* CONFIG_QOSA_QT2131_PLATFORM_FUNC */
+
 #define QURL_CFG_PORT_SOCKET_NONBLOCK_FUNC             qurl_platform_socket_nonblock
 #define QURL_CFG_PORT_SOCKET_GET_ERRNO_FUNC            qurl_platform_socket_get_errno
 #define QURL_CFG_PORT_SOCKET_OPT_SO_KEEPALIVE          SO_KEEPALIVE
@@ -174,7 +204,7 @@
 #define QURL_CFG_DNS_TASK_PRIORITY                     QOSA_PRIORITY_NORMAL
 #define QURL_CFG_NETWORK_TASK_PRIORITY                 QOSA_PRIORITY_NORMAL
 
-#define QURL_CFG_DNS_TASK_STACK_SIZE                   (2048)
-#define QURL_CFG_NETWORK_TASK_STACK_SIZE               (2048)
+#define QURL_CFG_DNS_TASK_STACK_SIZE                   (3072)
+#define QURL_CFG_NETWORK_TASK_STACK_SIZE               (3072)
 
 #endif /* Head define end*/
