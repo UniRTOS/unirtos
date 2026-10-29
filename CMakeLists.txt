@@ -386,6 +386,24 @@ endif()
 message("SYSTEM_SRC_CONFIG version: ${SYSTEM_SRC_CONFIG}")
 message("CHECK_CONFIG: ${CHECK_CONFIG}")
 
+# Process config files:
+# 1. Generate module capabilities before evaluating platform-dependent defaults.
+if(UNIRTOS_IS_WIFI_KERNEL)
+    execute_process(
+        COMMAND ${py_exe} ${tools_dir}/python/merge_files.py ${SYSTEM_SRC_CONFIG} ${CUSTOMER_SRC_CONFIG} ${CHECK_CONFIG}
+        WORKING_DIRECTORY ${UNIRTOS_DIR}
+        RESULT_VARIABLE MERGE_CHECK_CONFIG_RET
+    )
+else()
+    execute_process(
+        COMMAND ${py_exe} ${tools_dir}/python/merge_files.py ${SYSTEM_SRC_CONFIG} ${MODEM_SRC_CONFIG} ${CHECK_CONFIG}
+        WORKING_DIRECTORY ${UNIRTOS_DIR}
+        RESULT_VARIABLE MERGE_CHECK_CONFIG_RET
+    )
+endif()
+if(NOT MERGE_CHECK_CONFIG_RET EQUAL 0)
+    message(FATAL_ERROR "Failed to generate check.config from system/customer/modem config files")
+endif()
 
 # Bootstrap root .config from Kconfig defaults when it is missing or empty.
 set(BOOTSTRAP_ROOT_CONFIG OFF)
@@ -401,7 +419,8 @@ endif()
 if(BOOTSTRAP_ROOT_CONFIG)
     message("Root .config missing or empty, generating default config from Kconfig")
     execute_process(
-        COMMAND ${py_exe} ${tools_dir}/python/gen_default_config.py --kconfig ${CMAKE_CURRENT_SOURCE_DIR}/Kconfig --output ${SRC_CONFIG}
+        COMMAND "${py_exe}" "${tools_dir}/python/gen_default_config.py" --kconfig "${CMAKE_CURRENT_SOURCE_DIR}/Kconfig" --output "${SRC_CONFIG}"
+            --capability-config "${CHECK_CONFIG}"
         WORKING_DIRECTORY ${UNIRTOS_DIR}
         RESULT_VARIABLE GEN_DEFAULT_CONFIG_RET
         OUTPUT_VARIABLE GEN_DEFAULT_CONFIG_STDOUT
@@ -416,25 +435,6 @@ if(BOOTSTRAP_ROOT_CONFIG)
     if(NOT GEN_DEFAULT_CONFIG_RET EQUAL 0)
         message(FATAL_ERROR "Failed to generate default root .config from Kconfig defaults")
     endif()
-endif()
-
-# Process config files:
-# 1. Merge system.config and modem.config to generate capability check.config
-if(UNIRTOS_IS_WIFI_KERNEL)
-    execute_process(
-        COMMAND ${py_exe} ${tools_dir}/python/merge_files.py ${SYSTEM_SRC_CONFIG} ${CUSTOMER_SRC_CONFIG} ${CHECK_CONFIG}
-        WORKING_DIRECTORY ${UNIRTOS_DIR}
-        RESULT_VARIABLE MERGE_CHECK_CONFIG_RET
-    )
-else()
-    execute_process(
-        COMMAND ${py_exe} ${tools_dir}/python/merge_files.py ${SYSTEM_SRC_CONFIG} ${MODEM_SRC_CONFIG} ${CHECK_CONFIG}
-        WORKING_DIRECTORY ${UNIRTOS_DIR}
-        RESULT_VARIABLE MERGE_CHECK_CONFIG_RET
-    )
-endif()
-if(NOT MERGE_CHECK_CONFIG_RET EQUAL 0)
-    message(FATAL_ERROR "Failed to generate check.config from system/modem config files")
 endif()
 
 # 2. Initialize build-time effective.config from root .config directly,
@@ -473,7 +473,23 @@ foreach(external_app_depend_config ${EXTERNAL_APP_DEPEND_CONFIGS})
     endif()
 endforeach()
 
-# 3. Check effective.config is within check.config capability range
+# 3. Resolve the actual platform and existing AT dependencies in the build copy.
+# Leave the app config and unrelated raw requests untouched.
+set(TARGET_CMAKE ${BINARY_TOP_DIR}/target.cmake)
+execute_process(
+    COMMAND "${py_exe}" "${tools_dir}/python/cmakeconfig.py" "${EFFECTIVE_CONFIG}" "${TARGET_CMAKE}"
+        --capability-config "${CHECK_CONFIG}" --resolved-config "${EFFECTIVE_CONFIG}"
+    WORKING_DIRECTORY ${UNIRTOS_DIR}
+    RESULT_VARIABLE RESOLVE_PLATFORM_CONFIG_RET
+)
+if(NOT RESOLVE_PLATFORM_CONFIG_RET EQUAL 0)
+    message(FATAL_ERROR "Failed to resolve platform/AT Kconfig dependencies")
+endif()
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+    ${tools_dir}/python/cmakeconfig.py
+)
+
+# Check effective.config is within check.config capability range.
 execute_process(
     COMMAND ${py_exe} ${tools_dir}/python/check_config_cap.py ${CHECK_CONFIG} ${EFFECTIVE_CONFIG}
     WORKING_DIRECTORY ${UNIRTOS_DIR}
@@ -532,12 +548,7 @@ execute_process(
 )
 include(${KCONFIG_DEP})
 
-# Generate unified target.cmake from target.config according to dependencies in root directory kconfig files, and load into cmake environment
-set(TARGET_CMAKE ${BINARY_TOP_DIR}/target.cmake)
-execute_process(
-    COMMAND ${py_exe} ${tools_dir}/python/cmakeconfig.py ${TARGET_CONFIG} ${TARGET_CMAKE}
-    WORKING_DIRECTORY ${UNIRTOS_DIR}
-)
+# Load the dependency result only after capability validation has passed.
 include(${TARGET_CMAKE})
 
 # Later generate unirtos_version.h file and put it in bat script to generate

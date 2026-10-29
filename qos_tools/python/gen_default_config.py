@@ -6,6 +6,8 @@ import sys
 
 import kconfiglib
 
+from cmakeconfig import select_platform
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -21,10 +23,16 @@ def main():
         required=True,
         help="Output .config path",
     )
+    parser.add_argument(
+        "--capability-config",
+        help="Select the module platform before generating defaults",
+    )
     args = parser.parse_args()
 
     try:
         kconf = kconfiglib.Kconfig(args.kconfig)
+        if args.capability_config:
+            select_platform(kconf, args.capability_config)
 
         output_path = os.path.abspath(args.output)
         output_dir = os.path.dirname(output_path)
