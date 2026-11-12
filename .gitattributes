@@ -1,0 +1,20 @@
+# Normalize text from vendor Windows packages; keep binary artifacts byte-exact.
+* text=auto eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.sh text eol=lf
+*.a binary
+*.o binary
+*.obj binary
+*.lib binary
+*.elf binary
+*.bin binary
+*.img binary
+*.7z binary
+*.zip binary
+*.gz binary
+*.exe binary
+*.dll binary
+qos_tools/eigen_718/LogPrePass binary
+qos_tools/eigen_718/ecsecure binary
+qos_tools/eigen_718/fcelf binary

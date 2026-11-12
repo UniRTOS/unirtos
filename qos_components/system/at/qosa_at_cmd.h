@@ -21,6 +21,9 @@
 
 #include "qosa_sys.h"
 #include "qosa_at_param.h"
+#ifdef CONFIG_QOSA_OEM_DL_FUNC
+#include "qosa_at_config.h"
+#endif
 /*========================================================================
  *  Errcode Definition
  *========================================================================*/
@@ -278,7 +281,7 @@ typedef enum
 #define QOSA_ERR_AT_CMS_SMS_SEND_FAIL                   530
 
 // AUDIO ERRORS
-#define QOSA_ERR_AT_CME_AUDIO_PALY_ERROR                901
+#define QOSA_ERR_AT_CME_AUDIO_PLAY_ERROR                901
 #define QOSA_ERR_AT_CME_AUDIO_PARAM_INVALID             902
 #define QOSA_ERR_AT_CME_AUDIO_OPTION_NOT_SURPORT        903
 #define QOSA_ERR_AT_CME_AUDIO_WORK_BUSY                 904
@@ -521,6 +524,8 @@ void qosa_at_parser_add_cust_at(const qosa_at_desc_t *desc, qosa_uint32_t list_l
 #define qosa_at_resp_cme_error(dev_port, errcode) qosa_at_resp_cmd(dev_port, QOSA_ATCI_RESULT_CODE_CME_ERROR, errcode, QOSA_NULL, 1);
 #define qosa_at_resp_text(dev_port, text)         qosa_at_resp_cmd(dev_port, QOSA_ATCI_RESULT_CODE_OK, QOSA_CMD_RC_OK, text, 1);
 #define qosa_at_resp_ntext(dev_port, text, len)   qosa_at_resp_cmd_info_text(dev_port, text, len, 1)
+#define qosa_at_resp_ntext_force_add_begin_and_end(dev_port, text, len)     qosa_at_resp_cmd_info_text(dev_port, text, len, 2)
+#define qosa_at_resp_ntext_force_add_begin(dev_port, text, len)             qosa_at_resp_cmd_info_text(dev_port, text, len, 3)
 
 #define QOSA_RETURN_CME_ERR(dev_port, err)                                                                                                                     \
     {                                                                                                                                                          \

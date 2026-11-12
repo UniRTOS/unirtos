@@ -18,6 +18,7 @@
 #if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qppp.h"
 #include "ppp.h"
+#include "include/chap-new.h"
 
 struct qppp_auth
 {

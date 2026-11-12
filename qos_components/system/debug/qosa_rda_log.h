@@ -70,8 +70,14 @@ typedef enum
 #define QOSA_MAKE_LOG_TAG(a, b, c, d) ((unsigned)(a) | ((unsigned)(b) << 7) | ((unsigned)(c) << 14) | ((unsigned)(d) << 21))
 
 #include "osi_log.h"
+
+#ifdef CONFIG_QOSA_OEM_LT_FUNC
 #define qosa_log_printf(level, tag, funcname, line, fmt, ...)                                                                                                  \
-    SLOG_Kprintf(SLOG_LEVEL_INFO, SLOG_PRINT_SUBMDL_PUB, "%s %d " fmt "", funcname, line, ##__VA_ARGS__)
+    SLOG_Kprintf(SLOG_LEVEL_INFO, SLOG_PRINT_SUBMDL_PUB, "%d " fmt "", line, ##__VA_ARGS__)
+#else
+#define qosa_log_printf(level, tag, funcname, line, fmt, ...) \
+    SLOG_Kprintf(SLOG_LEVEL_INFO, SLOG_PRINT_SUBMDL_PUB, "%s %d " fmt, (funcname), (line), ##__VA_ARGS__)
+#endif /* CONFIG_QOSA_OEM_LT_FUNC */
 
 #define QOSA_LOG_PRINTF_TAG(level, tag, funcname, line, ...)                                                                                                   \
     do {                                                                                                                                                       \
@@ -115,6 +121,7 @@ typedef enum
 #define LOG_TAG_PING_API        QOSA_MAKE_LOG_TAG('Q', 'P', 'I', 'G')
 #define LOG_TAG_LBS_API         QOSA_MAKE_LOG_TAG('Q', 'L', 'B', 'S')
 #define LOG_TAG_WIFISCAN_API    QOSA_MAKE_LOG_TAG('Q', 'W', 'I', 'S')
+#define LOG_TAG_WIFI_API        QOSA_MAKE_LOG_TAG('Q', 'W', 'I', 'F')
 #define LOG_TAG_QURL_API        QOSA_MAKE_LOG_TAG('Q', 'U', 'R', 'L')
 #define LOG_TAG_COMPONENT       QOSA_MAKE_LOG_TAG('Q', 'C', 'M', 'P')
 #define LOG_TAG_MINI_HTTP       QOSA_MAKE_LOG_TAG('Q', 'M', 'H', 'T')
@@ -140,6 +147,11 @@ typedef enum
 #define LOG_TAG_MRD_API         QOSA_MAKE_LOG_TAG('Q', 'M', 'R', 'D')
 #define LOG_TAG_CI              QOSA_MAKE_LOG_TAG('Q', 'U', 'C', 'I')
 #define LOG_TAG_NET_API         QOSA_MAKE_LOG_TAG('Q', 'N', 'E', 'T')
+#define LOG_TAG_DATACALL        QOSA_MAKE_LOG_TAG('Q', 'D', 'A', 'T')
+#define LOG_TAG_SIM             QOSA_MAKE_LOG_TAG('Q', 'S', 'I', 'M')
+#define LOG_TAG_NETWORK         QOSA_MAKE_LOG_TAG('Q', 'N', 'W', 'K')
+#define LOG_TAG_USBNET          QOSA_MAKE_LOG_TAG('Q', 'U', 'N', 'E')
+#define LOG_TAG_DEV             QOSA_MAKE_LOG_TAG('Q', 'D', 'E', 'V')
 #define LOG_TAG_CALL            QOSA_MAKE_LOG_TAG('Q', 'C', 'A', 'L')
 #define LOG_TAG_IMS             QOSA_MAKE_LOG_TAG('Q', 'I', 'M', 'S')
 #define LOG_TAG_SMS             QOSA_MAKE_LOG_TAG('Q', 'S', 'M', 'S')
@@ -147,13 +159,23 @@ typedef enum
 #define LOG_TAG_DEMO            QOSA_MAKE_LOG_TAG('Q', 'D', 'E', 'M')
 #define LOG_TAG_AUDIO_API       QOSA_MAKE_LOG_TAG('Q', 'A', 'U', 'D')
 #define LOG_TAG_FLASH_TEST      QOSA_MAKE_LOG_TAG('Q', 'F', 'T', 'S')
+#define LOG_TAG_LCD_API         QOSA_MAKE_LOG_TAG('Q', 'L', 'C', 'D')
 
+#ifdef CONFIG_QOSA_OEM_LT_FUNC
+#define QOSA_LOG_E(tag, ...)    QOSA_LOG_PRINTF_TAG(QOSA_LOG_LEVEL_ERROR, tag, "", __LINE__, ##__VA_ARGS__)
+#define QOSA_LOG_W(tag, ...)    QOSA_LOG_PRINTF_TAG(QOSA_LOG_LEVEL_WARN, tag, "", __LINE__, ##__VA_ARGS__)
+#define QOSA_LOG_I(tag, ...)    QOSA_LOG_PRINTF_TAG(QOSA_LOG_LEVEL_INFO, tag, "", __LINE__, ##__VA_ARGS__)
+#define QOSA_LOG_D(tag, ...)    QOSA_LOG_PRINTF_TAG(QOSA_LOG_LEVEL_DEBUG, tag, "", __LINE__, ##__VA_ARGS__)
+#define QOSA_LOG_V(tag, ...)    QOSA_LOG_PRINTF_TAG(QOSA_LOG_LEVEL_VERBOSE, tag, "", __LINE__, ##__VA_ARGS__)
+#define QOSA_LOG_NO_F(tag, ...) QOSA_LOG_PRINTF_TAG(QOSA_LOG_LEVEL_VERBOSE, tag, "", __LINE__, ##__VA_ARGS__)
+#else
 #define QOSA_LOG_E(tag, ...)    QOSA_LOG_PRINTF_TAG(QOSA_LOG_LEVEL_ERROR, tag, __func__, __LINE__, ##__VA_ARGS__)
 #define QOSA_LOG_W(tag, ...)    QOSA_LOG_PRINTF_TAG(QOSA_LOG_LEVEL_WARN, tag, __func__, __LINE__, ##__VA_ARGS__)
 #define QOSA_LOG_I(tag, ...)    QOSA_LOG_PRINTF_TAG(QOSA_LOG_LEVEL_INFO, tag, __func__, __LINE__, ##__VA_ARGS__)
 #define QOSA_LOG_D(tag, ...)    QOSA_LOG_PRINTF_TAG(QOSA_LOG_LEVEL_DEBUG, tag, __func__, __LINE__, ##__VA_ARGS__)
 #define QOSA_LOG_V(tag, ...)    QOSA_LOG_PRINTF_TAG(QOSA_LOG_LEVEL_VERBOSE, tag, __func__, __LINE__, ##__VA_ARGS__)
 #define QOSA_LOG_NO_F(tag, ...) QOSA_LOG_PRINTF_TAG(QOSA_LOG_LEVEL_VERBOSE, tag, "0", __LINE__, ##__VA_ARGS__)
+#endif /* CONFIG_QOSA_OEM_LT_FUNC */
 
 #define QLOGE(...)              QOSA_LOG_E(QOS_LOG_TAG, ##__VA_ARGS__)
 #define QLOGW(...)              QOSA_LOG_W(QOS_LOG_TAG, ##__VA_ARGS__)

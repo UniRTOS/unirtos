@@ -488,6 +488,7 @@ typedef struct
 typedef struct
 {
     qosa_uint16_t   msg_id;                /*!< MQTT message id */
+    qosa_int8_t     qos;                   /*!< QoS level */
     qcm_mqtt_data_t topic;                 /*!< topic string */
     qcm_mqtt_data_t payload;               /*!< binary payload, length delimited */
 #ifdef CONFIG_QCM_MQTT5_FUNC
@@ -810,6 +811,18 @@ qosa_uint32_t qcm_mqtt_client_wait_read_cnt(qosa_uint8_t client_id);
  * @return qcm_mqtt_eercode_e Returns operation result error code
  */
 qcm_mqtt_eercode_e qcm_mqtt_client_read_subcribe_message(qosa_uint8_t client_id, qosa_uint8_t store_id, qcm_mqtt_recv_pub_t *recv_pub);
+
+/**
+ * @brief Peek the topic of the received publish message with the specified store_id without consuming the message.
+ *
+ * @param[in] qosa_uint8_t client_id
+ * @param[in] qosa_uint8_t store_id
+ * @param[out] const char **topic
+ * @param[out] qosa_uint32_t *topic_len
+ *
+ * @return qcm_mqtt_eercode_e
+ */
+qcm_mqtt_eercode_e qcm_mqtt_client_peek_subcribe_message(qosa_uint8_t client_id, qosa_uint8_t store_id, const char **topic, qosa_uint32_t *topic_len);
 
 /**
  * @brief Read cached data from the specified MQTT client

@@ -118,6 +118,7 @@ typedef struct
             qosa_rsrp_t rsrp; /*!< rsrp under nr5g */
             qosa_sinr_t sinr; /*!< sinr under nr5g */
             qosa_rsrq_t rsrq; /*!< rsrq under nr5g */
+            qosa_rsrp_t rssi; /*!< RSSI under nr5g */
         } nr5g;
     };
 } mpc_nw_signal_quality_t;
@@ -176,6 +177,19 @@ typedef struct
  * @return int
  */
 int mpc_nw_get_scell_info(qosa_uint8_t simid, mpc_cb_t cb);
+
+#ifdef CONFIG_QOSA_NW_ANTENNA_INFO_FUNC
+/**
+ * @brief Get the signal information of the primary and diversity antennas
+ *
+ * @param[in] simid
+ *          - sim ID
+ * @param[out] info
+ *          - Primary/diversity antenna signal information
+ * @return int
+ */
+int mpc_nw_get_antenna_info(qosa_uint8_t simid, qosa_nw_antenna_info_t *info);
+#endif /* CONFIG_QOSA_NW_ANTENNA_INFO_FUNC */
 
 /**
  * @brief Get neighbor cell information, type that does not decode SIB messages
@@ -767,6 +781,30 @@ int mpc_nw_get_jamm_detect_func(qosa_uint8_t simid, mpc_cb_t cb);
 int mpc_nw_set_ue_operation_mode(qosa_uint8_t simid, qosa_uint8_t *mode, mpc_cb_t cb);
 
 /**
+ * @brief Set eDRX configuration
+ *
+ * @param[in] simid
+ *          - SIM card identifier
+ * @param[in] cfg
+ *          - eDRX configuration
+ * @return int
+ */
+int mpc_nw_set_edrx_param(qosa_uint8_t simid, qosa_nw_edrx_cfg_t *cfg);
+
+/**
+ * @brief Get eDRX configuration
+ *
+ * @param[in] simid
+ *          - SIM card identifier
+ * @param[out] cfg
+ *          - eDRX configuration, can be QOSA_NULL if only dynamic info is needed
+ * @param[out] info
+ *          - dynamic eDRX information, can be QOSA_NULL if only configuration is needed
+ * @return int
+ */
+int mpc_nw_get_edrx_param(qosa_uint8_t simid, qosa_nw_edrx_cfg_t *cfg, qosa_nw_edrx_info_t *info);
+
+/**
  * @brief Get ue operation mode
  *
  * @param[in] simid
@@ -852,6 +890,20 @@ int mpc_nw_set_blacklist_param(qosa_uint8_t simid, qosa_nw_blacklist_t *all_para
  */
 int mpc_nw_get_blacklist_param(qosa_uint8_t simid, qosa_nw_blacklist_t *all_param);
 
+#ifdef CONFIG_QOSA_NBIOT_CUST_FUNC
+/*
+ * @brief get Downlink Bit Error Rate level, the level is defined in 3GPP TS 45.008, section 8.2.4
+ *
+ * @param[in] simid
+ *          - SIM ID
+ * @param[out] dlber_level
+ *          - Downlink Bit Error Rate level, the level is defined in 3GPP TS 45.008, section 8.2.4
+ *
+ * @return int
+ */
+int mpc_nw_get_dlber_level(qosa_uint8_t simid, qosa_uint8_t *dlber_level);
+#endif /* CONFIG_QOSA_NBIOT_CUST_FUNC */
+
 /**
  * @brief Set IMS mode configuration via MPC network interface
  *
@@ -859,7 +911,7 @@ int mpc_nw_get_blacklist_param(qosa_uint8_t simid, qosa_nw_blacklist_t *all_para
  *
  * @param[in] simid
  *          - Identifier of the SIM card to configure
- * 
+ *
  * @param[in] ims_conf
  *          - IMS configuration value (e.g., enable or disable)
  * @return int
@@ -873,10 +925,10 @@ int mpc_nw_set_ims_mode(qosa_uint8_t simid, qosa_uint8_t ims_conf);
  *
  * @param[in] simid
  *          - Identifier of the SIM card to query
- * 
+ *
  * @param[out] ims_conf
  *          - Pointer to a variable that will receive the IMS configuration value
- * 
+ *
  * @param[out] volte_cap
  *          - Pointer to a variable that will receive the VoLTE capability flag
  * @return int
@@ -899,28 +951,86 @@ int mpc_nw_get_ims_mode(qosa_uint8_t simid, qosa_uint8_t *ims_conf, qosa_bool_t 
 int mpc_nw_get_reg_status(qosa_uint8_t simid, qosa_uint8_t *cs_status, qosa_uint8_t *ps_status);
 #endif
 
+#ifdef CONFIG_QOSA_AUTOAPN_FUNC
 /**
- * @brief Get UE cell blacklist parameters
+ * @brief Get attach bearer CID from modem ext cfg
+ *
+ * Query the default PDP CID maintained by the platform network state.
+ *
+ * @param[in] simid
+ *          - SIM ID
+ * @param[out] attach_cid
+ *          - attach bearer cid
+ * @return int - QOSA_NW_ERR_OK on success
+ */
+int mpc_nw_get_attach_pdp_cid(qosa_uint8_t simid, qosa_uint8_t *attach_cid);
+#endif /*CONFIG_QOSA_AUTOAPN_FUNC*/
+
+/**
+ * @brief Add the cell information to the blacklist, or delete the cell information from the blacklist
  *
  * @param[in] simid
  *          - SIM ID
  *
- * @param[out] enable
- *          - parameter reference qosa_bool_t, to store the queried autoapn enable information
- * @return int
+ * @param[in] opt
+ *          - option,0-add black cell,1-delete black cell
+ *
+ * @param[in] cell_list
+ *          - Cell information to be added or deleted,reference qosa_nw_blacklist_cell_list_t
+ *
+ * @return qosa_nw_err_e
  */
-int mpc_nw_get_autoapn_param(qosa_uint8_t simid, qosa_bool_t *enable);
+int mpc_nw_set_black_cell_info(qosa_uint8_t simid, qosa_uint8_t opt, qosa_nw_blacklist_cell_list_t *cell_info);
+
 /**
- * @brief Set UE cell blacklist parameters
+ * @brief Get the cell information in the blacklist
  *
  * @param[in] simid
  *          - SIM ID
  *
- * @param[in] enable
- *          - parameter reference qosa_bool_t, to store the queried autoapn enable information
- * @return int
+ * @param[out] cell_list
+ *          - Cell information in the blacklist, reference qosa_nw_blacklist_cell_list_t
+ *
+ * @return qosa_nw_err_e
  */
-int mpc_nw_set_autoapn_param(qosa_uint8_t simid, qosa_bool_t enable);
+int mpc_nw_get_black_cell_info(qosa_uint8_t simid, qosa_nw_blacklist_cell_list_t *cell_info);
+
+/**
+ * @brief Get PdpRemap configuration value
+ *
+ * @param[in] simid
+ *          - SIM ID
+ * @param[out] pdpremap
+ *          - PdpRemap value (0,1) 0:Disable UE Remap function 1:Enable Remap function
+ * @return int - QOSA_NW_ERR_OK on success
+ */
+int mpc_nw_get_pdpremap(qosa_uint8_t simid, qosa_uint8_t *pdpremap);
+/**
+ * @brief Set PdpRemap configuration value
+ *
+ * @param[in] simid
+ *          - SIM ID
+ * @param[in] pdpremap
+ *          - PdpRemap value (0,1) 0:Disable UE Remap function 1:Enable Remap function
+ *          - MPC callback function
+ * @return int - error code
+ */
+int mpc_nw_set_pdpremap(qosa_uint8_t simid, qosa_uint8_t pdpremap, mpc_cb_t cb);
+
+/**
+ * @brief Save undefined PDP activation states to NV storage.
+ *
+ * @note NV backup is performed only when entering PSM.
+ */
+void mpc_set_undefined_pdp_state_nv(void);
+
+/**
+ * @brief Update TCP/IP PDP activation state.
+ *
+ * @note NV backup is performed only when entering PSM.
+ */
+void mpc_set_tcpip_pdp_state_nv(void);
+
 
 #endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 

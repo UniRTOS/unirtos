@@ -49,6 +49,10 @@ void qstd_exec_qcert_module_cmd(qosa_at_cmd_t *cmd);
 void qstd_exec_qpowd_cmd(qosa_at_cmd_t *cmd);
 #endif /* CONFIG_QAPP_UNIRTOS_AT_QPOWD_CMD */
 
+#ifdef CONFIG_QAPP_UNIRTOS_AT_QBOOTREASON_CMD
+void qstd_exec_qbootreason_cmd(qosa_at_cmd_t *cmd);
+#endif /* CONFIG_QAPP_UNIRTOS_AT_QBOOTREASON_CMD */
+
 #ifdef CONFIG_QAPP_UNIRTOS_AT_CBC_CMD
 void qstd_exec_cbc_cmd(qosa_at_cmd_t *cmd);
 #endif /* CONFIG_QAPP_UNIRTOS_AT_CBC_CMD */

@@ -1,0 +1,61 @@
+[config]
+line_0_com = COM9
+agbaud = 460800
+filter_embedusb = 1
+filter_externcom = 0
+filter_explicitcom0 = 19D1
+filter_explicitcom1 = 1366
+path_convert_cfg_avail = 1
+;pathconv_to_file_basedir_pairs=agentboot:agpath
+pathconv_to_file_basedir_pairs=bootloader:headpath;system:headpath
+
+[agentboot]
+;tool_basedir = 1
+agpath = .\agentboot_uart\agentboot.bin
+
+[storage_cfg]
+#will be update when load
+format_path = format_ec718m_none.json
+
+
+[bootloader]
+headpath = .\bl_sec_header.bin
+blpath = .\image_ec718\ap_bootloader.bin
+blloadskip = 0
+burnaddr=0xf
+;system.bin file infomation
+[system]
+headpath = .\sys_sec_header.bin
+syspath =.\image_ec718\ap_demo-flash.bin
+sysloadskip = 0
+burnaddr = 0xf
+
+[cp_system]
+cp_syspath = .\image_ec718\cp-demo-flash.bin
+cp_sysloadskip = 0
+burnaddr = 0xf
+
+[security]
+hashtype = 1
+extern_sec_head_used=1
+curve_type = curve_256
+
+[control]
+detect = 1
+reset = 2
+atreset = at+ecrst=delay,650
+atbaud = 115200
+prempt_detect_time = 6
+msg_waittime = 2
+max_preamble_cnt = 8
+lpc_recover_en = 0
+pullup_qspi = 1
+trc_ser = 1
+rom_version= 0000000103030000
+rom_version_append_list= 0000000203030000;0000000303030000
+dribble_dld_en = 1
+
+[flexfile0]
+filepath = .\MergeRfTable.bin
+burnaddr = 0x7e5000
+

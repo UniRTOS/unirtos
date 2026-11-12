@@ -69,8 +69,25 @@ flash xip address(from both ap/cp view): 0x00800000---0x01000000
 
 //bl addr and size
 #define BOOTLOADER_FLASH_LOAD_ADDR              (0x00803000)
-#define BOOTLOADER_FLASH_LOAD_SIZE              (0x20000)//128kB, real region size, tool will check when zip TODO:ZIP
 #define BOOTLOADER_FLASH_LOAD_UNZIP_SIZE        (0x22000)//136KB ,for ld
+
+#if defined (CONFIG_QOSA_SECURITY_BOOT_BL) || defined (CONFIG_QOSA_SECURITY_BOOT_KERNEL)
+#ifdef UNIRTOS_OPEN_MODE_SUPPORT
+//updater/application secboot header addr and size
+#define UPDATER_SECUREBOOT_LOAD_ADDR            ((BOOTLOADER_FLASH_LOAD_ADDR + BOOTLOADER_FLASH_PARTITION_SIZE - 2*SECUREBOOT_HEAD_LOAD_SIZE) - AP_FLASH_XIP_ADDR) // used the end of the bootloader to save Updater header
+#define UPDATER_SECUREBOOT_LOAD_SIZE            (SECUREBOOT_HEAD_LOAD_SIZE)//4kB
+
+#define APP_SECUREBOOT_LOAD_ADDR                ((BOOTLOADER_FLASH_LOAD_ADDR + BOOTLOADER_FLASH_PARTITION_SIZE - SECUREBOOT_HEAD_LOAD_SIZE) - AP_FLASH_XIP_ADDR) // used the end of the bootloader to save Updater header
+#define APP_SECUREBOOT_LOAD_SIZE                (SECUREBOOT_HEAD_LOAD_SIZE)//4kB
+#else /* UNIRTOS_OPEN_MODE_SUPPORT*/
+//updater secboot header addr and size
+#define UPDATER_SECUREBOOT_LOAD_ADDR            ((BOOTLOADER_FLASH_LOAD_ADDR + BOOTLOADER_FLASH_PARTITION_SIZE - SECUREBOOT_HEAD_LOAD_SIZE) - AP_FLASH_XIP_ADDR) // used the end of the bootloader to save Updater header
+#define UPDATER_SECUREBOOT_LOAD_SIZE            (SECUREBOOT_HEAD_LOAD_SIZE)//4kB
+#endif/* UNIRTOS_OPEN_MODE_SUPPORT*/
+#define BOOTLOADER_FLASH_LOAD_SIZE              (UPDATER_SECUREBOOT_LOAD_ADDR+AP_FLASH_XIP_ADDR-BOOTLOADER_FLASH_LOAD_ADDR)
+#else /* defined (CONFIG_QOSA_SECURITY_BOOT_BL) || defined (CONFIG_QOSA_SECURITY_BOOT_KERNEL)*/
+#define BOOTLOADER_FLASH_LOAD_SIZE              (BOOTLOADER_FLASH_PARTITION_SIZE)// 128kB, real region size, tool will check when zip TODO:ZIP
+#endif /* defined (CONFIG_QOSA_SECURITY_BOOT_BL) || defined (CONFIG_QOSA_SECURITY_BOOT_KERNEL)	*/
 
 #ifdef UNIRTOS_PLATFORM_MODIFY
 #include "quec_mem_map_718hm.h"

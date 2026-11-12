@@ -47,6 +47,9 @@ typedef enum
     QOSA_AT_CONFIG_CIREG,
     QOSA_AT_CONFIG_CGEREP_MODE,
     QOSA_AT_CONFIG_CGEREP_BFR,
+#ifdef CONFIG_QOSA_NBIOT_CUST_FUNC
+    QOSA_AT_CONFIG_ECPURC_HIB_RPT,
+#endif /* CONFIG_QOSA_NBIOT_CUST_FUNC */
     QOSA_AT_CONFIG_MAX,
 } qosa_at_config_e;
 
@@ -71,6 +74,11 @@ typedef enum
     QOSA_CS_MAX,
 } qosa_at_chset_e;
 
+typedef enum
+{
+    QOSA_AT_ATV_STATUS_CLOSE = 0,
+    QOSA_AT_ATV_STATUS_OPEN,
+} qosa_at_atv_status_e;
 /**
  * @brief Get AT device configuration information
  *
@@ -140,5 +148,22 @@ qosa_uint32_t qosa_at_uart_config_get(qosa_at_dev_type_e dev_port, qosa_at_uart_
  *       - Return whether the configuration is successful.
  */
 qosa_bool_t qosa_at_uart_config_set(qosa_at_dev_type_e dev_port, qosa_at_uart_cfg_e config, qosa_uint32_t value);
-#endif//!(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+
+#ifdef CONFIG_QOSA_NBIOT_CUST_FUNC
+/**
+ * @brief Get power-on CFUN value from old NVRAM (mwconfig.nvm)
+ *
+ * @param[out] pCfun  Pointer to CFUN value (0=off, 1=auto-attach, 4=flight mode)
+ */
+void qosa_nb_power_on_cfun_get(qosa_uint8_t *pCfun);
+
+/**
+ * @brief Set power-on CFUN value to old NVRAM (mwconfig.nvm)
+ *
+ * @param[in] cfun  CFUN value (0=off, 1=auto-attach, 4=flight mode)
+ */
+void qosa_nb_power_on_cfun_set(qosa_uint8_t cfun);
+#endif /* CONFIG_QOSA_NBIOT_CUST_FUNC */
+
+#endif /* Wi-Fi platform exclusion */
 #endif /* __AT_CONFIG_H__ */

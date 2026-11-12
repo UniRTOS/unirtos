@@ -36,6 +36,14 @@ config QOSA_DATACALL_LIGHT_MODE_SUPPORT_PPP
     help
         enable support for PPP in datacall light mode
 
+config QOSA_DATACALL_USBNET_SKIP_IPV6_CHECK
+    bool "skip IPv6 address check for USBNET IPv4v6 activation"
+    depends on QOSA_DATACALL_LIGHT_MODE
+    default n
+    help
+        skip IPv6 address and prefix checks when a USBNET IPv4v6 connection is activated.
+        The IPv4 address is still required before the activation succeeds.
+
 config QOSA_DATACALL_PDPID_MAX
     int "maximum PDPID"
     default 7

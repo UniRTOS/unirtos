@@ -22,8 +22,8 @@
 #define QOSA_EXT_FLASH_CLK_SET   6500000
 #define QOSA_EXT_FLASH_MOSI_PIN  67
 #define QOSA_EXT_FLASH_MOSI_FUNC 1
-#define QOSA_EXT_FLASH_MOSO_PIN  28
-#define QOSA_EXT_FLASH_MOSO_FUNC 1
+#define QOSA_EXT_FLASH_MISO_PIN  28
+#define QOSA_EXT_FLASH_MISO_FUNC 1
 #define QOSA_EXT_FLASH_SCLK_PIN  29
 #define QOSA_EXT_FLASH_SCLK_FUNC 1
 #define QOSA_EXT_FLASH_CS_PIN    66
@@ -34,8 +34,8 @@
 #define QOSA_EXT_FLASH_CLK_SET   6500000
 #define QOSA_EXT_FLASH_MOSI_PIN  63
 #define QOSA_EXT_FLASH_MOSI_FUNC 1
-#define QOSA_EXT_FLASH_MOSO_PIN  62
-#define QOSA_EXT_FLASH_MOSO_FUNC 1
+#define QOSA_EXT_FLASH_MISO_PIN  62
+#define QOSA_EXT_FLASH_MISO_FUNC 1
 #define QOSA_EXT_FLASH_SCLK_PIN  49
 #define QOSA_EXT_FLASH_SCLK_FUNC 1
 #define QOSA_EXT_FLASH_CS_PIN    64
@@ -53,8 +53,8 @@ typedef struct
     unsigned int clk_set;             /*!< SPI时钟频率 */
     unsigned int ext_flash_mosi_pin;  /*!< MOSI引脚 */
     unsigned int ext_flash_mosi_func; /*!< MOSI引脚功能 */
-    unsigned int ext_flash_moso_pin;  /*!< MOSO引脚 */
-    unsigned int ext_flash_moso_func; /*!< MOSO引脚功能 */
+    unsigned int ext_flash_miso_pin;  /*!< MISO 引脚 */
+    unsigned int ext_flash_miso_func; /*!< MISO 引脚功能 */
     unsigned int ext_flash_sclk_pin;  /*!< SCLK引脚 */
     unsigned int ext_flash_sclk_func; /*!< SCLK引脚功能 */
     unsigned int ext_flash_cs_pin;    /*!< CS引脚 */
@@ -132,6 +132,53 @@ unsigned int qosa_get_updater_size();
  *          - 分区起始地址
  */
 unsigned int qosa_get_updater_info_addr();
+
+/**
+ * @brief 获取当前UPDATER镜像目标地址
+ *
+ * @return unsigned int
+ *          - 分区起始地址
+ */
+unsigned int qosa_get_updater_target_addr();
+
+/**
+ * @brief 获取当前UPDATER镜像目标偏移
+ *
+ * @return unsigned int
+ *          - 存储设备内偏移地址
+ */
+unsigned int qosa_get_updater_target_offset();
+
+/**
+ * @brief 获取当前UPDATER镜像目标分区大小
+ *
+ * @return unsigned int
+ *          - 分区大小
+ */
+unsigned int qosa_get_updater_target_size();
+
+/**
+ * @brief 擦除当前UPDATER镜像目标分区
+ *
+ * @param addr 存储设备内偏移地址
+ * @param size 擦除大小
+ *
+ * @return int
+ *          - 0表示成功，其他表示失败
+ */
+int qosa_updater_target_erase(unsigned int offset, unsigned int size);
+
+/**
+ * @brief 写入当前UPDATER镜像目标分区
+ *
+ * @param data 写入数据
+ * @param addr 存储设备内偏移地址
+ * @param size 写入大小
+ *
+ * @return int
+ *          - 0表示成功，其他表示失败
+ */
+int qosa_updater_target_write(unsigned char *data, unsigned int offset, unsigned int size);
 
 #ifdef QOSA_EXT_UPDATER_SUPPORT
 /**

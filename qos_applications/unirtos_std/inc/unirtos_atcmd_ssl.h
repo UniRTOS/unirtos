@@ -19,8 +19,9 @@
 #include "qosa_def.h"
 #include "qosa_sys.h"
 #include "qosa_at_param.h"
+#ifdef CONFIG_QCM_VTLS_FUNC
 #include "qcm_vtls_cfg.h"
-
+#endif /* CONFIG_QCM_VTLS_FUNC */
 //SSL config number of configuration items
 #define UNIR_SSL_CTX_ID_MIN 0
 #define UNIR_SSL_CTX_ID_MAX 5

@@ -95,11 +95,7 @@
 #endif /* CONFIG_QCM_QURL_SMTP_FUNC */
 
 /*HTTP specifies the default boundary*/
-#if !defined(CONFIG_QOSA_QCX216_PLATFORM_FUNC) && !defined(CONFIG_QOSA_QCX217_PLATFORM_FUNC)
 #define QURL_CFG_MULTIFORM_BOUNDARY_DEFAULT "-------Quectel1234567890Quectel"
-#else
-#define QURL_CFG_MULTIFORM_BOUNDARY_DEFAULT "---------------------------7e3291262b03f0"
-#endif
 
 /** Standard Library Related APIs*/
 #define QURL_CFG_PORT_MALLOC_FUNC                      qosa_malloc

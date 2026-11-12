@@ -27,5 +27,6 @@ void qstd_exec_qcfg_nwscanseq_cmd(qosa_at_cmd_t *cmd);
 void qstd_exec_qcfg_band_cmd(qosa_at_cmd_t *cmd);
 void qstd_exec_qcfg_roamservice_cmd(qosa_at_cmd_t *cmd);
 void qstd_exec_qcfg_service_domain_cmd(qosa_at_cmd_t *cmd);
-
+void qstd_exec_qcfg_pdpremap_cmd(qosa_at_cmd_t *cmd);
+void qstd_exec_qcfg_qops_fmt_cmd(qosa_at_cmd_t *cmd);
 #endif /* __UNIRTOS_ATCMD_IMPL_H__ */

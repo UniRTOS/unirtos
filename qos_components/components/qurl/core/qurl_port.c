@@ -125,10 +125,10 @@ void qurl_dns_thread_cb(void *arg)
     qurl_memset(&hints, 0, sizeof(hints));
     hints.ai_family = data_ptr->dns_addrtype;
     hints.ai_socktype = SOCK_STREAM;
-#ifndef CONFIG_QOSA_ASR160X_PLATFORM_FUNC
+#if !defined(CONFIG_QOSA_ASR160X_PLATFORM_FUNC) && !defined(CONFIG_QOSA_ASR1803_PLATFORM_FUNC)
     //Only for the ASR1903 platform and lwip1.4.1 lwip such as 1606. Once ASR1903 is upgraded to lwip2.0 later, it can be changed back to support.
     hints.ai_flags = AI_ADDRCONFIG;
-#endif /* CONFIG_QOSA_ASR1903_PLATFORM_FUNC */
+#endif /* !defined(CONFIG_QOSA_ASR160X_PLATFORM_FUNC) && !defined(CONFIG_QOSA_ASR1803_PLATFORM_FUNC) */
 
     struct addrinfo *ai = QOSA_NULL;
     // printf("resoulve:[%s]\r\n", data_ptr->hostname);

@@ -43,6 +43,11 @@ typedef enum
 typedef enum
 {
     QOSA_DEV_NONE = -1,
+    /*
+    The values of UART and USB are associated with each platform.
+    The relevant values correspond to the indices of the at_dev_name array for each platform.
+    Additional values need to be added. Do not insert them directly in the middle.
+    */
     QOSA_DEV_SIOLIB_UART1_PORT,
     QOSA_DEV_SIOLIB_UART2_PORT,
     QOSA_DEV_SIOLIB_UART3_PORT,
@@ -56,6 +61,10 @@ typedef enum
     QOSA_DEV_SIOLIB_DATA_MUX_3_PORT,
     QOSA_DEV_SIOLIB_DATA_MUX_4_PORT,
     QOSA_DEV_VIRT_AT_PORT,
+    QOSA_DEV_SIOLIB_VIRT_AT_PORT_0,
+    QOSA_DEV_SIOLIB_VIRT_AT_PORT_1,
+    QOSA_DEV_SIOLIB_DIAG_PORT,
+
     QOSA_DEV_PORT_MAX,
 } qosa_at_dev_type_e;
 
@@ -107,6 +116,8 @@ typedef enum
  * @brief For registering cb function for automatic switching to transparent transmission mode
  */
 typedef qosa_bool_t (*qosa_at_data_modem_switch_cb_func)(qosa_at_dev_type_e dev_port, void* argv);
+
+typedef qosa_int32_t (*qosa_at_sio_mux_data_cb)(qosa_at_dev_type_e dev_port, qosa_uint8_t* data, qosa_uint16_t len, void* user_argv);
 
 typedef void (*qosa_at_data_modem_ato_free_cb_func)(void* argv);
 
@@ -310,6 +321,46 @@ qosa_uint32_t qosa_at_get_tx_avail_size(qosa_at_dev_type_e dev_port);
  * @param[in/out] type Corresponding ioctl command parameters
  */
 qosa_bool_t qosa_at_dev_port_ioctl(qosa_at_dev_type_e dev_port, qosa_dev_ioctl_cmd_e cmd, qosa_dev_ioctl_type* type);
+
+/**
+ * Role of the platform debug UART, used by AT+QDIAGPORT
+ */
+typedef enum
+{
+    QOSA_AT_DEBUG_UART_MODE_CONSOLE = 0, /*!< Debug UART acts as the debug-log console */
+    QOSA_AT_DEBUG_UART_MODE_AT,          /*!< Debug UART acts as an AT-command port */
+} qosa_at_debug_uart_mode_e;
+
+/**
+ * @brief Record a pending debug-UART role switch requested on dev_port. The platform applies
+ *        the new role only after the AT response of the current command has been emitted on
+ *        that channel, so a command that tears its own port down is still able to answer.
+ *
+ * @param[in] dev_port AT channel that issued the command. This identifies where the response
+ *                     is being written; the switch target is always the platform debug UART,
+ *                     which may or may not be this channel.
+ * @param[in] mode     Requested role, see qosa_at_debug_uart_mode_e.
+ *
+ * @note Deferred/asynchronous: this call only records the request, it does not touch the port.
+ * @note Must be called from AT command context, and before the OK/ERROR of the current command
+ *       is sent. Recording it after the response makes the switch take effect one command late.
+ * @note Implemented per platform. Platforms without a switchable debug UART do not provide it;
+ *       every caller is guarded by CONFIG_QAPP_UNIRTOS_AT_QDIAGPORT_CMD.
+ */
+void qosa_at_debug_uart_mode_defer(qosa_at_dev_type_e dev_port, qosa_uint8_t mode);
+
+/**
+ * @brief Apply the debug-UART role immediately.
+ *
+ * @param[in] mode Requested role, see qosa_at_debug_uart_mode_e.
+ *
+ * @note Synchronous: returns after the platform has closed/reopened the port and switched the
+ *       debug-log console accordingly, and may block for the duration of that switch.
+ * @note For use only when no AT response is in flight, i.e. the power-on restore path. From AT
+ *       command context use qosa_at_debug_uart_mode_defer() instead.
+ * @note Implemented per platform, same guard as qosa_at_debug_uart_mode_defer().
+ */
+void qosa_at_debug_uart_mode_apply(qosa_uint8_t mode);
 
 /**
  * @brief  Used to send virtual AT instructions

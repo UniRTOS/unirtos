@@ -273,20 +273,20 @@
 // { PAD_PIN25},  // 0 : gpio10  / 3 : UART2 RXD
 // { PAD_PIN26},  // 0 : gpio11  / 3 : UART2 TXD
 // quec add 
-#if defined __QUECTEL_PROJECT_EG800ZCN_LG__
+#if defined(__QUECTEL_PROJECT_EG800ZCN_LG__) || defined(__QUECTEL_PROJECT_EG800ZEU_LG__)
 #define RTE_UART2_RX_BIT                21
 #define RTE_UART2_RX_FUNC               PAD_MUX_ALT2
 
 #define RTE_UART2_TX_BIT                22
 #define RTE_UART2_TX_FUNC               PAD_MUX_ALT2
 
-#else
+#else  /* defined(__QUECTEL_PROJECT_EG800ZCN_LG__) || defined(__QUECTEL_PROJECT_EG800ZEU_LG__) */
 #define RTE_UART2_RX_BIT                25
 #define RTE_UART2_RX_FUNC               PAD_MUX_ALT3
 
 #define RTE_UART2_TX_BIT                26
 #define RTE_UART2_TX_FUNC               PAD_MUX_ALT3
-#endif
+#endif /* defined(__QUECTEL_PROJECT_EG800ZCN_LG__) || defined(__QUECTEL_PROJECT_EG800ZEU_LG__) */
 
 #define RTE_UART3_RX_BIT                29
 #define RTE_UART3_RX_FUNC               PAD_MUX_ALT3

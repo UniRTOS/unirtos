@@ -1,4 +1,4 @@
-﻿/*****************************************************************/ /**
+/*****************************************************************/ /**
 * @file qosa_ftm.h
 * @brief Factory Test Mode interface
 * @author joe.tu@quectel.com
@@ -29,6 +29,7 @@ typedef enum
     QOSA_FTM_SUCCESS = 0,                                  /*!< Execution successful */
     QOSA_FTM_ERR_GENERAL = (QOSA_COMPONENT_FTM << 16) | 1, /*!< Execution failed */
     QOSA_FTM_ERR_WAIT_RESULT, /*!< Asynchronous operation, actual execution result needs to be returned through callback function */
+    QOSA_FTM_ERR_INVALID_PARAM,                            /*!< Invalid parameter */
 } qosa_ftm_err_e;
 
 /**

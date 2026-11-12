@@ -40,4 +40,9 @@ void qstd_exec_qupdater_cmd(qosa_at_cmd_t *cmd);
 void qstd_exec_qgpiov_cmd(qosa_at_cmd_t *cmd);
 #endif /* CONFIG_QAPP_UNIRTOS_AT_QGPIOV_CMD */
 
+#ifdef CONFIG_QAPP_UNIRTOS_AT_QCFEM_CMD
+void qstd_exec_qcfem_cmd(qosa_at_cmd_t *cmd);
+void qstd_qcfem_boot_at_init(void);
+#endif /* CONFIG_QAPP_UNIRTOS_AT_QCFEM_CMD */
+
 #endif /* __UNIRTOS_ATCMD_QUPCHECK_H__ */

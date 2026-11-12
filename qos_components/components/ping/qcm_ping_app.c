@@ -26,10 +26,18 @@
 #include "qcm_proj_config.h"
 #include "qosa_sockets.h"
 #include "qosa_ip_addr.h"
+#ifdef CONFIG_QOSA_QT2131_PLATFORM_FUNC
+#include "lwip_public.h"
+#endif /* CONFIG_QOSA_QT2131_PLATFORM_FUNC */
 
 /*Adaptation of ICMP header files completed*/
 #define PING_TASK_PRIO    QOSA_PRIORITY_NORMAL
+#ifdef CONFIG_QOSA_QT2131_PLATFORM_FUNC
+//In QT2131, change the value of PING_MSGQ_MAX_CNT to EXT_NPING_MAX_COUNT + 5. This will be able to accommodate an entire round of results along with a small amount of other messages.
+#define PING_MSGQ_MAX_CNT (EXT_NPING_MAX_COUNT + 5)
+#else  /* CONFIG_QOSA_QT2131_PLATFORM_FUNC */
 #define PING_MSGQ_MAX_CNT (5)
+#endif /* CONFIG_QOSA_QT2131_PLATFORM_FUNC */
 
 #define QOS_LOG_TAG       LOG_TAG_PING_API
 
@@ -342,6 +350,9 @@ typedef enum
 #if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
     QCM_PING_PDP_ACTIVE_RESP = 1008, /*!< PDP activation result returned*/
 #endif
+#ifdef CONFIG_QOSA_QT2131_PLATFORM_FUNC
+    QCM_PING_PLATFORM_RESULT_IND = 1009, /*!< Per-packet result reported by the platform ping interface*/
+#endif /* CONFIG_QOSA_QT2131_PLATFORM_FUNC */
 } qcm_ping_msg_e;
 
 /**
@@ -379,6 +390,9 @@ typedef struct
     void                 *notify_arg;            /*!< Structure for user parameters carried during user registration*/
     qosa_msgq_t           ping_task_msgq;        /*!< ping task message queue*/
     qcm_ping_summary_type summary_info;          /*!< Summary information of ping execution*/
+#ifdef CONFIG_QOSA_QT2131_PLATFORM_FUNC
+    qosa_uint16_t         round_remain;          /*!< Results still expected from the current platform ping round*/
+#endif /* CONFIG_QOSA_QT2131_PLATFORM_FUNC */
 } qcm_ping_session_t;
 
 /**
@@ -424,6 +438,12 @@ static qcm_ping_session_t *ping_mgr[QCM_TCPIP_PING_MAX_SESSION_CNT] = {QOSA_NULL
  */
 static qosa_uint32_t qcm_get_ping_timestamp_ms(void)
 {
+#if defined(CONFIG_QOSA_ASR160X_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR1903_PLATFORM_FUNC)
+    qosa_uint32_t ping_time_ms = qosa_get_system_tick_cnt() * (1000 / CONFIG_QOSA_SYS_TICK_PER_SECOND);
+
+    QLOGV("reply time=%x", ping_time_ms);
+    return ping_time_ms;
+#else
     qosa_time_t curent_ms = 0;
     curent_ms = qosa_get_system_time_milliseconds();
 
@@ -431,6 +451,7 @@ static qosa_uint32_t qcm_get_ping_timestamp_ms(void)
     qosa_uint32_t ping_time_ms = (qosa_uint32_t)curent_ms;
     QLOGV("reply time=%x %x", ping_time_ms, curent_ms);
     return ping_time_ms;
+#endif /* CONFIG_QOSA_ASR160X_PLATFORM_FUNC||CONFIG_QOSA_ASR1903_PLATFORM_FUNC */
 }
 
 /**
@@ -490,6 +511,7 @@ static void qcm_ping_info_event_cb(qcm_ping_session_t *ping_session, qcm_ping_ev
     ping_session->notify_fcn(event_id, result_code, &ping_info, ping_session->notify_arg);
 }
 
+#ifndef CONFIG_QOSA_QT2131_PLATFORM_FUNC
 /**
  * @brief Retrieve the corresponding ping session handle via the socket file descriptor
  *
@@ -519,6 +541,7 @@ static qcm_ping_session_t *qcm_ping_socket_get_session_id(qosa_int32_t sock_hd)
         return QOSA_NULL;
     }
 }
+#endif /* CONFIG_QOSA_QT2131_PLATFORM_FUNC */
 
 /**
  * @brief Get the corresponding ping operation address pointer based on the session ID
@@ -597,6 +620,7 @@ static qcm_ping_error_e qcm_ping_req_event(qcm_ping_msg_e msgid, qcm_ping_sessio
     return QCM_PING_OK;
 }
 
+#ifndef CONFIG_QOSA_QT2131_PLATFORM_FUNC
 /**
  * @brief
  */
@@ -650,7 +674,9 @@ static void qcm_ping_socket_event_cb(int sock_hd, int event, int code, void *use
         qcm_ping_req_event(QCM_PING_SOCKET_CLOSE, ping_session);
     }
 }
-#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
+#endif /* CONFIG_QOSA_QT2131_PLATFORM_FUNC */
+
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
 /**
  * @brief
  */
@@ -979,6 +1005,373 @@ exit:
     return result;
 }
 
+#ifdef CONFIG_QOSA_QT2131_PLATFORM_FUNC
+#define QCM_PING_QT2131_BUSY_RETRY_CNT (10)
+#define QCM_PING_QT2131_BUSY_RETRY_MS  (50)
+//Extra wait on top of the per-packet timeouts before a platform round is considered hung
+#define QCM_PING_QT2131_GUARD_MS       (2000)
+
+/**
+ * @struct qcm_ping_qt2131_result_t
+ * @brief Platform ping result forwarded from the platform callback to the ping task
+ */
+typedef struct
+{
+    qosa_uint8_t      session_id; /*!< Session that owns the platform round*/
+    soc_ping_callback type;       /*!< Result type reported by the platform*/
+    qosa_uint8_t      ttl;        /*!< TTL of the echo reply*/
+    qosa_uint32_t     rtt;        /*!< RTT of the echo reply, ms*/
+    soc_ret           fail_cause; /*!< Failure cause when type is SOC_PING_CALLBACK_FAILURE*/
+} qcm_ping_qt2131_result_t;
+
+//The platform supports a single ping instance and its callback carries no user data.
+static qosa_int32_t  g_qt2131_ping_session_id = -1;   /*!< Session id owning the platform round, -1 if none or released*/
+static qosa_uint16_t g_qt2131_ping_remain = 0;        /*!< Results still expected from the platform round*/
+static qosa_mutex_t  g_qt2131_ping_mutex = QOSA_NULL; /*!< Protects g_qt2131_ping_session_id and g_qt2131_ping_remain*/
+
+static qcm_ping_error_e qcm_ping_qt2131_err_map(soc_ret ret)
+{
+    QLOGV("ret: %x", ret);
+    switch (ret)
+    {
+        case SOC_RET_ERROR_IN_PARAMETERS:
+            return QCM_PING_ERR_INVALID_PARAM;
+        case SOC_RET_MEMORY_ERROR:
+            return QCM_PING_ERR_MEMORY;
+        case SOC_RET_IN_PROGRESS:
+            return QCM_PING_ERR_OPERATION_NOT_ALLOWED;
+        case SOC_RET_CID_NOT_DEFINED:
+        case SOC_RET_CID_NOT_ACTIVE:
+        case SOC_RET_NO_NETWORK_SERVICE:
+            return QCM_PING_ERR_PDP_ACTIVE_FAILURE;
+        default:
+            return QCM_PING_ERR_SOCKET_WRITE_FAILURE;
+    }
+}
+
+static void qcm_ping_qt2131_release_session_id(qosa_uint32_t session_id)
+{
+    qosa_mutex_lock(g_qt2131_ping_mutex, QOSA_WAIT_FOREVER);
+    //Keep g_qt2131_ping_remain so that a still running platform round keeps blocking new requests
+    if (g_qt2131_ping_session_id == (qosa_int32_t)session_id)
+    {
+        g_qt2131_ping_session_id = -1;
+    }
+    qosa_mutex_unlock(g_qt2131_ping_mutex);
+}
+
+static void qt2131_ping_result_callback(const char *host, ip_addr_t *ip_addr, soc_ping_callback type, soc_ping_result *ping_result)
+{
+    qosa_int32_t              session_id = -1;
+    qcm_ping_session_t       *ping_session = QOSA_NULL;
+    qcm_ping_qt2131_result_t *res_ptr = QOSA_NULL;
+    qcm_ping_task_msg_t       ping_msg = {0};
+
+    QOSA_UNUSED(host);
+    QOSA_UNUSED(ip_addr);
+
+    QLOGV("type: %d", type);
+
+    //The summary is computed by the ping task itself
+    if (type == SOC_PING_CALLBACK_AVERAGE)
+    {
+        return;
+    }
+
+    //Hold the lock until the result is posted, so qcm_ping_free_session cannot free the session in between
+    qosa_mutex_lock(g_qt2131_ping_mutex, QOSA_WAIT_FOREVER);
+    if (g_qt2131_ping_remain == 0)
+    {
+        goto exit;
+    }
+    session_id = g_qt2131_ping_session_id;
+
+    if (type == SOC_PING_CALLBACK_FAILURE)
+    {
+        g_qt2131_ping_remain = 0;
+    }
+    else
+    {
+        g_qt2131_ping_remain = g_qt2131_ping_remain - 1;
+    }
+
+    if (g_qt2131_ping_remain == 0)
+    {
+        g_qt2131_ping_session_id = -1;
+    }
+
+    QLOGV("type=%d session_id=%d", type, session_id);
+    if (session_id < 0)
+    {
+        goto exit;
+    }
+    ping_session = qcm_ping_get_session_ptr((qosa_uint8_t)session_id);
+    if (ping_session == QOSA_NULL)
+    {
+        goto exit;
+    }
+
+    res_ptr = (qcm_ping_qt2131_result_t *)qosa_malloc(sizeof(qcm_ping_qt2131_result_t));
+    if (res_ptr == QOSA_NULL)
+    {
+        QLOGE("malloc failed");
+        goto exit;
+    }
+    qosa_memset(res_ptr, 0, sizeof(qcm_ping_qt2131_result_t));
+    res_ptr->session_id = (qosa_uint8_t)session_id;
+    res_ptr->type = type;
+    if (ping_result != QOSA_NULL)
+    {
+        if (type == SOC_PING_CALLBACK_OK)
+        {
+            res_ptr->ttl = ping_result->ping_result_ok.ttl;
+            res_ptr->rtt = ping_result->ping_result_ok.rtt;
+        }
+        else if (type == SOC_PING_CALLBACK_FAILURE)
+        {
+            res_ptr->fail_cause = ping_result->ping_fail_cause;
+        }
+    }
+
+    ping_msg.msgid = QCM_PING_PLATFORM_RESULT_IND;
+    ping_msg.argv = (void *)res_ptr;
+    if (qosa_msgq_release(ping_session->ping_task_msgq, sizeof(qcm_ping_task_msg_t), (qosa_uint8_t *)&ping_msg, QOSA_NO_WAIT) != 0)
+    {
+        QLOGE("msgq release failed");
+        qosa_free(res_ptr);
+    }
+
+exit:
+    qosa_mutex_unlock(g_qt2131_ping_mutex);
+}
+
+/**
+ * @brief Start a platform ping round, the platform limits one round to EXT_NPING_MAX_COUNT packets.
+ */
+static qcm_ping_error_e qcm_ping_qt2131_start_round(qcm_ping_session_t *ping_session)
+{
+    soc_ret       ret = SOC_RET_OK;
+    qosa_uint32_t retry = 0;
+    qosa_uint32_t timeout_ms = ping_session->user_opts.ping_response_time_out * 1000;
+    qosa_uint32_t remain = ping_session->user_opts.num_pings - ping_session->summary_info.num_pkts_sent;
+    qosa_uint16_t count = (remain > EXT_NPING_MAX_COUNT) ? EXT_NPING_MAX_COUNT : (qosa_uint16_t)remain;
+    char          ip_str[CONFIG_QOSA_INET6_ADDRSTRLEN] = {0};
+
+    if (ping_session->user_opts.num_data_bytes > PING_IPV4_MAX_VAL)
+    {
+        return QCM_PING_ERR_INVALID_PARAM;
+    }
+
+    if (ping_session->remote_ip.ip_vsn == QOSA_PDP_IPV4)
+    {
+        qcm_inet_ntop(QCM_AF_INET, &ping_session->remote_ip.addr.ipv4_addr, ip_str, CONFIG_QOSA_INET6_ADDRSTRLEN);
+    }
+    else
+    {
+        qcm_inet_ntop(QCM_AF_INET6, &ping_session->remote_ip.addr.ipv6_addr, ip_str, CONFIG_QOSA_INET6_ADDRSTRLEN);
+    }
+
+    qosa_mutex_lock(g_qt2131_ping_mutex, QOSA_WAIT_FOREVER);
+    if (g_qt2131_ping_remain != 0)
+    {
+        qosa_mutex_unlock(g_qt2131_ping_mutex);
+        QLOGE("platform ping busy");
+        return QCM_PING_ERR_OPERATION_NOT_ALLOWED;
+    }
+    //Claim ownership before sending, the platform may call back before uapi_icmp_ping_send returns
+    g_qt2131_ping_session_id = (qosa_int32_t)ping_session->session_id;
+    g_qt2131_ping_remain = count;
+    qosa_mutex_unlock(g_qt2131_ping_mutex);
+    ping_session->round_remain = count;
+
+    do {
+        //QuecOS cid starts from 1, platform cid starts from 0
+        ret = uapi_icmp_ping_send(
+            ip_str,
+            (uint16_t)ping_session->user_opts.num_data_bytes,
+            timeout_ms,
+            (uint8_t)(ping_session->pdp_cid - 1),
+            count,
+            qt2131_ping_result_callback
+        );
+        QLOGV("ret=%x", ret);
+        if (ret != SOC_RET_IN_PROGRESS)
+        {
+            break;
+        }
+        //The platform frees its context only after the last callback of the previous round returns
+        qosa_task_sleep_ms(QCM_PING_QT2131_BUSY_RETRY_MS);
+        retry++;
+    } while (retry < QCM_PING_QT2131_BUSY_RETRY_CNT);
+
+    QLOGV("ret=%x ip=%s count=%d retry=%d", ret, ip_str, count, retry);
+    if (ret != SOC_RET_OK)
+    {
+        qosa_mutex_lock(g_qt2131_ping_mutex, QOSA_WAIT_FOREVER);
+        g_qt2131_ping_session_id = -1;
+        g_qt2131_ping_remain = 0;
+        qosa_mutex_unlock(g_qt2131_ping_mutex);
+        ping_session->round_remain = 0;
+        return qcm_ping_qt2131_err_map(ret);
+    }
+
+    // After uapi_icmp_ping_send is successful, the ping_response_timer included in the session is activated.
+    if (qosa_timer_start(ping_session->ping_response_timer, (timeout_ms * count) + QCM_PING_QT2131_GUARD_MS, QOSA_FALSE) != QOSA_OK)
+    {
+        QLOGE("guard timer start failed");
+    }
+    return QCM_PING_OK;
+}
+
+/**
+ * @brief Process a per-packet result reported by the platform ping interface
+ *
+ * @param[in] void * argv
+ *          - Corresponds to a pointer of type qcm_ping_qt2131_result_t structure
+ *
+ * @return qcm_ping_error_e
+ *       - Returns QCM_PING_OK to continue, QCM_PING_SEND_END when all pings are done
+ *       - Returns other on failure
+ */
+static qcm_ping_error_e qcm_ping_qt2131_result_handler(void *argv)
+{
+    qcm_ping_qt2131_result_t *res_ptr = (qcm_ping_qt2131_result_t *)argv;
+    qcm_ping_session_t       *ping_session = QOSA_NULL;
+    qcm_ping_stats_type       ping_stats;
+    qcm_ping_error_e          result = QCM_PING_OK;
+
+    ping_session = qcm_ping_get_session_ptr(res_ptr->session_id);
+    if (ping_session == QOSA_NULL)
+    {
+        result = QCM_PING_ERR_INVALID_PARAM;
+        goto exit;
+    }
+
+    if (res_ptr->type == SOC_PING_CALLBACK_FAILURE)
+    {
+        QLOGE("platform ping failed, cause=%x", res_ptr->fail_cause);
+        ping_session->round_remain = 0;
+        result = qcm_ping_qt2131_err_map(res_ptr->fail_cause);
+        goto exit;
+    }
+
+    ping_session->summary_info.num_pkts_sent++;
+    if (res_ptr->type == SOC_PING_CALLBACK_OK)
+    {
+        ping_session->summary_info.num_pkts_recvd++;
+        if (ping_session->summary_info.max_rtt <= 0 || ping_session->summary_info.max_rtt < res_ptr->rtt)
+        {
+            ping_session->summary_info.max_rtt = res_ptr->rtt;
+        }
+        if (ping_session->summary_info.min_rtt <= 0 || ping_session->summary_info.min_rtt > res_ptr->rtt)
+        {
+            ping_session->summary_info.min_rtt = res_ptr->rtt;
+        }
+        ping_session->summary_info.avg_rtt = (qosa_uint32_t)((qosa_int32_t)ping_session->summary_info.avg_rtt + ((qosa_int32_t)res_ptr->rtt - (qosa_int32_t)ping_session->summary_info.avg_rtt) / (qosa_int32_t)ping_session->summary_info.num_pkts_recvd);
+
+        qosa_memset(&ping_stats, 0, sizeof(ping_stats));
+        ping_stats.ping_rtt = res_ptr->rtt;
+        ping_stats.ping_size = ping_session->user_opts.num_data_bytes;
+        ping_stats.ping_ttl = res_ptr->ttl;
+        if (ping_session->remote_ip.ip_vsn == QOSA_PDP_IPV4)
+        {
+            qcm_inet_ntop(QCM_AF_INET, &ping_session->remote_ip.addr.ipv4_addr, ping_stats.resolved_ip_addr, CONFIG_QOSA_INET6_ADDRSTRLEN);
+        }
+        else
+        {
+            qcm_inet_ntop(QCM_AF_INET6, &ping_session->remote_ip.addr.ipv6_addr, ping_stats.resolved_ip_addr, CONFIG_QOSA_INET6_ADDRSTRLEN);
+        }
+        qcm_ping_info_event_cb(ping_session, QCM_PING_STATS, QCM_PING_OK, &ping_stats);
+    }
+    else
+    {
+        ping_session->summary_info.num_pkts_lost++;
+    }
+
+    QLOGV("sent=%d recvd=%d lost=%d", ping_session->summary_info.num_pkts_sent, ping_session->summary_info.num_pkts_recvd, ping_session->summary_info.num_pkts_lost);
+    if (ping_session->round_remain > 0)
+    {
+        ping_session->round_remain--;
+    }
+    if (ping_session->round_remain == 0)
+    {
+        if (qosa_timer_is_running(ping_session->ping_response_timer))
+        {
+            qosa_timer_stop(ping_session->ping_response_timer);
+        }
+        if (ping_session->summary_info.num_pkts_sent < ping_session->user_opts.num_pings)
+        {
+            result = qcm_ping_qt2131_start_round(ping_session);
+        }
+        else
+        {
+            //Same as the raw socket implementation: all packets lost ends with a timeout error
+            if (0 == ping_session->summary_info.num_pkts_recvd)
+            {
+                result = QCM_PING_ERR_TIMEOUT;
+            }
+            else
+            {
+                result = QCM_PING_SEND_END;
+            }
+        }
+    }
+
+exit:
+    qosa_free(res_ptr);
+    return result;
+}
+
+/**
+ * @brief Check the PDP and start the first platform ping round.
+ *
+ * @param[in] void * argv
+ *          - Corresponds to a pointer of type qcm_ping_req_session_id_t structure
+ *
+ * @return qcm_ping_error_e
+ *       - Returns QCM_PING_OK on success
+ *       - Returns other on failure
+ */
+static qcm_ping_error_e qcm_ping_send_icmp_request(void *argv)
+{
+    qcm_ping_error_e           result = QCM_PING_OK;
+    qcm_ping_session_t        *ping_session = QOSA_NULL;
+    qcm_ping_req_session_id_t *send_ptr = QOSA_NULL;
+    qosa_datacall_ip_info_t    info = {0};
+    qosa_datacall_conn_t       conn = 0;
+
+    send_ptr = (qcm_ping_req_session_id_t *)argv;
+    if (send_ptr == QOSA_NULL)
+    {
+        QLOGE("INVALID PARAM");
+        result = QCM_PING_ERR_INVALID_PARAM;
+        goto exit;
+    }
+    ping_session = qcm_ping_get_session_ptr(send_ptr->ping_session_id);
+    qosa_free(send_ptr);
+    if (ping_session == QOSA_NULL)
+    {
+        QLOGE("INVALID PARAM");
+        result = QCM_PING_ERR_INVALID_PARAM;
+        goto exit;
+    }
+
+    // get the local address
+    conn = qosa_datacall_conn_new(ping_session->sim_id, ping_session->pdp_cid, QOSA_DATACALL_CONN_TCPIP);
+    if (QOSA_DATACALL_OK != qosa_datacall_get_ip_info(conn, &info))
+    {
+        QLOGE("...result=%d simid=%d pdpcid=%d", result, ping_session->sim_id, ping_session->pdp_cid);
+        result =  QCM_PING_ERR_PDP_ACTIVE_FAILURE;
+        goto exit;
+    }
+
+    result = qcm_ping_qt2131_start_round(ping_session);
+
+exit:
+    return result;
+}
+#else  /* CONFIG_QOSA_QT2131_PLATFORM_FUNC */
+
 /**
  * @brief ICMP packet assembly and transmission function, used for ICMP self-packet assembly, socket creation and connection, and sending.
  *
@@ -1141,6 +1534,7 @@ static qcm_ping_error_e qcm_ping_send_icmp_request(void *argv)
 exit:
     return result;
 }
+#endif /* CONFIG_QOSA_QT2131_PLATFORM_FUNC */
 
 /**
  * @brief Timeout handling function: after sending an ICMP packet, start a timer; upon timeout, execute the timeout event, report a URC, and if the number of transmissions is insufficient, resend.
@@ -1174,6 +1568,23 @@ static qcm_ping_error_e qcm_ping_timeout_send_request(void *argv)
         result = QCM_PING_ERR_INVALID_PARAM;
         return result;
     }
+#ifdef CONFIG_QOSA_QT2131_PLATFORM_FUNC
+    QOSA_UNUSED(ping_session_id);
+    //Stale expiry queued before the round finished or the timer was restarted for the next round
+    if (ping_session->round_remain == 0 || qosa_timer_is_running(ping_session->ping_response_timer))
+    {
+        // If round_remain is equal == 0, or if the timer is currently running (indicating that a new round has been restarted), this timeout message is a leftover from the previous round and should be ignored directly.
+        QLOGV("Ignore the information from the previous round.");
+        return QCM_PING_OK;
+    }
+    //Platform results that never arrived are counted as lost; the global busy state is left to the platform callbacks
+    QLOGE("platform ping round timeout, remain=%d", ping_session->round_remain);
+    //For all the packages that have not been reported by the platform in this round, they shall all be regarded as "sent but no response received".
+    ping_session->summary_info.num_pkts_sent += ping_session->round_remain;
+    ping_session->summary_info.num_pkts_lost += ping_session->round_remain;
+    ping_session->round_remain = 0;
+    result = QCM_PING_ERR_TIMEOUT;
+#else  /* CONFIG_QOSA_QT2131_PLATFORM_FUNC */
     //After timeout, the number of lost packets +1
     ping_session->summary_info.num_pkts_lost++;
     if (ping_session->summary_info.num_pkts_recvd > 0)
@@ -1205,6 +1616,7 @@ static qcm_ping_error_e qcm_ping_timeout_send_request(void *argv)
         QLOGE("timeout");
         result = QCM_PING_ERR_TIMEOUT;
     }
+#endif /* CONFIG_QOSA_QT2131_PLATFORM_FUNC */
     return result;
 }
 
@@ -1220,9 +1632,11 @@ static qcm_ping_error_e qcm_ping_timeout_send_request(void *argv)
  */
 static qcm_ping_error_e qcm_ping_dns_response_handler(void *argv)
 {
-    qcm_ping_error_e     result = QCM_PING_OK;
-    qcm_ping_dns_resp_t *dns_ptr = (qcm_ping_dns_resp_t *)argv;
-    qcm_ping_session_t  *ping_session = QOSA_NULL;
+    qcm_ping_error_e        result = QCM_PING_OK;
+    qcm_ping_dns_resp_t    *dns_ptr = (qcm_ping_dns_resp_t *)argv;
+    qcm_ping_session_t     *ping_session = QOSA_NULL;
+    struct qosa_addrinfo_s *addrinfo_ptr = QOSA_NULL;
+    qosa_uint8_t            want_family = 0;
 
     ping_session = qcm_ping_get_session_ptr(dns_ptr->session_id);
     if (ping_session == QOSA_NULL)
@@ -1238,9 +1652,26 @@ static qcm_ping_error_e qcm_ping_dns_response_handler(void *argv)
     else
     {
         //DNS resolution successful
-        if (dns_ptr->info->ai_family == QCM_AF_INET)
+        //dns_ping_type: -1 - use the first result; 0 - select the IPv4 result; 1 - select the IPv6 result
+        addrinfo_ptr = dns_ptr->info;
+        if (ping_session->user_opts.dns_ping_type != -1)
         {
-            inet_pton(QCM_AF_INET, dns_ptr->info->ip_addr, &ping_session->remote_ip.addr.ipv4_addr);
+            want_family = (ping_session->user_opts.dns_ping_type == 0) ? QCM_AF_INET : QCM_AF_INET6;
+            while (addrinfo_ptr != QOSA_NULL && addrinfo_ptr->ai_family != want_family)
+            {
+                addrinfo_ptr = addrinfo_ptr->ai_next;
+            }
+            if (addrinfo_ptr == QOSA_NULL)
+            {
+                //No address matching the requested family exists, fall back to the first DNS result.
+                QLOGW("no matched addr family, dns_ping_type=%d, use the first result", ping_session->user_opts.dns_ping_type);
+                addrinfo_ptr = dns_ptr->info;
+            }
+        }
+
+        if (addrinfo_ptr->ai_family == QCM_AF_INET)
+        {
+            inet_pton(QCM_AF_INET, addrinfo_ptr->ip_addr, &ping_session->remote_ip.addr.ipv4_addr);
 #if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
             ping_session->remote_ip.ip_vsn = QOSA_IP_V4;
 #else
@@ -1249,14 +1680,14 @@ static qcm_ping_error_e qcm_ping_dns_response_handler(void *argv)
         }
         else
         {
-            inet_pton(QCM_AF_INET6, dns_ptr->info->ip_addr, &ping_session->remote_ip.addr.ipv6_addr);
+            inet_pton(QCM_AF_INET6, addrinfo_ptr->ip_addr, &ping_session->remote_ip.addr.ipv6_addr);
 #if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
             ping_session->remote_ip.ip_vsn = QOSA_IP_V6;
 #else
             ping_session->remote_ip.ip_vsn = QOSA_PDP_IPV6;
 #endif
         }
-        ping_session->ai_family = dns_ptr->info->ai_family;
+        ping_session->ai_family = addrinfo_ptr->ai_family;
 
         qosa_dns_result_free(dns_ptr->info);
         qcm_ping_req_event(QCM_PING_SEND_ICMP_REQUEST, ping_session);
@@ -1375,7 +1806,7 @@ static qcm_ping_error_e qcm_ping_read_icmp_reply(void *argv)
     if (ping_session->ai_family == QCM_AF_INET)
     {
         struct qcm_icmp_echo_hdr *idur = QOSA_NULL;
-#ifndef CONFIG_UNIRTOS_RAW_SOCKET_ICMP_LOSE_IP_HEAD
+#ifndef CONFIG_QOSA_QCX216_PLATFORM_FUNC
         struct qcm_ip_hdr *iphdr = QOSA_NULL;
 
         iphdr = (struct qcm_ip_hdr *)in_buf;
@@ -1395,7 +1826,7 @@ static qcm_ping_error_e qcm_ping_read_icmp_reply(void *argv)
         }
 
         //After offsetting the IP header, the ICMP header follows directly. Cast the ICMP header to the specified structure type.
-#endif /* CONFIG_UNIRTOS_RAW_SOCKET_ICMP_LOSE_IP_HEAD */
+#endif /* CONFIG_QOSA_QCX216_PLATFORM_FUNC */
 
         icmp_buf = (in_buf + iphdr_hlen);
         idur = (struct qcm_icmp_echo_hdr *)(icmp_buf);
@@ -1410,7 +1841,7 @@ static qcm_ping_error_e qcm_ping_read_icmp_reply(void *argv)
     else
     {
         struct qcm_icmp6_echo_hdr *idur6 = QOSA_NULL;
-#ifndef CONFIG_UNIRTOS_RAW_SOCKET_ICMP_LOSE_IP_HEAD
+#ifndef CONFIG_QOSA_QCX216_PLATFORM_FUNC
         struct qcm_ip6_hdr *ip6hdr = QOSA_NULL;
         qosa_uint16_t       hlen;
         qosa_uint8_t        nexth;
@@ -1460,7 +1891,7 @@ static qcm_ping_error_e qcm_ping_read_icmp_reply(void *argv)
             }
         }
         QLOGV("iphdr_hlen: %d", iphdr_hlen);
-#endif /* CONFIG_UNIRTOS_RAW_SOCKET_ICMP_LOSE_IP_HEAD */
+#endif /* CONFIG_QOSA_QCX216_PLATFORM_FUNC */
 
         icmp_buf = (in_buf + iphdr_hlen);
 
@@ -1526,7 +1957,7 @@ static qcm_ping_error_e qcm_ping_read_icmp_reply(void *argv)
         ping_session->summary_info.min_rtt = rtt;
     }
 
-    ping_session->summary_info.avg_rtt =ping_session->summary_info.avg_rtt+(rtt-ping_session->summary_info.avg_rtt)/ping_session->summary_info.num_pkts_recvd ;
+    ping_session->summary_info.avg_rtt = (qosa_uint32_t)((qosa_int32_t)ping_session->summary_info.avg_rtt + ((qosa_int32_t)rtt - (qosa_int32_t)ping_session->summary_info.avg_rtt) / (qosa_int32_t)ping_session->summary_info.num_pkts_recvd);
 
     qcm_ping_info_event_cb(ping_session, QCM_PING_STATS, QCM_PING_OK, &ping_stats);
 
@@ -1631,6 +2062,9 @@ static void qcm_ping_free_session(qcm_ping_session_t *ping_session)
 
     if (ping_session == QOSA_NULL)
         return;
+#ifdef CONFIG_QOSA_QT2131_PLATFORM_FUNC
+    qcm_ping_qt2131_release_session_id(ping_session->session_id);
+#endif /* CONFIG_QOSA_QT2131_PLATFORM_FUNC */
     if (ping_session->sock_hd > 0)
     {
         qcm_socket_close(ping_session->sock_hd);
@@ -1672,11 +2106,7 @@ static void qcm_ping_app_task(void *argv)
     qcm_ping_task_msg_t ping_msg = {0};
     qcm_ping_session_t *ping_session = (qcm_ping_session_t *)argv;
     QLOGV("ping task running");
-#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
-    qcm_ping_req_event(QCM_PING_DNS_PARSE_REQ, ping_session);
-#else
-    qcm_ping_req_event(QCM_PING_PDP_ACTIVE_REQ, ping_session);
-#endif
+
     for (;;)
     {
         qosa_memset(&ping_msg, 0, sizeof(qcm_ping_task_msg_t));
@@ -1734,6 +2164,12 @@ static void qcm_ping_app_task(void *argv)
             }
             break;
 #endif
+#ifdef CONFIG_QOSA_QT2131_PLATFORM_FUNC
+            case QCM_PING_PLATFORM_RESULT_IND: {
+                result = qcm_ping_qt2131_result_handler(ping_msg.argv);
+            }
+            break;
+#endif /* CONFIG_QOSA_QT2131_PLATFORM_FUNC */
             default:
                 break;
         }
@@ -1794,6 +2230,15 @@ qcm_ping_start(qosa_int32_t cid, qosa_int32_t sim_id, const char *host_name, qcm
         return QCM_PING_ERR_INVALID_PARAM;
     }
 
+#ifdef CONFIG_QOSA_QT2131_PLATFORM_FUNC
+    if (g_qt2131_ping_mutex == QOSA_NULL && qosa_mutex_create(&g_qt2131_ping_mutex) != QOSA_OK)
+    {
+        QLOGE("mutex create failed");
+        g_qt2131_ping_mutex = QOSA_NULL;
+        return QCM_PING_ERR_UNKNOW;
+    }
+#endif /* CONFIG_QOSA_QT2131_PLATFORM_FUNC */
+
     //Apply for a ping echo request handle, with a maximum of 3 simultaneously.
     ping_session = qcm_ping_alloc_session();
     if (ping_session == QOSA_NULL)
@@ -1839,6 +2284,11 @@ qcm_ping_start(qosa_int32_t cid, qosa_int32_t sim_id, const char *host_name, qcm
         ret = QCM_PING_ERR_UNKNOW;
         goto exit;
     }
+#if defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) || defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)
+    qcm_ping_req_event(QCM_PING_DNS_PARSE_REQ, ping_session);
+#else
+    qcm_ping_req_event(QCM_PING_PDP_ACTIVE_REQ, ping_session);
+#endif
     return QCM_PING_OK;
 
 exit:

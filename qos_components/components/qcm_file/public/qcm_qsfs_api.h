@@ -35,8 +35,6 @@ int qcm_sfs_file_set_aes_key(void *key, qosa_uint8_t len);
 
 int qcm_sfs_fstat(int fd, char *fname, char *path, struct qosa_vfs_stat_t *st);
 
-qosa_int64_t qcm_sfs_lseek(int fd, qosa_int64_t offset, int mode);
-
 qosa_ssize_t qcm_sfs_write(int fd, const void *data, qosa_size_t size);
 
 qosa_ssize_t qcm_sfs_read(int fd, void *dst, qosa_size_t size);

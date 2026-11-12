@@ -200,6 +200,43 @@ void qstd_exec_cchc_cmd(qosa_at_cmd_t *cmd);
  */
 void qstd_exec_cnum_cmd(qosa_at_cmd_t *cmd);
 
+#ifdef CONFIG_QAPP_UNIRTOS_AT_STK_CMD
+/**
+ * @brief AT^STA command processing function
+ *
+ * This function is used to process the AT^STA command, which queries and sets SAT terminal status parameters,
+ * and triggers SAT terminal profile activation when needed.
+ *
+ * @param [in] cmd
+ *           - Pointer to the AT command structure, containing the command information to be processed
+ *           - Includes device port, command type, parameters, and other information
+ */
+void qstd_exec_sta_cmd(qosa_at_cmd_t *cmd);
+
+/**
+ * @brief AT^STGI command processing function
+ *
+ * Returns detailed information of a pending SIM proactive command cached when
+ * the @c ^STN URC was reported. Supports TEST/READ/SET forms.
+ *
+ * @param [in] cmd
+ *           - Pointer to the AT command structure, containing the command information to be processed
+ *           - Includes device port, command type, parameters, and other information
+ */
+void qstd_exec_stgi_cmd(qosa_at_cmd_t *cmd);
+/**
+ * @brief AT^STR (STK Terminal Response) command handler.
+ *
+ * Builds a raw BER-TLV terminal response from the supplied parameters and
+ * sends it to the SIM card.  Must be called after AT^STGI; clears the cached
+ * pending proactive command on success.
+ *
+ * @param [in] cmd
+ *           - Pointer to the AT command structure, containing the command information to be processed
+ */
+void qstd_exec_str_cmd(qosa_at_cmd_t *cmd);
+#endif
+
 #ifdef CONFIG_QOSA_DSDS_FUNC
 /**
  * @brief AT+QDSCCID command processing function
@@ -315,5 +352,20 @@ void qstd_exec_qspn_cmd(qosa_at_cmd_t *cmd);
  *           - Contains device port, command type, parameters, and other information
  */
 void qstd_exec_qwritesim_cmd(qosa_at_cmd_t *cmd);
+
+
+#ifdef CONFIG_QAPP_UNIRTOS_AT_ESIM_EID_CMD
+/**
+ * @brief AT+QESIM command processing function
+ *
+ * This function is used to process the AT+QESIM command, which performs SIM-related configuration and query operations
+ * based on different sub-command names, and dispatches processing through the registered QESIM command table.
+ *
+ * @param [in] cmd
+ *           - Pointer to the AT command structure, containing the command information to be processed
+ *           - Contains device port, command type, parameters, and other information
+ */
+void qstd_exec_qesim_cmd(qosa_at_cmd_t *cmd);
+#endif /* CONFIG_QAPP_UNIRTOS_AT_ESIM_EID_CMD */
 
 #endif /* __UNIRTOS_ATCMD_SIM_H__ */

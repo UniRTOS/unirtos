@@ -163,7 +163,10 @@ extern "C"
  * fixing the dependency loop here by declaring the ppp_pcb type then
  * by including headers containing necessary struct definition for ppp_pcb
  */
+#ifndef PPP_PCB_TYPEDEF_DEFINED
+#define PPP_PCB_TYPEDEF_DEFINED
     typedef struct ppp_pcb_s ppp_pcb;
+#endif
 
 /* Type definitions for BSD code. */
 #ifndef __u_char_defined

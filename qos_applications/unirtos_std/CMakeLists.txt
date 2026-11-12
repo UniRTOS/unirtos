@@ -12,6 +12,20 @@ target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
 target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
+# unirtos_atcmd_def.h splices the GW (State Grid) $MY* dispatch entries
+if(CONFIG_QOSA_OEM_DL_FUNC)
+    target_include_directories(${target} PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/../unirtos_std_gw/inc
+    )
+endif()
+
+# unirtos_atcmd_def.h splices the EG21 compatibility table entries
+if(CONFIG_QAPP_UNIRTOS_EG21_AT_FUNC)
+    target_include_directories(${target} PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/../unirtos_std_eg21/inc
+    )
+endif()
+
 # Source files or precompiled files directory
 set(apps_file_dir "${CMAKE_CURRENT_SOURCE_DIR}/src")
 message("apps_file_dir: ${apps_file_dir}")
@@ -27,6 +41,9 @@ if (PREBUILT_OBJECTS)
     # csdk
     set(HAS_PREBUILT_OBJECTS FALSE)
     message(STATUS "CSDK compilation")
+if(CONFIG_QCM_VTLS_FUNC)
+    target_include_directories(${target} PRIVATE ${UNIRTOS_COMPONENTS_DIR}/vtls/public)
+endif()
 else()
     # Headers needed for std compilation
     set(HAS_PREBUILT_OBJECTS TRUE)
@@ -36,10 +53,13 @@ else()
     target_include_directories(${target} PRIVATE ${SOURCE_SYS_OS_DIR})
     target_include_directories(${target} PRIVATE ${SOURCE_SYS_SOCKET_DIR})
     target_include_directories(${target} PRIVATE ${SOURCE_COMPONENTS_PUBLIC_INC})
+    target_include_directories(${target} PRIVATE ${SOURCE_TOP_DIR}/components/qcm_vnet/public)
     target_include_directories(${target} PRIVATE ${SOURCE_TOP_DIR}/system/ppp/interface)
     target_include_directories(${target} PRIVATE ${SOURCE_TOP_DIR}/system/sys_callbacks)
+    target_include_directories(${target} PRIVATE ${SOURCE_TOP_DIR}/system/wifi)
     target_include_directories(${target} PRIVATE ${SOURCE_TOP_DIR}/system/flash)
     target_include_directories(${target} PRIVATE ${SOURCE_TOP_DIR}/components/lwm2m/public)
+    target_include_directories(${target} PRIVATE ${SOURCE_TOP_DIR}/components/lwm2m/client)
     target_include_directories(${target} PRIVATE ${SOURCE_TOP_DIR}/components/lwm2m_fota/public)
     target_include_directories(${target} PRIVATE ${SOURCE_TOP_DIR}/components/coap/public)
     target_include_directories(${target} PRIVATE ${SOURCE_TOP_DIR}/components/qurl/include)
@@ -149,6 +169,14 @@ else()
     if(CONFIG_QCM_UTILS_XMODEM_FUNC)
         target_include_directories(${target} PUBLIC ${UNIRTOS_COMPONENTS_DIR}/utils/xmodem/public)
     endif()
+    target_include_directories(${target} PRIVATE ${UNIRTOS_COMPONENTS_DIR}/qcm_urc)
+    if(CONFIG_QAPP_UNIRTOS_AGORA_RTC_AT_FUNC)
+        target_include_directories(${target} PRIVATE ${UNIRTOS_COMPONENTS_DIR}/agora_rtsa_sdk/agora_sdk/inc)
+        target_include_directories(${target} PRIVATE ${QL_DEMO_DIR}/apps/agora_rtsa_sdk_demo)
+    endif()
+    if(CONFIG_QCM_OPAUTH_FUNC)
+        target_include_directories(${target} PRIVATE ${UNIRTOS_COMPONENTS_DIR}/qcm_opauth/public)
+    endif()
 endif()
 
 
@@ -200,6 +228,12 @@ if(CONFIG_QAPP_UNIRTOS_PING_AT_FUNC)
     list(APPEND LINK_LIB ping)
 endif()
 
+if(CONFIG_QAPP_UNIRTOS_HY_ANDLINK_AT_FUNC)
+    list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_hy_andlink.c")
+    list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_hy_andlink_app.c")
+    list(APPEND LINK_LIB hy_andlink)
+endif()
+
 if(CONFIG_QAPP_UNIRTOS_SSL_AT_FUNC)
     list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_ssl.c")
 endif()
@@ -223,6 +257,10 @@ endif()
 if(CONFIG_QAPP_UNIRTOS_COAP_AT_FUNC)
     list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_coap.c")
     list(APPEND LINK_LIB qcm_coap)
+endif()
+
+if(CONFIG_QAPP_UNIRTOS_WIFI_AT_FUNC)
+    list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_wifi.c")
 endif()
 
 if(CONFIG_QCM_LWM2M_FUNC)
@@ -293,6 +331,10 @@ if(CONFIG_QAPP_UNIRTOS_QINDCFG_AT_FUNC)
     list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_qindcfg.c")
 endif()
 
+if(CONFIG_QOSA_UIS8360S_PLATFORM_FUNC AND CONFIG_QOSA_WIFI_FUNC)
+    list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_uis8360s.c")
+endif()
+
 if(CONFIG_QAPP_UNIRTOS_FOTA_AT_FUNC)
     list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_qfotadl.c")
 endif()
@@ -333,6 +375,15 @@ if(CONFIG_QAPP_UNIRTOS_DATACALL_AT_FUNC)
     list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_datacall.c")
 endif()
 
+# if(CONFIG_QAPP_UNIRTOS_MIFI_AT_FUNC)
+if(CONFIG_QAPP_UNIRTOS_MIFI_AT_FUNC AND CONFIG_QOSA_ASR1805_PLATFORM_FUNC)
+    list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_mifi.c")
+    list(APPEND LINK_LIB mifi)
+    if(TARGET mifi_solution)
+        target_link_libraries(${target} mifi_solution)
+    endif()
+endif()
+
 if(CONFIG_QAPP_UNIRTOS_MODEM_AT_BYPASS_FUNC)
     list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_modem_at.c")
 endif()
@@ -355,7 +406,12 @@ if(CONFIG_QAPP_UNIRTOS_LBS_AT_FUNC)
     list(APPEND LINK_LIB qcm_lbs)
 endif()
 
-if(CONFIG_QAPP_UNIRTOS_UART_AT_FUNC)
+if(CONFIG_QAPP_UNIRTOS_FIREWALL_AT_FUNC)
+    list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_firewall.c")
+    list(APPEND LINK_LIB qcm_firewall)
+endif()
+
+if(CONFIG_QAPP_UNIRTOS_UART_AT_FUNC OR CONFIG_QAPP_UNIRTOS_AT_QDIAGPORT_CMD)
     list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_uart.c")
 endif()
 
@@ -372,8 +428,16 @@ if(CONFIG_QAPP_UNIRTOS_FTM_AT_FUNC)
     list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_ftm.c")
 endif()
 
+if(CONFIG_QAPP_UNIRTOS_WIFI_RF_TEST_AT_FUNC)
+    list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_qwifirf.c")
+endif()
+
 if(CONFIG_QAPP_UNIRTOS_AT_QDBGCFG_CMD)
     list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_qdbgcfg.c")
+endif()
+
+if(CONFIG_QAPP_UNIRTOS_AT_QCLI_CMD)
+    list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_qcli.c")
 endif()
 
 if(CONFIG_QAPP_UNIRTOS_AT_QVSIM_FUNC)
@@ -381,8 +445,12 @@ if(CONFIG_QAPP_UNIRTOS_AT_QVSIM_FUNC)
     list(APPEND LINK_LIB qvsim)
 endif()
 
-if(CONFIG_QOSA_UIS8852_PLATFORM_FUNC)
+if(CONFIG_QOSA_UIS8852_PLATFORM_FUNC AND NOT CONFIG_QOSA_OPENCPU_FUNC)
     list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_uis8852.c")
+endif()
+
+if(CONFIG_QOSA_XY4100_PLATFORM_FUNC)
+    list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_xy4100.c")
 endif()
 
 if(CONFIG_QAPP_UNIRTOS_AT_FLASH_TEST_CMD)
@@ -397,6 +465,10 @@ if(CONFIG_QAPP_UNIRTOS_LICENSE_AT_FUNC)
     list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_license.c")
 endif()
 
+if(CONFIG_QAPP_UNIRTOS_QINGYA_CODE_DECODER_AT_FUNC)
+    list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_qingya.c")
+endif()
+
 if(CONFIG_QAPP_UNIRTOS_PDP_AT_FUNC)
     list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_pdp_app.c")
 endif()
@@ -406,7 +478,7 @@ if(CONFIG_QAPP_UNIRTOS_AT_QESIM_CMD)
     list(APPEND LINK_LIB esim_sdk)
 endif()
 
-if(CONFIG_QOSA_EIGEN_PLATFORM_FUNC)
+if(CONFIG_QOSA_EIGEN_PLATFORM_FUNC OR CONFIG_QOSA_QCX_PLATFORM_FUNC)
     list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_eigen.c")
 endif()
 
@@ -434,6 +506,7 @@ endif()
 
 if(CONFIG_QAPP_OEM_LT_AT_FUNC)
     list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_LT.c")
+    list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_lt_tcp.c")
 endif()
 
 if(CONFIG_QAPP_UNIRTOS_AT_CALL_CONTROL_CMD)
@@ -459,7 +532,19 @@ list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_factory.c")
 # Virtual functions for AT are compiled and linked last
 list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_virt_func.c")
 
+if(CONFIG_QAPP_UNIRTOS_CMUX_AT_FUNC)
+    list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_cmux.c")
+endif()
 
+if(CONFIG_QAPP_UNIRTOS_AGORA_RTC_AT_FUNC)
+    list(APPEND FILES_TO_ADD "${apps_file_dir}/unirtos_atcmd_agora_rtc.c")
+endif()
+if(CONFIG_QAPP_UNIRTOS_EG21_AT_FUNC)
+    set(eg21_file_dir "${CMAKE_CURRENT_SOURCE_DIR}/../unirtos_std_eg21/src")
+    list(APPEND FILES_TO_ADD "${eg21_file_dir}/unirtos_atcmd_eg21_platform.c")
+    list(APPEND FILES_TO_ADD "${eg21_file_dir}/unirtos_atcmd_eg21_app.c")
+    list(APPEND FILES_TO_ADD "${eg21_file_dir}/unirtos_atcmd_eg21_modem.c")
+endif()
 # Targets to link for STD compilation
 if (NOT PREBUILT_OBJECTS)
     list(REMOVE_DUPLICATES LINK_LIB)
@@ -494,3 +579,7 @@ endforeach()
 target_sources(${target} PRIVATE
     ${MY_SOURCES}
 )
+
+if(CONFIG_QAPP_UNIRTOS_MIFI_APP_FUNC)
+    target_link_libraries(${target} mifi_solution)
+endif()

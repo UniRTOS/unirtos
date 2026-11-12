@@ -47,7 +47,7 @@ typedef enum
  */
 typedef enum
 {
-    QCM_AUD_TYPE_LOACL,
+    QCM_AUD_TYPE_LOCAL,
     QCM_AUD_TYPE_VOICE
 } qcm_aud_type_e;
 
@@ -63,6 +63,7 @@ typedef struct
     qosa_uint32_t       skip_frams;                       /*!< Number of frame skips (to be discussed if needed?)*/
     qosa_aud_callback_t callback;                         /*!< Callback function*/
     qosa_uint64_t       options;                          /*!< Platform-specific configuration, each platform interprets independently*/
+    qosa_aud_route_e    route;                            /*!< Playback destination: near / far / both*/
 } qosa_aud_file_cfg_t;
 
 /**
@@ -77,6 +78,7 @@ typedef struct
     qosa_aud_fmt_e      format;                           /*!< Stream format*/
     qosa_aud_callback_t callback;                         /*!< Callback function*/
     qosa_uint64_t       options;                          /*!< Platform-specific configuration, each platform interprets independently*/
+    qosa_aud_route_e    route;                            /*!< Recording source: near / far / both*/
 } qosa_aud_rec_file_cfg_t;
 
 /**
@@ -132,7 +134,7 @@ qosa_aud_errcode_e qcm_aud_record_file_stop(qosa_aud_handle_t handle);
  * @return qosa_aud_errcode_e
  *         - Error code, returns 0 for success
  */
-qosa_aud_errcode_e qcm_aud_paly_file_stop(qosa_aud_handle_t handle);
+qosa_aud_errcode_e qcm_aud_play_file_stop(qosa_aud_handle_t handle);
 
 /**
  * @brief Close the audio stream

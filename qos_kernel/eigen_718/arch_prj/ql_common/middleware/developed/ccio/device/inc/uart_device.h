@@ -91,6 +91,20 @@ typedef struct
  */
 CcioDevice_t* uartDevCreate(uint32_t uartIdx, UartDevConf_t *uartConf);
 
+#ifdef UNIRTOS_COMMON_MODIFY
+/**
+ * @brief uartDevCreate_ex with callback support
+ * @details create a uart device with create completion callback
+ *
+ * @param uartIdx   The index of uart port
+ * @param uartConf  The configuration about a uart device
+ * @param uart_create_callback  Callback function called when create completes
+ * @param argv      User data passed to callback
+ * @return NULL failure; !NULL the created uart device.
+ */
+CcioDevice_t* uartDevCreate_ex(uint32_t uartIdx, UartDevConf_t *uartConf, chdevDestroyCallback uart_create_callback, void *argv);
+#endif /* UNIRTOS_COMMON_MODIFY */
+
 /**
  * @brief uartDevDestroy(uint32_t uartIdx)
  * @details destroy/delete a uart device of 'uartIdx'

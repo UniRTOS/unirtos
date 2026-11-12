@@ -20,7 +20,6 @@
 #include "qosa_def.h"
 #if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_sys.h"
-#include "qosa_camera_water_meter_ai.h"
 
 /*===========================================================================
  * Macro Definition
@@ -38,34 +37,40 @@
  */
 typedef enum
 {
-    QOSA_CAMERA_AI_SUCCESS = 0,            ///< Operation completed successfully.
-    QOSA_CAMERA_WATER_METER_AI_INIT_ERR,               ///< Failed to initialize the camera AI module.
-    QOSA_CAMERA_AI_INVALID_ERR,            ///< Invalid argument or parameter provided.
-    QOSA_CAMERA_AI_REPEAT_INIT_ERR,        ///< The module has already been initialized (redundant initialization attempt).
-    QOSA_CAMERA_AI_RECOGNITION_ERR,        ///< An error occurred during the AI recognition process (e.g., detection or classification failed).
+    QOSA_CAMERA_AI_SUCCESS = 0,           ///< Operation completed successfully.
+    QOSA_CAMERA_WATER_METER_AI_INIT_ERR,  ///< Failed to initialize the camera AI module.
+    QOSA_CAMERA_AI_INVALID_ERR,           ///< Invalid argument or parameter provided.
+    QOSA_CAMERA_AI_REPEAT_INIT_ERR,       ///< The module has already been initialized (redundant initialization attempt).
+    QOSA_CAMERA_AI_RECOGNITION_ERR,       ///< An error occurred during the AI recognition process (e.g., detection or classification failed).
+    QOSA_CAMERA_AI_LICENSE_ERROR,         ///< License error, such as invalid license or license expiration.
 } qosa_camera_ai_errcode_e;
 
 /**
- * @brief Represents a bounding box with associated detection result.
- *
- * This structure describes an axis-aligned bounding box (e.g., around a detected digit),
- * along with the predicted class (value) and its confidence score.
- *
- * The bounding box is defined by two corner coordinates:
- *   - (x1, y1): top-left corner
- *   - (x2, y2): bottom-right corner
- *
- * It is typically used in AI-based visual recognition tasks such as digit detection,
- * where the "digit" appears inside the box.
+ * @brief Enumeration of inference status codes (return status for AI model inference/object detection)
  */
-typedef struct qosa_bbox {
-    float x1;          ///< X-coordinate of the top-left corner of the bounding box.
-    float y1;          ///< Y-coordinate of the top-left corner of the bounding box.
-    float x2;          ///< X-coordinate of the bottom-right corner of the bounding box.
-    float y2;          ///< Y-coordinate of the bottom-right corner of the bounding box.
-    float score;     ///< Confidence score (0.0 to 1.0) indicating the model's certainty that the content inside the box is valid.
-    int cls;         ///< Predicted class label (e.g., the recognized digit: 0–9, or other defined categories).
+typedef enum
+{
+    QOSA_CAMERA_AI_INERENCE_SUCCESS = 0,    /**< Inference successful, detection result is normal */
+    QOSA_CAMERA_AI_ARGS_INVALID = 1,        /**< Invalid input arguments (e.g., null pointer, illegal size) */
+    QOSA_CAMERA_AI_OBJ_NOT_FOUND = 2,       /**< Target not detected, or target count does not match expectation */
+    QOSA_CAMERA_AI_OBJ_NOT_ENOUGH = 3,      /**< Target count is less than expected (e.g., insufficient digit count) */
+    QOSA_CAMERA_AI_OBJ_TOO_MUCH = 4,        /**< Target count exceeds expected (e.g., extra interference targets) */
+    QOSA_CAMERA_AI_OBJ_NOT_CALIBRATION = 5, /**< Target not calibrated (position or state not calibrated) */
+} qosa_camera_ai_inference_status_e;
+
+/**
+ * @brief Represents a bounding box with associated detection result.
+ */
+typedef struct qosa_bbox
+{
+    float x1;     ///< X-coordinate of the top-left corner of the bounding box.
+    float y1;     ///< Y-coordinate of the top-left corner of the bounding box.
+    float x2;     ///< X-coordinate of the bottom-right corner of the bounding box.
+    float y2;     ///< Y-coordinate of the bottom-right corner of the bounding box.
+    float score;  ///< Confidence score from 0.0 to 1.0.
+    int   cls;    ///< Predicted class label.
 } qosa_bbox;
+
 /*===========================================================================
  * Variate
  ===========================================================================*/
@@ -74,14 +79,13 @@ typedef struct qosa_bbox {
  * Functions
  ===========================================================================*/
 
- /**
+/**
  * @brief Initialize detection
  *
  * @param num_size Valid length of input water meter result, used to exclude abnormal cases
  * @return int 0 indicates success, other values indicate failure
  */
 qosa_camera_ai_errcode_e qosa_camera_water_meter_ai_init(qosa_uint32_t num_size);
-
 
 /**
  * @brief Perform detection inference
@@ -91,10 +95,15 @@ qosa_camera_ai_errcode_e qosa_camera_water_meter_ai_init(qosa_uint32_t num_size)
  * @param image_width Input image width
  * @param out_buf Pointer to output detection results
  * @param size Pointer to output detection result count
+ * @param cali_angle Counterclockwise rotation angle; only 90 and 270 are supported
  * @return int 0 indicates success, other values indicate failure
  */
-qosa_camera_ai_errcode_e qosa_camera_water_meter_ai_inference(qosa_uint8_t* input_buf, qosa_uint32_t image_height, qosa_uint32_t image_width, qosa_bbox *out_buf, qosa_uint32_t* size);
-
+qosa_uint32_t qosa_camera_water_meter_ai_inference(qosa_uint8_t *input_buf,
+                                                   qosa_uint32_t image_height,
+                                                   qosa_uint32_t image_width,
+                                                   qosa_bbox *out_buf,
+                                                   qosa_uint32_t *size,
+                                                   qosa_int32_t cali_angle);
 
 /**
  * @brief Get SDK version number

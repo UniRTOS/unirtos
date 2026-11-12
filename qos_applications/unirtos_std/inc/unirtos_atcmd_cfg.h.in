@@ -15,9 +15,24 @@
 #cmakedefine CONFIG_QAPP_UNIRTOS_SECBOOT_AT_FUNC
 
 /**
+ * UniRTOS secboot std at secbootenable function
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_AT_QSECCFG_SECBOOT_ENABLE_CMD
+
+/**
+ * UniRTOS secboot std at secboot function
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_AT_QSECCFG_SECBOOT_CMD
+
+/**
  * QUECTEL license at function
  */
 #cmakedefine CONFIG_QAPP_UNIRTOS_LICENSE_AT_FUNC
+
+/**
+ * Qingya code decoder AT function
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_QINGYA_CODE_DECODER_AT_FUNC
 
 /**
  * UniRTOS std at function
@@ -53,6 +68,36 @@
  * UniRTOS nb atc function
  */
 #cmakedefine CONFIG_QAPP_UNIRTOS_NB_AT_FUNC
+
+/**
+ * UniRTOS NCSEARFCN AT function
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_AT_NCSEARFCN_CMD
+
+/**
+ * UniRTOS NEARFCN AT function
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_AT_NEARFCN_CMD
+
+/**
+ * UniRTOS +NBAND AT command
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_AT_NBAND_CMD
+
+/**
+ * UniRTOS +NCONFIG AT command
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_AT_NCONFIG_CMD
+
+/**
+ * UniRTOS +NPSMR AT command
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_AT_NPSMR_CMD
+
+/**
+ * UniRTOS NPIN std at function
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_AT_NPIN_CMD
 
 /**
  * UniRTOS jd atc function
@@ -140,6 +185,11 @@
 #cmakedefine CONFIG_QAPP_UNIRTOS_PING_AT_FUNC
 
 /**
+ * UniRTOS hy_andlink at function
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_HY_ANDLINK_AT_FUNC
+
+/**
  * UniRTOS ntp std at function
  */
 #cmakedefine CONFIG_QAPP_UNIRTOS_NTP_AT_FUNC
@@ -163,6 +213,11 @@
  * UniRTOS sim std at function
  */
 #cmakedefine CONFIG_QAPP_UNIRTOS_SIM_AT_FUNC
+
+/**
+ * UniRTOS EDRX std at function
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_EDRX_AT_FUNC
 
 /**
  * UniRTOS sms std at function
@@ -219,6 +274,21 @@
 #cmakedefine CONFIG_QAPP_UNIRTOS_DATACALL_AT_FUNC
 
 /**
+ * UniRTOS MiFi compatibility at function
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_MIFI_AT_FUNC
+#cmakedefine CONFIG_QAPP_UNIRTOS_MIFI_SIM_AT_FUNC
+#cmakedefine CONFIG_QAPP_UNIRTOS_MIFI_WIFI_AT_FUNC
+#cmakedefine CONFIG_QAPP_UNIRTOS_MIFI_NET_AT_FUNC
+#cmakedefine CONFIG_QAPP_UNIRTOS_MIFI_SYSTEST_AT_FUNC
+#cmakedefine CONFIG_QAPP_UNIRTOS_MIFI_OPAUTH_AT_FUNC
+#cmakedefine CONFIG_QAPP_UNIRTOS_MIFI_APP_FUNC
+#cmakedefine CONFIG_QAPP_UNIRTOS_MIFI_BATTERY_CVK_3000MA
+#cmakedefine CONFIG_QAPP_UNIRTOS_MIFI_BATTERY_CVK_5000MA
+#cmakedefine CONFIG_QAPP_UNIRTOS_MIFI_BATTERY_DKS_3000MA
+#cmakedefine CONFIG_QAPP_UNIRTOS_MIFI_BATTERY_XKD_4800MA
+
+/**
  * UniRTOS pdp at function
  */
 #cmakedefine CONFIG_QAPP_UNIRTOS_PDP_AT_FUNC
@@ -242,6 +312,11 @@
  * UniRTOS lbs std at function
  */
 #cmakedefine CONFIG_QAPP_UNIRTOS_LBS_AT_FUNC
+
+/**
+ * UniRTOS firewall atc function
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_FIREWALL_AT_FUNC
 
 /**
  * UniRTOS uart std at function
@@ -289,6 +364,11 @@
 #cmakedefine CONFIG_QAPP_UNIRTOS_AT_QINF_CMD
 
 /**
+ * UniRTOS QCLI std at function
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_AT_QCLI_CMD
+
+/**
  * UniRTOS QGMR std at function
  */
 #cmakedefine CONFIG_QAPP_UNIRTOS_AT_QGMR_CMD
@@ -327,6 +407,11 @@
  * UniRTOS QPOWD std at function
  */
 #cmakedefine CONFIG_QAPP_UNIRTOS_AT_QPOWD_CMD
+
+/**
+ * UniRTOS QBOOTREASON std at function
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_AT_QBOOTREASON_CMD
 
 /**
  * UniRTOS CBC std at function
@@ -372,6 +457,11 @@
  * UniRTOS CCLK std at function
  */
 #cmakedefine CONFIG_QAPP_UNIRTOS_AT_CCLK_CMD
+
+/**
+ * UniRTOS CPNER std at function
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_AT_CPNER_CMD
 
 /**
  * UniRTOS RETSET std at function
@@ -429,9 +519,19 @@
 #cmakedefine CONFIG_QAPP_UNIRTOS_HTTP_FOTA_AT_FUNC
 
 /**
+ * UniRTOS QCFEM std at function
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_AT_QCFEM_CMD
+
+/**
  * UniRTOS GPIO std at function
  */
 #cmakedefine CONFIG_QAPP_UNIRTOS_AT_GPIO_CMD
+
+/**
+ * UniRTOS QGPIOV std at function
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_AT_QGPIOV_CMD
 
 /**
  * UniRTOS LPM std at function
@@ -469,6 +569,11 @@
 #cmakedefine CONFIG_QAPP_UNIRTOS_WIFISCAN_AT_FUNC
 
 /**
+ * UniRTOS wifi std at function
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_WIFI_AT_FUNC
+
+/**
  * UniRTOS VSIM std at function
  */
 #cmakedefine CONFIG_QAPP_UNIRTOS_AT_QVSIM_FUNC
@@ -477,6 +582,11 @@
  * UniRTOS debug at function
  */
 #cmakedefine CONFIG_QAPP_UNIRTOS_AT_QDBGCFG_CMD
+
+/**
+ * UniRTOS debug-UART role switch (AT+QDIAGPORT) at function
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_AT_QDIAGPORT_CMD
 
 /**
  * UniRTOS debug at dumpcfg function
@@ -525,6 +635,13 @@
  */
 #cmakedefine CONFIG_QAPP_UNIRTOS_AT_QIND_MODE_CMD
 
+
+/**
+ * @brief 配置是否支持AT^STA CMD
+ * @brief Set whether to support AT^STA CMD
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_AT_STK_CMD
+
 /**
  * @brief 配置是否支持AT+QWRITESIM CMD
  * @brief Set whether to support AT+QWRITESIM CMD
@@ -545,6 +662,11 @@
  * UniRTOS QUPCHECK AT function
  */
 #cmakedefine CONFIG_QOSA_EIGEN_PLATFORM_FUNC
+
+/**
+ * UniRTOS QUPCHECK AT function
+ */
+#cmakedefine CONFIG_QOSA_QCX_PLATFORM_FUNC
 
 /**
  * UniRTOS QBAND AT function
@@ -582,6 +704,11 @@
 #cmakedefine CONFIG_QAPP_UNIRTOS_AT_QCFG_DHCP_CFG_CMD
 
 /**
+ * UniRTOS QCFG USBNET RI AT function
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_AT_QCFG_USBNET_RI_CMD
+
+/**
  * UniRTOS QREDDAAVN AT function
  */
 #cmakedefine CONFIG_QAPP_UNIRTOS_AT_QREDDAAVN_CMD
@@ -592,6 +719,21 @@
 #cmakedefine CONFIG_QAPP_OEM_LT_AT_FUNC
 
 /**
+ * UniRTOS OEM SE function (SIM2 + NIC switchable via AT+QLTACT)
+ */
+#cmakedefine CONFIG_QOSA_OEM_SE_FUNC
+
+/**
+ * UniRTOS OEM RWR AT function
+ */
+#cmakedefine CONFIG_QAPP_OEM_RWR_AT_FUNC
+
+/**
+ * UniRTOS std Neoway(RWR) variant, the taken-over sources live in apps/unirtos_std_nw
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_STD_NEOWAY_FUNC
+
+/**
  * UniRTOS QCFG PDPREACT AT function
  */
 #cmakedefine CONFIG_QAPP_UNIRTOS_AT_QCFG_PDPREACT_CMD
@@ -599,7 +741,7 @@
 /**
  * @brief UniRTOS AUTOAPN function
  */
-#cmakedefine CONFIG_QAPP_AUTOAPN_AT_FUNC
+#cmakedefine CONFIG_QAPP_UNIRTOS_AUTOAPN_AT_FUNC
 
 /**
  * UniRTOS QCFG SERVICE DOMAIN AT function
@@ -612,9 +754,24 @@
 #cmakedefine CONFIG_QAPP_UNIRTOS_AT_QCFG_SIMWPROTECT_CMD
 
 /**
+ * UniRTOS QCFG PDPREMAP AT function
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_AT_QCFG_PDPREMAP_CMD
+
+/**
  * UniRTOS VOICE CALL AT function
  */
 #cmakedefine CONFIG_QAPP_UNIRTOS_AT_CALL_CONTROL_CMD
+
+/**
+ * @brief UniRTOS CMUX AT function
+ *
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_CMUX_AT_FUNC
+/**
+ * UniRTOS AGORA RTC AT function
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_AGORA_RTC_AT_FUNC
 
 /**
  * UniRTOS QCFG IMS AT function
@@ -627,9 +784,40 @@
 #cmakedefine CONFIG_QAPP_UNIRTOS_CLAT_AT_FUNC
 
 /**
+ * UniRTOS NON-ESIM VERSION EID QUERY FUNCTION
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_AT_ESIM_EID_CMD
+
+/**
  * UniRTOS ABNORMAL BASESTATION AT function
  */
 #cmakedefine CONFIG_QAPP_UNIRTOS_ABNORMAL_BASESTATION_AT_FUNC
+
+/**
+ * UniRTOS QCFG BIP AT function
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_AT_QCFG_BIP_CMD
+
+/**
+ * UniRTOS QCFG QOPS FMT AT function
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_AT_QCFG_QOPS_FMT_CMD
+
+/**
+ * UniRTOS QSCANEX AT function
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_AT_QSCANEX_CMD
+
+/**
+ * UniRTOS QANTINFO AT function
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_AT_QANTINFO_CMD
+
+/**
+ * UniRTOS VNET SPI NET AT function
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_SPINET_AT_FUNC
+
 // ============================================================================
 // UniRTOS ATC SUPPORT STOP
 // ============================================================================
@@ -642,6 +830,12 @@
  * @brief Set the stack size for the PDP notification event handling task.
  */
 #cmakedefine CONFIG_UNIRTOS_PDP_TASK_STACK_SIZE @CONFIG_UNIRTOS_PDP_TASK_STACK_SIZE@
+
+/**
+ * @brief Stack size for modem AT command processing task
+ * @brief Set the stack size for the modem AT command processing task.
+ */
+#cmakedefine CONFIG_UNIRTOS_MODEM_AT_TASK_STACK_SIZE @CONFIG_UNIRTOS_MODEM_AT_TASK_STACK_SIZE@
 
 /**
  * @brief Stack size for SMTP QSMTPPUT task
@@ -876,6 +1070,12 @@
 #cmakedefine CONFIG_UNIRTOS_MQTT_MAX_PUBLISH_MSG_LEN @CONFIG_UNIRTOS_MQTT_MAX_PUBLISH_MSG_LEN@
 
 /**
+ * @brief QFREAD CONNECT 字符与数据一同吐出
+ * @brief QFREAD CONNECT character is emitted along with the data.
+ */
+#cmakedefine CONFIG_UNIRTOS_QFREAD_CONNECT_REPORT_WITH_DATA
+
+/**
  * @brief QHTTPCFG 配置参数显示方式
  * @brief QHTTPCFG configuration parameter display mode
  */
@@ -886,6 +1086,12 @@
  * @brief QHTTPCFG custom head configuration parameter display mode
  */
 #cmakedefine CONFIG_UNIRTOS_QHTTPCFG_CUSTOM_HEADER_VIEW_TYPE
+
+/**
+ * @brief QHTTPREAD CONNECT 字符与数据一同吐出
+ * @brief QHTTPREAD CONNECT character is emitted along with the data.
+ */
+#cmakedefine CONFIG_UNIRTOS_QHTTPREAD_CONNECT_REPORT_WITH_DATA
 
 /**
  * @brief QFOTADL 使用flash分区
@@ -910,6 +1116,12 @@
  * @brief QFOTADL uses file root file systems
  */
 #cmakedefine CONFIG_UNIRTOS_QFOTADL_USE_FILE_ROOT_SYSTEM
+
+/**
+ * @brief QNTP 使用 NB 的参数
+ * @brief QNTP uses NB parameters
+ */
+#cmakedefine CONFIG_UNIRTOS_QNTP_USE_NB_PARAM
 
 /** 配置是否支持SSL MFL扩展选项 */
 /** Configure whether to support SSL MFL extension option */
@@ -958,9 +1170,17 @@
 /** After enabling this macro, the return result of AT+QURCCFG=? command will include uart2 */
 #cmakedefine CONFIG_UNIRTOS_QURCCFG_SHOW_UART2_STRING
 
-/** 启用该宏后，AT+QURCCFG=? 命令的返回结果将包含 all */
-/** After enabling this macro, the return result of AT+QURCCFG=? command will include all */
-#cmakedefine CONFIG_UNIRTOS_QURCCFG_SHOW_ALL_STRING
+/** Enable this macro when the platform supports the usbat AT port */
+#cmakedefine CONFIG_QOSA_AT_PORT_SUPPORT_USBAT
+
+/** Enable this macro when the platform supports the usbmodem AT port */
+#cmakedefine CONFIG_QOSA_AT_PORT_SUPPORT_USBMODEM
+
+/** Enable this macro when the platform supports the uart1 AT port */
+#cmakedefine CONFIG_QOSA_AT_PORT_SUPPORT_UART1
+
+/** Enable this macro when the platform supports the uart2 AT port */
+#cmakedefine CONFIG_QOSA_AT_PORT_SUPPORT_UART2
 
 /** FACTORY std at function */
 #cmakedefine CONFIG_QAPP_UNIRTOS_FACTORY_AT_FUNC
@@ -1014,6 +1234,23 @@
  *
  */
 #cmakedefine CONFIG_UNIRTOS_FLASH_REPAIR_ERASE_TEST_AT_FUNC @CONFIG_UNIRTOS_FLASH_REPAIR_ERASE_TEST_AT_FUNC@
+
+/**
+ * @brief flash test Subinstruction AT; Used to test Quad Enable (QE) operation
+ *
+ */
+#cmakedefine CONFIG_UNIRTOS_FLASH_QUAD_ENABLE_TEST_AT_FUNC @CONFIG_UNIRTOS_FLASH_QUAD_ENABLE_TEST_AT_FUNC@
+
+/**
+ * UniRTOS AT+QCPULOAD command
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_AT_QCPULOAD_CMD
+
+/**
+ * UniRTOS EG21 compatibility AT function (apps/unirtos_std_eg21)
+ */
+#cmakedefine CONFIG_QAPP_UNIRTOS_EG21_AT_FUNC
+
 
 // ============================================================================
 // UniRTOS AT Standard FUNC option config STOP

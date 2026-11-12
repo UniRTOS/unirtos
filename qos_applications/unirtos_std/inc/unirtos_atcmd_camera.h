@@ -36,6 +36,7 @@ typedef enum
     UNIR_CAMERA_WATER_METER_AI_NOT_INIT_ERROR = 7700,      /*!< Water meter AI module has not been initialized */
     UNIR_CAMERA_WATER_METER_AI_NOT_PICTURE_ERROR = 7800,   /*!< No valid input image provided for recognition */
     UNIR_CAMERA_WATER_METER_AI_PICTURE_ROTATE_ERROR = 7900,/*!< Input image rotation is invalid or unsupported */
+    UNIR_CAMERA_WATER_METER_AI_LICENSE_ERROR = 8000,/*!< License error */
     UNIR_CAMERA_ERROR_MAX,
 } UNIR_CAMERA_ERROR_CODES;
 

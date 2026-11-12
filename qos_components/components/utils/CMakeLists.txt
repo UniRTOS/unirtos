@@ -15,3 +15,6 @@ if(CONFIG_QCM_UTILS_XMODEM_FUNC)
     add_subdirectory_if_exist(xmodem)
 endif()
 
+if(CONFIG_QCM_UTILS_TTLV_FUNC)
+    add_subdirectory_if_exist(ttlv)
+endif()

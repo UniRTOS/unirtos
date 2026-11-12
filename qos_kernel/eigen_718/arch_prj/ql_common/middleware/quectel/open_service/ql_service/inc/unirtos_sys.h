@@ -1,4 +1,4 @@
-﻿/**  @file
+/**  @file
   func.h
 
   @brief Automatically generated function declarations header file.
@@ -86,10 +86,25 @@ WHEN              WHO         WHAT, WHERE, WHY
 #include "qosa_secboot.h"
 #include "qosa_clat.h"
 #include "qosa_pinctrl.h"
+#include "qosa_vpu_code.h"
 #include "qosa_hw_timer.h"
+#include "qosa_ims.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+
+extern qosa_ftm_err_e qosa_ftm_ant_tuner_fem_gpio_get_cfg(qosa_ftm_ant_tuner_cfg_t *pCfg);
+typedef qosa_ftm_err_e (* _api_qosa_ftm_ant_tuner_fem_gpio_get_cfg_t)(qosa_ftm_ant_tuner_cfg_t *pCfg);
+
+extern qosa_ftm_err_e qosa_ftm_ant_tuner_fem_gpio_set_cfg(qosa_ftm_ant_tuner_cfg_t *pCfg);
+typedef qosa_ftm_err_e (* _api_qosa_ftm_ant_tuner_fem_gpio_set_cfg_t)(qosa_ftm_ant_tuner_cfg_t *pCfg);
+
+extern qosa_ftm_err_e qosa_ftm_ant_tuner_fem_gpio_set_group(qosa_uint8_t groupIdx, qosa_ftm_ant_tuner_one_group_cfg_t *pGroupCfg);
+typedef qosa_ftm_err_e (* _api_qosa_ftm_ant_tuner_fem_gpio_set_group_t)(qosa_uint8_t groupIdx, qosa_ftm_ant_tuner_one_group_cfg_t *pGroupCfg);
+
+extern qosa_ftm_err_e qosa_ftm_ant_tuner_fem_gpio_reset_cfg(void);
+typedef qosa_ftm_err_e (* _api_qosa_ftm_ant_tuner_fem_gpio_reset_cfg_t)(void);
 
 extern qosa_int32_t qosa_tim_ic_init(qosa_tim_ic_handle_t *htim);
 typedef qosa_int32_t (* _api_qosa_tim_ic_init_t)(qosa_tim_ic_handle_t *htim);
@@ -97,9 +112,9 @@ typedef qosa_int32_t (* _api_qosa_tim_ic_init_t)(qosa_tim_ic_handle_t *htim);
 extern qosa_int32_t qosa_tim_ic_deinit(qosa_tim_ic_handle_t *htim);
 typedef qosa_int32_t (* _api_qosa_tim_ic_deinit_t)(qosa_tim_ic_handle_t *htim);
 
-extern qosa_int32_t qosa_tim_ic_config_channel(qosa_tim_ic_handle_t *htim, 
+extern qosa_int32_t qosa_tim_ic_config_channel(qosa_tim_ic_handle_t *htim,
                                                const qosa_tim_ic_config_t *ch_config);
-typedef qosa_int32_t (* _api_qosa_tim_ic_config_channel_t)(qosa_tim_ic_handle_t *htim, 
+typedef qosa_int32_t (* _api_qosa_tim_ic_config_channel_t)(qosa_tim_ic_handle_t *htim,
                                                            const qosa_tim_ic_config_t *ch_config);
 
 extern qosa_int32_t qosa_tim_ic_start_it(qosa_tim_ic_handle_t *htim);
@@ -122,6 +137,9 @@ typedef qosa_secboot_error_e (*_api_qosa_secboot_get_enable_state_t)(qosa_uint8_
 
 extern qosa_secboot_error_e qosa_secboot_enable(void);
 typedef qosa_secboot_error_e (*_api_qosa_secboot_enable_t)(void);
+
+extern qosa_secboot_error_e qosa_secboot_ioctl(qosa_secboot_ioctl_cmd_e cmd, void *arg);
+typedef qosa_secboot_error_e (*_api_qosa_secboot_ioctl_t)(qosa_secboot_ioctl_cmd_e cmd, void *arg);
 
 extern void qosa_redda_set_dm_log_ctl(qosa_uint8_t onoff);
 typedef void (*_api_qosa_redda_set_dm_log_ctl_t)(qosa_uint8_t onoff);
@@ -146,6 +164,18 @@ typedef qosa_license_error_e (*_api_qosa_license_get_apppid_t)(qosa_license_app_
 // int qosa_license_get_dev_info(unsigned char *dev_info, int *dev_info_len);
 extern int qosa_license_get_dev_info(unsigned char *dev_info, int *dev_info_len);
 typedef int (*_api_qosa_license_get_dev_info_t)(unsigned char *dev_info, int *dev_info_len);
+
+extern qosa_license_error_e qosa_license_set_auth_info(unsigned char *auth_info, int auth_info_len);
+typedef qosa_license_error_e (*_api_qosa_license_set_auth_info_t)(unsigned char *auth_info, int auth_info_len);
+
+extern qosa_license_error_e qosa_license_get_auth_info(unsigned char *auth_info, int *auth_info_len);
+typedef qosa_license_error_e (*_api_qosa_license_get_auth_info_t)(unsigned char *auth_info, int *auth_info_len);
+
+extern int qosa_qingya_get_qrlience(char *qrcode_info);
+typedef int (*_api_qosa_qingya_get_qrlience_t)(char *qrcode_info);
+
+extern int qosa_qingya_get_imei(char *qrcode_info);
+typedef int (*_api_qosa_qingya_get_imei_t)(char *qrcode_info);
 
 //qosa_license_app_type_t qosa_license_appid_to_apptype(int appid);
 extern qosa_license_app_type_t qosa_license_appid_to_apptype(int appid);
@@ -623,12 +653,6 @@ typedef qosa_dev_error_e (* _api_qosa_dev_set_sim_imei_t)(qosa_uint8_t simid, ch
 extern qosa_dev_error_e qosa_dev_set_sn(char *sn_str);
 typedef qosa_dev_error_e (* _api_qosa_dev_set_sn_t)(char *sn_str);
 
-extern qosa_dev_error_e qosa_dev_set_sn2(char *sn2_str);
-typedef qosa_dev_error_e (* _api_qosa_dev_set_sn2_t)(char *sn2_str);
-
-extern qosa_dev_error_e qosa_dev_get_sn2(char *SN2, qosa_int32_t *len);
-typedef qosa_dev_error_e (* _api_qosa_dev_get_sn2_t)(char *SN2, qosa_int32_t *len);
-
 extern qosa_dev_error_e qosa_dev_get_cpu_uid(qosa_uint64_t *chip_id);
 typedef qosa_dev_error_e (* _api_qosa_dev_get_cpu_uid_t)(qosa_uint64_t *chip_id);
 
@@ -824,6 +848,12 @@ typedef qosa_aud_errcode_e (* _api_qosa_aud_set_volume_t)(qosa_aud_vol_level_e v
 extern qosa_aud_vol_level_e qosa_aud_get_volume(void);
 typedef qosa_aud_vol_level_e (* _api_qosa_aud_get_volume_t)(void);
 
+extern qosa_aud_errcode_e qosa_aud_apply_pcm_gain(qosa_bool_t en, qosa_int16_t level);
+typedef qosa_aud_errcode_e (* _api_qosa_aud_apply_pcm_gain_t)(qosa_bool_t en, qosa_int16_t level);
+
+extern qosa_int32_t qosa_aud_driver_setPinEn(qosa_uint32_t enMask);
+typedef qosa_int32_t (* _api_qosa_aud_driver_setPinEn_t)(qosa_uint32_t enMask);
+
 extern qosa_aud_errcode_e qosa_aud_bind_pa_cb(qosa_aud_pa_callback_t callback);
 typedef qosa_aud_errcode_e (* _api_qosa_aud_bind_pa_cb_t)(qosa_aud_pa_callback_t callback);
 
@@ -856,6 +886,9 @@ typedef qosa_aud_errcode_e (*_api_qosa_tts_resource_init_t)(qosa_int8_t *path_na
 
 extern qosa_i2c_error_e qosa_i2c_init(qosa_i2c_channel_e i2c_no, qosa_i2c_mode_e Mode);
 typedef qosa_i2c_error_e (* _api_qosa_i2c_init_t)(qosa_i2c_channel_e i2c_no, qosa_i2c_mode_e Mode);
+
+extern qosa_i2c_error_e qosa_i2c_ioctl(qosa_i2c_channel_e i2c_no, qosa_i2c_ioctl_cmd_e cmd, void *arg);
+typedef qosa_i2c_error_e (* _api_qosa_i2c_ioctl_t)(qosa_i2c_channel_e i2c_no, qosa_i2c_ioctl_cmd_e cmd, void *arg);
 
 extern qosa_i2c_error_e qosa_i2c_write(qosa_i2c_channel_e i2c_no, qosa_uint8_t slave, qosa_uint16_t addr, qosa_uint8_t *data, qosa_uint32_t length);
 typedef qosa_i2c_error_e (* _api_qosa_i2c_write_t)(qosa_i2c_channel_e i2c_no, qosa_uint8_t slave, qosa_uint16_t addr, qosa_uint8_t *data, qosa_uint32_t length);
@@ -937,6 +970,9 @@ typedef qosa_camera_error_e (* _api_qosa_camera_ioctl_t)(qosa_camera_channel_e c
 
 extern qosa_camera_error_e qosa_camera_convert_to_jpeg(qosa_uint8_t quality, qosa_camera_crop_info_t *crop_info, qosa_uint8_t *pInBuf, qosa_uint32_t uInWidth, qosa_uint32_t uInHeight, qosa_uint8_t *pOutBuf, qosa_uint32_t *pOutLength, qosa_camera_output_format_opt_e image_format);
 typedef qosa_camera_error_e (* _api_qosa_camera_convert_to_jpeg_t)(qosa_uint8_t quality, qosa_camera_crop_info_t *crop_info, qosa_uint8_t *pInBuf, qosa_uint32_t uInWidth, qosa_uint32_t uInHeight, qosa_uint8_t *pOutBuf, qosa_uint32_t *pOutLength, qosa_camera_output_format_opt_e image_format);
+
+extern qosa_camera_error_e qosa_camera_decode_jpeg(qosa_uint8_t *pInBuf, qosa_uint32_t uInLength, qosa_uint8_t *pOutBuf, qosa_uint32_t *pOutLength, qosa_uint32_t *pOutWidth, qosa_uint32_t *pOutHeight, qosa_camera_output_format_opt_e image_format);
+typedef qosa_camera_error_e (* _api_qosa_camera_decode_jpeg_t)(qosa_uint8_t *pInBuf, qosa_uint32_t uInLength, qosa_uint8_t *pOutBuf, qosa_uint32_t *pOutLength, qosa_uint32_t *pOutWidth, qosa_uint32_t *pOutHeight, qosa_camera_output_format_opt_e image_format);
 
 extern qosa_lcd_error_e qosa_lcd_init(qosa_lcd_channel_e lcd_no);
 typedef qosa_lcd_error_e (* _api_qosa_lcd_init_t)(qosa_lcd_channel_e lcd_no);
@@ -1090,6 +1126,12 @@ typedef qosa_datacall_errno_e (* _api_qosa_datacall_get_pdp_timer_t)(qosa_uint8_
 
 extern qosa_datacall_errno_e qosa_datacall_get_dynamic_pdp_ctx(qosa_uint8_t simid, qosa_uint8_t pdpid, qosa_pdp_dynamic_context_t *pdp_dynamic_ctx);
 typedef qosa_datacall_errno_e (* _api_qosa_datacall_get_dynamic_pdp_ctx_t)(qosa_uint8_t simid, qosa_uint8_t pdpid, qosa_pdp_dynamic_context_t *pdp_dynamic_ctx);
+
+extern qosa_datacall_errno_e qosa_datacall_set_pdpreact_mode(qosa_uint8_t simid, qosa_bool_t enable);
+typedef qosa_datacall_errno_e (* _api_qosa_datacall_set_pdpreact_mode_t)(qosa_uint8_t simid, qosa_bool_t enable);
+
+extern qosa_datacall_errno_e qosa_datacall_get_pdpreact_mode(qosa_uint8_t simid, qosa_bool_t *enable);
+typedef qosa_datacall_errno_e (* _api_qosa_datacall_get_pdpreact_mode_t)(qosa_uint8_t simid, qosa_bool_t *enable);
 
 extern qosa_dev1_error_e qosa_dev_set_cfun(qosa_uint8_t simid, qosa_uint8_t func, dev_callback_ptr cb, void *ctx);
 typedef qosa_dev1_error_e (* _api_qosa_dev_set_cfun_t)(qosa_uint8_t simid, qosa_uint8_t func, dev_callback_ptr cb, void *ctx);
@@ -1271,6 +1313,12 @@ typedef qosa_nw_err_e (* _api_qosa_nw_get_jamm_detect_param_t)(qosa_uint8_t simi
 extern qosa_nw_err_e qosa_nw_get_as_event(qosa_uint8_t simid,qosa_nw_as_event_t *as_event_info);
 typedef qosa_nw_err_e (* _api_qosa_nw_get_as_event_t)(qosa_uint8_t simid,qosa_nw_as_event_t *as_event_info);
 
+extern qosa_nw_err_e qosa_nw_set_edrx_param(qosa_uint8_t simid, qosa_nw_edrx_cfg_t *cfg, nw_callback_t cb, void *ctx);
+typedef qosa_nw_err_e (* _api_qosa_nw_set_edrx_param_t)(qosa_uint8_t simid, qosa_nw_edrx_cfg_t *cfg, nw_callback_t cb, void *ctx);
+
+extern qosa_nw_err_e qosa_nw_get_edrx_param(qosa_uint8_t simid, qosa_nw_edrx_info_t *info);
+typedef qosa_nw_err_e (* _api_qosa_nw_get_edrx_param_t)(qosa_uint8_t simid, qosa_nw_edrx_info_t *info);
+
 extern qosa_nw_err_e qosa_nw_get_scell_is_changed(qosa_uint8_t simid,qosa_bool_t *result);
 typedef qosa_nw_err_e (* _api_qosa_nw_get_scell_is_changed_t)(qosa_uint8_t simid,qosa_bool_t *result);
 
@@ -1282,6 +1330,33 @@ typedef qosa_nw_err_e (* _api_qosa_nw_set_ue_operation_mode_t)(qosa_uint8_t simi
 
 extern qosa_nw_err_e qosa_nw_get_ue_operation_mode(qosa_uint8_t simid,qosa_uint8_t *mode);
 typedef qosa_nw_err_e (* _api_qosa_nw_get_ue_operation_mode_t)(qosa_uint8_t simid,qosa_uint8_t *mode);
+
+extern qosa_nw_err_e qosa_nw_set_blacklist_param(qosa_uint8_t simid, qosa_nw_blacklist_param_t *all_param);
+typedef qosa_nw_err_e (* _api_qosa_nw_set_blacklist_param_t)(qosa_uint8_t simid, qosa_nw_blacklist_param_t *all_param);
+
+extern qosa_nw_err_e qosa_nw_get_blacklist_param(qosa_uint8_t simid, qosa_nw_blacklist_param_t *all_param);
+typedef qosa_nw_err_e (* _api_qosa_nw_get_blacklist_param_t)(qosa_uint8_t simid, qosa_nw_blacklist_param_t *all_param);
+
+extern qosa_nw_err_e qosa_nw_blacklist_set_cell_info(qosa_uint8_t simid, qosa_uint8_t opt, qosa_nw_blacklist_cell_list_t *cell_list);
+typedef qosa_nw_err_e (* _api_qosa_nw_blacklist_set_cell_info_t)(qosa_uint8_t simid, qosa_uint8_t opt, qosa_nw_blacklist_cell_list_t *cell_list);
+
+extern qosa_nw_err_e qosa_nw_blacklist_get_cell_info(qosa_uint8_t simid, qosa_nw_blacklist_cell_list_t *cell_list);
+typedef qosa_nw_err_e (* _api_qosa_nw_blacklist_get_cell_info_t)(qosa_uint8_t simid, qosa_nw_blacklist_cell_list_t *cell_list);
+
+extern qosa_nw_err_e qosa_nw_get_pdpremap(qosa_uint8_t simid, qosa_uint8_t *pdpremap);
+typedef qosa_nw_err_e (*_api_qosa_nw_get_pdpremap_t)(qosa_uint8_t simid, qosa_uint8_t *pdpremap);
+
+extern qosa_nw_err_e qosa_nw_set_pdpremap(qosa_uint8_t simid, qosa_uint8_t pdpremap, nw_callback_t cb, void *ctx);
+typedef qosa_nw_err_e (*_api_qosa_nw_set_pdpremap_t)(qosa_uint8_t simid, qosa_uint8_t pdpremap, nw_callback_t cb, void *ctx);
+
+extern qosa_nw_err_e  qosa_nw_set_anti_detect_state(qosa_uint8_t anti_detect_state);
+typedef qosa_nw_err_e (* _api_qosa_nw_set_anti_detect_state_t)(qosa_uint8_t anti_detect_state);
+
+extern qosa_nw_err_e qosa_nw_get_anti_detect_state(qosa_uint8_t *anti_detect_state);
+typedef qosa_nw_err_e (* _api_qosa_nw_get_anti_detect_state_t)(qosa_uint8_t *anti_detect_state);
+
+extern qosa_nw_err_e qosa_nw_anti_detect_register_cb(void(*cb)(qosa_uint32_t earfcn,qosa_uint16_t pci));
+typedef qosa_nw_err_e (* _api_qosa_nw_anti_detect_register_cb_t)(void(*cb)(qosa_uint32_t earfcn,qosa_uint16_t pci));
 
 extern int qosa_nr_rsrp_meas(qosa_rsrp_t x);
 typedef int (* _api_qosa_nr_rsrp_meas_t)(qosa_rsrp_t x);
@@ -1673,6 +1748,9 @@ typedef char* (* _api_qosa_strnstr_t)(const char* s1, const char* s2, size_t n);
 extern int qosa_msgq_create(qosa_msgq_t* msgQRef, qosa_uint32_t size, qosa_uint32_t maxNumber);
 typedef int (* _api_qosa_msgq_create_t)(qosa_msgq_t* msgQRef, qosa_uint32_t size, qosa_uint32_t maxNumber);
 
+extern int qosa_msgq_create_static(qosa_msgq_t *msgQRef, qosa_uint32_t size, qosa_uint32_t maxNumber, void *cb_mem, void *q_name, qosa_uint8_t *mq_mem, qosa_uint32_t mq_size);
+typedef int (* _api_qosa_msgq_create_static_t)(qosa_msgq_t *msgQRef, qosa_uint32_t size, qosa_uint32_t maxNumber, void *cb_mem, void *q_name, qosa_uint8_t *mq_mem, qosa_uint32_t mq_size);
+
 extern int qosa_msgq_delete(qosa_msgq_t msgQRef);
 typedef int (* _api_qosa_msgq_delete_t)(qosa_msgq_t msgQRef);
 
@@ -1684,6 +1762,9 @@ typedef int (* _api_qosa_msgq_wait_t)(qosa_msgq_t msgQRef, qosa_uint8_t* value, 
 
 extern int qosa_msgq_get_cnt(qosa_msgq_t msgQRef, qosa_uint32_t* cnt_ptr);
 typedef int (* _api_qosa_msgq_get_cnt_t)(qosa_msgq_t msgQRef, qosa_uint32_t* cnt_ptr);
+
+extern int qosa_msgq_get_space(qosa_msgq_t msgQRef, qosa_uint32_t *space);
+typedef int (* _api_qosa_msgq_get_space_t)(qosa_msgq_t msgQRef, qosa_uint32_t *space);
 
 extern int qosa_msgq_reset(qosa_msgq_t msgQRef);
 typedef int (* _api_qosa_msgq_reset_t)(qosa_msgq_t msgQRef);
@@ -2356,8 +2437,15 @@ typedef qosa_adc_errcode_e (*_api_qosa_adc_get_volt_t)(qosa_adc_channel_e adc_id
 extern qosa_adc_errcode_e qosa_get_vbat_volt(int *adc_value);
 typedef qosa_adc_errcode_e (*_api_qosa_get_vbat_volt_t)(int *adc_value);
 
+extern qosa_uint8_t qosa_adc_get_channel_num(void);
+typedef qosa_uint8_t (*_api_qosa_adc_get_channel_num_t)(void);
+
 extern qosa_uint32_t qosa_get_system_tick_cnt(void);
 typedef qosa_uint32_t (*_api_qosa_get_system_tick_cnt_t)(void);
+
+extern qosa_uint32_t qosa_get_running_time(void);
+typedef qosa_uint32_t (*_api_qosa_get_running_time_t)(void);
+
 extern qosa_rtc_error_e qosa_rtc_set_alarm(qosa_rtc_time_t *rtc_time);
 typedef qosa_rtc_error_e (*_api_qosa_rtc_set_alarm_t)(qosa_rtc_time_t *rtc_time);
 
@@ -2565,14 +2653,14 @@ typedef int32_t (*_api_qosa_can_get_rx_message_count_t)(qosa_can_dev_num_e dev, 
 extern qosa_sms_err_e qosa_sms_utf8_to_ucs2(const char* utf8_txt, char* ucs2_character, qosa_size_t buffer_size);
 typedef qosa_sms_err_e (*_api_qosa_sms_utf8_to_ucs2_t)(const char* utf8_txt, char* ucs2_character, qosa_size_t buffer_size);
 
-extern int qosa_start_voice_call(const char *phone_number);
-typedef int (* _api_qosa_start_voice_call_t)(const char *phone_number);
+extern int qosa_start_voice_call(qosa_uint8_t simid, const char *phone_number, ims_callback_t cb, void *ctx);
+typedef int (* _api_qosa_start_voice_call_t)(qosa_uint8_t simid, const char *phone_number, ims_callback_t cb, void *ctx);
 
-extern int qosa_stop_voice_call(qosa_uint8_t simid);
-typedef int (* _api_qosa_stop_voice_call_t)(qosa_uint8_t simid);
+extern int qosa_stop_voice_call(qosa_uint8_t simid, ims_callback_t cb, void *ctx);
+typedef int (* _api_qosa_stop_voice_call_t)(qosa_uint8_t simid, ims_callback_t cb, void *ctx);
 
-extern int qosa_answer_call(void);
-typedef int (* _api_qosa_answer_call_t)(void);
+extern int qosa_answer_call(qosa_uint8_t simid, ims_callback_t cb, void *ctx);
+typedef int (* _api_qosa_answer_call_t)(qosa_uint8_t simid, ims_callback_t cb, void *ctx);
 
 extern qosa_int32_t qosa_usb_hid_send_proc(qosa_uint8_t hid_num, qosa_uint8_t* sndbuf_ptr, qosa_uint32_t size);
 typedef qosa_int32_t (*_api_qosa_usb_hid_send_proc_t)(qosa_uint8_t hid_num, qosa_uint8_t* sndbuf_ptr, qosa_uint32_t size);
@@ -2597,6 +2685,10 @@ typedef qosa_pinctrl_error_e (* _api_qosa_pin_set_func_t)(qosa_pin_num_e pin_num
 
 extern qosa_pinctrl_error_e qosa_pin_get_func(qosa_pin_num_e pin_num, qosa_uint8_t *func_sel);
 typedef qosa_pinctrl_error_e (* _api_qosa_pin_get_func_t)(qosa_pin_num_e pin_num, qosa_uint8_t *func_sel);
+extern void qosa_mp3dec_vpu_init(void);
+typedef void (* _api_qosa_mp3dec_vpu_init_t)(void);
+extern void qosa_mp3_synth_full_vpu(struct mad_synth *synth, struct mad_frame const *frame, unsigned int nch, unsigned int ns);
+typedef void (* _api_qosa_mp3_synth_full_vpu_t)(struct mad_synth *synth, struct mad_frame const *frame, unsigned int nch, unsigned int ns);
 
 extern qosa_int32_t qosa_cpu_usage_start(qosa_uint32_t period_ms, qosa_cpu_usage_cb_t cb);
 typedef qosa_int32_t (*_api_qosa_cpu_usage_start_t)(qosa_uint32_t period_ms, qosa_cpu_usage_cb_t cb);

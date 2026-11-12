@@ -4,6 +4,10 @@
 #include "qosa_log.h"
 #include "unirtos_apps_config.h"
 
+#ifdef CONFIG_QOSA_OEM_DL_FUNC
+#include "unirtos_atcmd_gw_cfg.h"
+#endif
+
 #include "unirtos_app_init_registry.h"
 
 #define QOS_LOG_TAG LOG_TAG_DEMO
@@ -33,6 +37,18 @@ static void unir_unirtos_std_bootstrap(void)
 }
 
 UNIRTOS_APP_EXPORT(100, "unirtos_std", unir_unirtos_std_bootstrap);
+#endif
+
+#ifdef CONFIG_QAPP_UNIRTOS_STD_DL_FUNC
+extern void unir_gw_atcmd_init(void);
+
+/* GW dispatch entries are now wired into unirtos_std's unir_img_at_desc[] */
+static void unir_unirtos_gw_init_bootstrap(void)
+{
+    unir_gw_atcmd_init();
+}
+
+UNIRTOS_APP_EXPORT(110, "unirtos_gw_init",     unir_unirtos_gw_init_bootstrap);
 #endif
 
 static void unirtos_app_sort_entries(const unirtos_app_init_entry_t **entries, size_t count)

@@ -39,6 +39,14 @@
 #define QOSA_SMS_USER_DATA_LEN           140
 /** Maximum number of characters that can be carried in SMS TPDU */
 #define QOSA_SMS_MAX_USER_VALID_DATA_LEN 160
+#ifdef CONFIG_QOSA_SMS_CBS_FUNC
+/** Minimum CBS PDU header length: Serial Number(2) + Message Identifier(2) + DCS(1) + Page Parameter(1) */
+#define CBM_PDU_HDR_LEN                  6
+/** Maximum number of characters in one CBM page when decoded with GSM 7-bit default alphabet */
+#define QOSA_SMS_CBM_MAX_TEXT_LEN        93
+/** Maximum CBM text output buffer length, reserves space for UCS2 hex-string presentation */
+#define QOSA_SMS_CBM_TEXT_BUF_LEN        (QOSA_SMS_CBM_MAX_TEXT_LEN * 4 + 1)
+#endif /* CONFIG_QOSA_SMS_CBS_FUNC */
 
 /** Get sca field data length in PDU SMS */
 #define QOSA_SMS_GET_SCA_PART_LEN(pdu)   ((pdu)[0] ? (1 + (pdu)[0]) : 1)
@@ -62,6 +70,34 @@
 #define QOSA_SMS_CLASS(dcs)              ((dcs)&0x03)
 /** Extract SMS alphabet from DCS */
 #define QOSA_SMS_ALPHABET(dcs)           (((dcs) >> 2) & 0x03)
+
+#ifdef CONFIG_QOSA_SMS_CBS_FUNC
+/** Extract CBS DCS coding group */
+#define QOSA_SMS_CBM_GRP(dcs)            ((dcs) & 0xF0)
+/** Extract CBS DCS lower nibble in general-data-coding group */
+#define QOSA_SMS_CBM_GEN(dcs)            ((dcs) & 0x0F)
+/** Extract CBS DCS alphabet field in message-class groups */
+#define QOSA_SMS_CBM_ALPHA(dcs)          ((dcs) & 0x0C)
+
+/** CBS DCS groups used by current decoder */
+#define QOSA_SMS_CBM_GRP_00              0x00
+#define QOSA_SMS_CBM_GRP_10              0x10
+#define QOSA_SMS_CBM_GRP_20              0x20
+#define QOSA_SMS_CBM_GRP_F0              0xF0
+
+/** CBS DCS general-data-coding lower-nibble values used by current decoder */
+#define QOSA_SMS_CBM_GEN_GSM7            0x00
+#define QOSA_SMS_CBM_GEN_UCS2            0x01
+
+/** CBS DCS message-class group selectors */
+#define QOSA_SMS_CBM_CLASS_MASK          0xC0
+#define QOSA_SMS_CBM_CLASS_40            0x40
+
+/** CBS DCS alphabet field values in message-class groups */
+#define QOSA_SMS_CBM_ALPHA_GSM7          0x00
+#define QOSA_SMS_CBM_ALPHA_8BIT          0x04
+#define QOSA_SMS_CBM_ALPHA_UCS2          0x08
+#endif /* CONFIG_QOSA_SMS_CBS_FUNC */
 
 /** SMS callback function type definition */
 typedef void (*sms_callback_t)(void *ctx, void *argv);
@@ -209,6 +245,20 @@ typedef enum
     QOSA_SMS_STATUS_REPORT = 2, /*!< Status Report message */
 } qosa_sms_msg_type_e;
 
+#ifdef CONFIG_QOSA_SMS_CBS_FUNC
+/**
+ * @enum qosa_sms_cbm_msg_type_e
+ * @brief cell broadcast message type
+ *
+ */
+typedef enum
+{
+    QOSA_SMS_CBM_ETWS_PRIMARY = 0,   /*!< ETWS primary notification */
+    QOSA_SMS_CBM_ETWS_SECONDARY = 1, /*!< ETWS secondary notification */
+    QOSA_SMS_CBM_CMAS = 2,           /*!< CMAS notification */
+} qosa_sms_cbm_msg_type_e;
+#endif /* CONFIG_QOSA_SMS_CBS_FUNC */
+
 /**
  * @enum qosa_sms_select_type_e
  * @brief record selection method
@@ -275,7 +325,7 @@ typedef enum
  *
  * This structure encapsulates SMS-related AT command configuration parameters
  * defined in the 3GPP TS 27.005 standard, including storage management,
- * new message indication, and service mode selection.
+ * new message indication, ETWS primary notification reporting, and service mode selection.
  */
 typedef struct
 {
@@ -290,6 +340,9 @@ typedef struct
     qosa_uint8_t nmi_bm;   /*!< NMI bm */
     qosa_uint8_t nmi_ds;   /*!< NMI ds */
     qosa_uint8_t nmi_bfr;  /*!< NMI bfr */
+
+    // CPNER parameters
+    qosa_uint8_t cpner_rpt; /*!< ETWS primary notification reporting mode */
 
     // CSMS parameters
     qosa_uint8_t service_mode; /*!< messaging service */
@@ -540,6 +593,36 @@ typedef struct
     qosa_sms_stor_e   storage; /*!< Storage type */
     qosa_sms_record_t record;  /*!< SMS record, if record index is 0xFFFF, it means the SMS was not stored, storage field is invalid */
 } qosa_sms_new_msg_event_t;
+
+#ifdef CONFIG_QOSA_SMS_CBS_FUNC
+/**
+ * @struct qosa_sms_cbm_event_t
+ * @brief CBM payload data
+ *
+*/
+typedef struct
+{
+    qosa_sms_cbm_msg_type_e cbm_type;       /*!< Cell broadcast message type */
+    qosa_uint16_t           msg_identifier; /*!< Message identifier */
+    qosa_uint16_t           serial_number;  /*!< Serial_number */
+    qosa_uint16_t           warning_type;   /*!< ETWS primary warning type, other message types keep 0 */
+    qosa_uint8_t            dcs;            /*!< Raw DCS value in the CBM header*/
+    qosa_uint8_t            page;           /*!< Current page number */
+    qosa_uint8_t            pages;          /*!< Total page count */
+    qosa_sms_pdu_t          pdu;            /*!< Raw PDU data*/
+} qosa_sms_cbm_event_t;
+
+/**
+ * @struct qosa_sms_cbm_notify_event_t
+ * @brief Data content carried by event QOSA_EVENT_MODEM_SMS_CBM report
+ *
+ */
+typedef struct
+{
+    qosa_uint8_t         simid;     /*!< SIM card ID */
+    qosa_sms_cbm_event_t cbm_event; /*!< CBM payload data */
+} qosa_sms_cbm_notify_event_t;
+#endif /* CONFIG_QOSA_SMS_CBS_FUNC */
 
 /**
  * @struct qosa_sms_storage_full_event_t
@@ -954,5 +1037,21 @@ qosa_sms_err_e qosa_sms_set_charset(qosa_uint8_t charset);
  *      (Each UCS-2 character requires 4 hexadecimal digits + null terminator)
  */
 qosa_sms_err_e qosa_sms_utf8_to_ucs2(const char* utf8_txt, char* ucs2_character, qosa_size_t buffer_size);
-#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+
+#ifdef CONFIG_QOSA_SMS_CBS_FUNC
+/**
+ * @brief Decode ETWS/CMAS PDU payload to text data
+ *
+ * @param[in] event
+ *          - ETWS/CMAS payload data
+ * @param[out] out
+ *          - Output text buffer
+ * @param[in,out] out_len
+ *          - Input is output buffer size, output is actual text length
+ * @return qosa_sms_err_e
+ */
+qosa_sms_err_e qosa_sms_cbm_decode_text(qosa_sms_cbm_event_t *event, qosa_uint8_t *out, qosa_uint16_t *out_len);
+#endif /* CONFIG_QOSA_SMS_CBS_FUNC */
+
+#endif /* Wi-Fi platform exclusion */
 #endif /* __QOSA_SMS_H__ */

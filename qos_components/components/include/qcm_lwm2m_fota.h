@@ -62,6 +62,7 @@ typedef enum
 typedef enum
 {
     QCM_LWM2M_FOTA_CODE_BEGIN_DOWNLOADING, /*!< Start downloading */
+    QCM_LWM2M_FOTA_CODE_DOWNLOAD_COMPLETED,/*!< Download completed, verification not finished */
     QCM_LWM2M_FOTA_CODE_DOWNLOAD_SUCCESS,  /*!< Download successful */
     QCM_LWM2M_FOTA_CODE_DOWNLOAD_FAIL,     /*!< Download failed */
     QCM_LWM2M_FOTA_CODE_UPDATING,          /*!< Start updating */
@@ -114,6 +115,10 @@ struct qcm_lwm2m_fota_ctrl_s
 
     /* Download record */
     qosa_uint32_t write_pos; /*!< Length of downloaded content written */
+
+    /* Deferred-update gate (guarded by lock) */
+    qosa_bool_t pkg_verified;   /*!< Package signature/hash verification passed */
+    qosa_bool_t pending_update; /*!< Server UPDATE(5/0/2) received while verifying */
 };
 typedef struct qcm_lwm2m_fota_ctrl_s qcm_lwm2m_fota_ctrl_t;
 

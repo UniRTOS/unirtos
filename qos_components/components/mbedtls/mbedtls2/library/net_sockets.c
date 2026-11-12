@@ -685,7 +685,7 @@ int mbedtls_net_send(void *ctx, const unsigned char *buf, size_t len)
     do
     {
         tv.tv_usec -= (passedTime*1000);
-        preSelTime=qosa_get_system_tick_cnt();
+        preSelTime=qosa_get_running_time();
         ret = select(fd+1, NULL, &writeFs, NULL, &tv);
         if(ret>0)
         {
@@ -705,8 +705,8 @@ int mbedtls_net_send(void *ctx, const unsigned char *buf, size_t len)
                 return MBEDTLS_ERR_NET_SEND_FAILED;
             }
 
-            QLOGD("preSelTime: %d,current tick %d", preSelTime,qosa_get_system_tick_cnt());
-            passedTime=(qosa_get_system_tick_cnt()-preSelTime)>0?(qosa_get_system_tick_cnt() - preSelTime):(0xFFFFFFFF - preSelTime + qosa_get_system_tick_cnt());
+            QLOGD("preSelTime: %d,current time %d", preSelTime,qosa_get_running_time());
+            passedTime=(qosa_get_running_time()-preSelTime)>0?(qosa_get_running_time() - preSelTime):(0xFFFFFFFF - preSelTime + qosa_get_running_time());
 
         }
         else//slelct return <=0 select timeout or error

@@ -11,6 +11,13 @@ config QAPP_UNIRTOS_CAMERA_AT_FUNC
     select QOSA_CAMERA_FUNC
     default n
 
+config QAPP_UNIRTOS_CAMERA_WATER_METER_AI_AT_FUNC
+    bool "UniRTOS Camera water meter AI AT function"
+    select QAPP_UNIRTOS_STD_FUNC
+    select QOSA_CAMERA_FUNC
+    select QOSA_CAMERA_WATER_METER_AI_FUNC
+    default n
+
 config QAPP_UNIRTOS_FILE_AT_FUNC
     bool "UniRTOS File AT function"
     select QAPP_UNIRTOS_STD_FUNC
@@ -32,6 +39,42 @@ config QAPP_UNIRTOS_TCPIP_NB_AT_FUNC
     select QCM_SOCKET_ADP_FUNC
     select QCM_URC_FUNC
     select QCM_UTILS_UTILS_FUNC
+    default n
+
+config QAPP_UNIRTOS_AT_NCSEARFCN_CMD
+    bool "UniRTOS NCSEARFCN AT function"
+    select QAPP_UNIRTOS_STD_FUNC
+    select QAPP_UNIRTOS_NW_AT_FUNC
+    default n
+
+config QAPP_UNIRTOS_AT_NEARFCN_CMD
+    bool "UniRTOS +NEARFCN AT command"
+    select QAPP_UNIRTOS_STD_FUNC
+    select QAPP_UNIRTOS_NW_AT_FUNC
+    default n
+
+config QAPP_UNIRTOS_AT_NBAND_CMD
+    bool "UniRTOS +NBAND AT command"
+    select QAPP_UNIRTOS_STD_FUNC
+    select QAPP_UNIRTOS_NW_AT_FUNC
+    default n
+
+config QAPP_UNIRTOS_AT_NCONFIG_CMD
+    bool "UniRTOS +NCONFIG AT command"
+    select QAPP_UNIRTOS_STD_FUNC
+    select QAPP_UNIRTOS_NW_AT_FUNC
+    default n
+
+config QAPP_UNIRTOS_AT_NPSMR_CMD
+    bool "UniRTOS +NPSMR AT command"
+    select QAPP_UNIRTOS_STD_FUNC
+    select QAPP_UNIRTOS_NW_AT_FUNC
+    default n
+
+config QAPP_UNIRTOS_AT_NPIN_CMD
+    bool "UniRTOS AT+NPIN CMD"
+    select QAPP_UNIRTOS_STD_FUNC
+    select QAPP_UNIRTOS_NB_AT_FUNC
     default n
 
 config QAPP_UNIRTOS_SSL_AT_FUNC
@@ -187,7 +230,7 @@ config QAPP_UNIRTOS_SIM_AT_FUNC
 config QAPP_UNIRTOS_SMS_AT_FUNC
     bool "UniRTOS SMS std At function"
     select QAPP_UNIRTOS_STD_FUNC
-    select QOSA_SMS_FUNC
+    depends on QOSA_SMS_FUNC
     select QCM_URC_FUNC
     select QCM_UTILS_UTILS_FUNC
     default n
@@ -203,6 +246,14 @@ config QAPP_UNIRTOS_LICENSE_AT_FUNC
     bool "Quectel smtp std at function"
     select QAPP_UNIRTOS_STD_FUNC
     select QOSA_LICENSE_FUNC
+    select QCM_UTILS_UTILS_FUNC
+    default n
+
+config QAPP_UNIRTOS_QINGYA_CODE_DECODER_AT_FUNC
+    bool "UniRTOS Qingya code decoder std At function"
+    select QAPP_UNIRTOS_STD_FUNC
+    select QCM_UTILS_UTILS_FUNC
+    select QOSA_QINGYA_CODE_DECODER_FUNC
     default n
 
 config QAPP_UNIRTOS_NW_AT_FUNC
@@ -212,6 +263,7 @@ config QAPP_UNIRTOS_NW_AT_FUNC
     select QCM_URC_FUNC
     select QCM_UTILS_UTILS_FUNC
     select QAPP_UNIRTOS_MODEM_AT_BYPASS_FUNC
+    select QAPP_UNIRTOS_QINDCFG_AT_FUNC
     default n
 
 config QAPP_UNIRTOS_USBNET_AT_FUNC
@@ -243,6 +295,70 @@ config QAPP_UNIRTOS_DATACALL_AT_FUNC
     select QCM_UTILS_UTILS_FUNC
     select QOSA_NW_FUNC
     default n
+
+config QAPP_UNIRTOS_MIFI_AT_FUNC
+    bool "UniRTOS MIFI compatibility AT function"
+    select QAPP_UNIRTOS_STD_FUNC
+    select QCM_MIFI_FUNC
+    select QCM_MIFI_SIMPOLL_FUNC
+    select QCM_FILE_API_FUNC
+    select QOSA_IIC_FUNC
+    select QOSA_LPM_FUNC
+    default n
+
+config QAPP_UNIRTOS_MIFI_SIM_AT_FUNC
+    bool "UniRTOS MIFI SIM AT function"
+    depends on QAPP_UNIRTOS_MIFI_AT_FUNC
+    default y
+
+config QAPP_UNIRTOS_MIFI_WIFI_AT_FUNC
+    bool "UniRTOS MIFI WiFi AT function"
+    depends on QAPP_UNIRTOS_MIFI_AT_FUNC
+    default y
+
+config QAPP_UNIRTOS_MIFI_NET_AT_FUNC
+    bool "UniRTOS MIFI Network AT function"
+    depends on QAPP_UNIRTOS_MIFI_AT_FUNC
+    default y
+
+config QAPP_UNIRTOS_MIFI_SYSTEST_AT_FUNC
+    bool "UniRTOS MIFI System Test & Peripheral AT function"
+    depends on QAPP_UNIRTOS_MIFI_AT_FUNC
+    default y
+
+config QAPP_UNIRTOS_MIFI_OPAUTH_AT_FUNC
+    bool "UniRTOS MIFI Operator Auth AT function"
+    depends on QAPP_UNIRTOS_MIFI_AT_FUNC
+    default y
+
+config QAPP_UNIRTOS_MIFI_APP_FUNC
+    bool "UniRTOS MIFI App runtime function"
+    depends on QAPP_UNIRTOS_MIFI_AT_FUNC
+    select QCM_MIFI_POWER_SAVER_FUNC
+    select QCM_UTILS_BASE64_FUNC
+    select QOSA_MIFI_KEY_FUNC if QOSA_UIS8360S_PLATFORM_FUNC
+    select QOSA_MIFI_LED_FUNC if QOSA_UIS8360S_PLATFORM_FUNC
+    select QOSA_USBNET_FUNC
+    default y
+
+choice QAPP_UNIRTOS_MIFI_BATTERY_TYPE
+    prompt "UniRTOS MIFI battery type"
+    depends on QAPP_UNIRTOS_MIFI_AT_FUNC
+    default QAPP_UNIRTOS_MIFI_BATTERY_DKS_3000MA
+
+config QAPP_UNIRTOS_MIFI_BATTERY_CVK_3000MA
+    bool "CVK 3000mAh battery"
+
+config QAPP_UNIRTOS_MIFI_BATTERY_CVK_5000MA
+    bool "CVK 5000mAh battery"
+
+config QAPP_UNIRTOS_MIFI_BATTERY_DKS_3000MA
+    bool "DKS 3000mAh battery"
+
+config QAPP_UNIRTOS_MIFI_BATTERY_XKD_4800MA
+    bool "XKD 4800mAh battery"
+
+endchoice
 
 config QAPP_UNIRTOS_DEV_AT_FUNC
     bool "UniRTOS device std At function"
@@ -301,6 +417,13 @@ config QAPP_UNIRTOS_LBS_AT_FUNC
     select QCM_URC_FUNC
     default n
 
+config QAPP_UNIRTOS_FIREWALL_AT_FUNC
+    bool "UniRTOS firewall at std function"
+    select QAPP_UNIRTOS_STD_FUNC
+    select QCM_URC_FUNC
+    select QCM_FIREWALL_FUNC
+    default n
+
 config QAPP_UNIRTOS_UART_AT_FUNC
     bool "UniRTOS UART at std function"
     select QAPP_UNIRTOS_STD_FUNC
@@ -314,6 +437,13 @@ config QAPP_UNIRTOS_AT_CSUB_CMD
 config QAPP_UNIRTOS_AT_QINF_CMD
     bool "UniRTOS AT+QINF CMD"
     select QAPP_UNIRTOS_STD_FUNC
+    default n
+
+config QAPP_UNIRTOS_AT_QCLI_CMD
+    bool "UniRTOS AT+QCLI CMD"
+    select QAPP_UNIRTOS_STD_FUNC
+    select QOSA_CLI_FUNC
+    select QOSA_MODEM_DEV_FUNC
     default n
 
 config QAPP_UNIRTOS_AT_QGMR_CMD
@@ -365,6 +495,11 @@ config QAPP_UNIRTOS_AT_QPOWD_CMD
     select QAPP_UNIRTOS_STD_FUNC
     default n
 
+config QAPP_UNIRTOS_AT_QBOOTREASON_CMD
+    bool "UniRTOS AT+QBOOTREASON CMD"
+    select QAPP_UNIRTOS_STD_FUNC
+    default n
+
 config QAPP_UNIRTOS_AT_CBC_CMD
     bool "UniRTOS AT+CBC CMD"
     select QAPP_UNIRTOS_STD_FUNC
@@ -407,6 +542,13 @@ config QAPP_UNIRTOS_AT_CCLK_CMD
     select QAPP_UNIRTOS_DEV_AT_FUNC
     default n
 
+config QAPP_UNIRTOS_AT_CPNER_CMD
+    bool "UniRTOS AT+CPNER CMD"
+    depends on QOSA_SMS_CBS_FUNC
+    depends on QAPP_UNIRTOS_SMS_AT_FUNC
+    select QAPP_UNIRTOS_STD_FUNC
+    default n
+
 config QAPP_UNIRTOS_AT_RETSET_CMD
     bool "UniRTOS AT+RETSET CMD"
     select QAPP_UNIRTOS_STD_FUNC
@@ -417,6 +559,12 @@ config QHTTPCFG_CUSTOM_HEADER_EMPTY_SHOW
     select QAPP_UNIRTOS_STD_FUNC
     select QAPP_UNIRTOS_HTTP_AT_FUNC
     select QCM_QURL_FUNC
+    default n
+
+config QAPP_UNIRTOS_AT_QCFEM_CMD
+    bool "UniRTOS AT+QCFEM CMD"
+    depends on QOSA_EIGEN_PLATFORM_FUNC || QOSA_QCX_PLATFORM_FUNC
+    select QAPP_UNIRTOS_STD_FUNC
     default n
 
 config QAPP_UNIRTOS_AT_STYLE_REG_FUNC
@@ -454,10 +602,21 @@ config QAPP_UNIRTOS_AT_GPIO_CMD
     select QAPP_UNIRTOS_STD_FUNC
     default n
 
+config QAPP_UNIRTOS_AT_QGPIOV_CMD
+    bool "UniRTOS AT+QGPIOV CMD"
+    select QAPP_UNIRTOS_STD_FUNC
+    default n
+
 config QAPP_UNIRTOS_WIFISCAN_AT_FUNC
     bool "UniRTOS AT+QWIFISCAN CMD"
     select QOSA_WIFISCAN_FUNC
     select QCM_URC_FUNC
+    default n
+
+config QAPP_UNIRTOS_WIFI_AT_FUNC
+    bool "UniRTOS WiFi AT CMD"
+    select QAPP_UNIRTOS_STD_FUNC
+    select QOSA_WIFI_FUNC
     default n
 
 config QAPP_UNIRTOS_QDMZ_AT_FUNC
@@ -491,6 +650,7 @@ config QAPP_UNIRTOS_FTM_AT_FUNC
     select QAPP_UNIRTOS_STD_FUNC
     select QOSA_FTM_FUNC
     default n
+
 
 config QAPP_UNIRTOS_AT_IPR_CMD
     bool "UniRTOS AT+IPR at function"
@@ -558,6 +718,11 @@ config QAPP_UNIRTOS_AT_QDBGCFG_DUMPCFG_CMD
     bool "UniRTOS AT+QDBGCFG DUMPCFG at function"
     select QAPP_UNIRTOS_STD_FUNC
     select QAPP_UNIRTOS_AT_QDBGCFG_CMD
+    default n
+
+config QAPP_UNIRTOS_AT_QDIAGPORT_CMD
+    bool "UniRTOS AT+QDIAGPORT at function"
+    select QAPP_UNIRTOS_STD_FUNC
     default n
 
 config QAPP_UNIRTOS_AT_QDBGCFG_IPTRACE_CMD
@@ -632,6 +797,12 @@ config QAPP_UNIRTOS_AT_QIND_MODE_CMD
         8   SYSINFO_SYSTEMO_SUBMODE_UTRAN
         17  SYSINFO_SYSTEMO_SUBMODE_EUTRAN
 
+config QAPP_UNIRTOS_AT_STK_CMD
+    bool "UniRTOS AT^STA/^STGI/^STR command function"
+    select QAPP_UNIRTOS_STD_FUNC
+    select QOSA_SIM_STK_FUNC
+    default n
+
 config QAPP_UNIRTOS_AT_QWRITESIM_CMD
     bool "UniRTOS AT+QWRITESIM at function"
     select QAPP_UNIRTOS_STD_FUNC
@@ -682,7 +853,15 @@ config QAPP_UNIRTOS_QCEER_AT_FUNC
 config QAPP_UNIRTOS_JD_AT_FUNC
     bool "UniRTOS jamm detect atc function"
     select QAPP_UNIRTOS_STD_FUNC
+    select QOSA_JD_FUNC
     select QCM_URC_FUNC
+    default n
+
+config QAPP_UNIRTOS_EDRX_AT_FUNC
+    bool "UniRTOS AT+CEDRX CMD"
+    select QOSA_NW_EDRX_FUNC
+    select QAPP_UNIRTOS_STD_FUNC
+    select QAPP_UNIRTOS_NW_AT_FUNC
     default n
 
 config QAPP_UNIRTOS_GNSS_AT_FUNC
@@ -720,6 +899,11 @@ config QAPP_UNIRTOS_AT_QCFG_DHCP_CFG_CMD
     select QAPP_UNIRTOS_STD_FUNC
     default n
 
+config QAPP_UNIRTOS_AT_QCFG_USBNET_RI_CMD
+    bool "UniRTOS AT+QCFG USBNET RI CMD"
+    select QAPP_UNIRTOS_STD_FUNC
+    default n
+
 config QAPP_UNIRTOS_AT_QREDDAAVN_CMD
     bool "UniRTOS AT+QREDDAAVN CMD"
     select QAPP_UNIRTOS_STD_FUNC
@@ -738,6 +922,12 @@ config QAPP_OEM_LT_AT_FUNC
     select QOSA_NW_FUNC
     default n
 
+config QAPP_OEM_RWR_AT_FUNC
+    bool "UniRTOS OEM RWR at function"
+    select QAPP_UNIRTOS_STD_FUNC
+    select QOSA_OEM_RWR_FUNC
+    default n
+
 config QAPP_UNIRTOS_AT_QCFG_PDPREACT_CMD
     bool "UniRTOS AT+QCFG PDPREACT CMD"
     select QAPP_UNIRTOS_STD_FUNC
@@ -752,6 +942,12 @@ config QAPP_UNIRTOS_AT_QCFG_SIMWPROTECT_CMD
 
 config QAPP_UNIRTOS_AT_QCFG_SERVICE_DOMAIN_CMD
     bool "UniRTOS AT+QCFG servicedomain function"
+    select QAPP_UNIRTOS_STD_FUNC
+    select QOSA_NW_FUNC
+    default n
+
+config QAPP_UNIRTOS_AT_QCFG_PDPREMAP_CMD
+    bool "UniRTOS AT+QCFG pdpremap function"
     select QAPP_UNIRTOS_STD_FUNC
     select QOSA_NW_FUNC
     default n
@@ -773,6 +969,13 @@ config QAPP_UNIRTOS_CLAT_AT_FUNC
     depends on QOSA_CLAT_FUNC
     default n
 
+config QAPP_UNIRTOS_AT_ESIM_EID_CMD
+    bool "UniRTOS AT+QESIM eid CMD"
+    select QAPP_UNIRTOS_STD_FUNC
+    select QAPP_UNIRTOS_SIM_AT_FUNC
+    select QOSA_ESIM_EID_QUERY_FUNC
+    default n
+
 config QAPP_UNIRTOS_SENDHEX
     bool "Configure AT0 send ok and send fail not to be converted to numbers"
     select QAPP_UNIRTOS_STD_FUNC
@@ -791,7 +994,13 @@ config UNIRTOS_FLASH_REPAIR_ERASE_TEST_AT_FUNC
     depends on QOSA_FLASH_TEST_FUNC
     default n
 
-config QAPP_AUTOAPN_AT_FUNC
+config UNIRTOS_FLASH_QUAD_ENABLE_TEST_AT_FUNC
+    bool "UniRTOS qftest quad enable (QE) test at function"
+    depends on QAPP_UNIRTOS_STD_FUNC
+    depends on QOSA_FLASH_TEST_FUNC
+    default n
+
+config QAPP_UNIRTOS_AUTOAPN_AT_FUNC
     bool "UniRTOS autoapn at function"
     depends on QAPP_UNIRTOS_STD_FUNC
     depends on QOSA_AUTOAPN_FUNC
@@ -802,6 +1011,72 @@ config QAPP_UNIRTOS_ABNORMAL_BASESTATION_AT_FUNC
     depends on QAPP_UNIRTOS_STD_FUNC
     depends on QOSA_ABNORMAL_BASESTATION_FUNC
     default n
+
+config QAPP_UNIRTOS_AT_QCFG_BIP_CMD
+    bool "UniRTOS AT+QCFG BIP CMD"
+    select QAPP_UNIRTOS_STD_FUNC
+    select QAPP_UNIRTOS_SIM_AT_FUNC
+    default n
+
+config QAPP_UNIRTOS_CMUX_AT_FUNC
+    bool "UniRTOS CMUX at function"
+    depends on QAPP_UNIRTOS_STD_FUNC
+    depends on UNIRTOS_CMUX_SUPPORT
+    default n
+
+config QAPP_UNIRTOS_CPU_USAGE_FUNC
+    bool "UniRTOS CPU usage monitoring API (qosa_cpu_usage_start/stop)"
+    select QAPP_UNIRTOS_STD_FUNC
+    default n
+
+
+config QAPP_UNIRTOS_AT_QCPULOAD_CMD
+    bool "UniRTOS AT+QCPULOAD command"
+    select QAPP_UNIRTOS_STD_FUNC
+    select QAPP_UNIRTOS_CPU_USAGE_FUNC
+    default n
+
+
+config QAPP_UNIRTOS_AT_QCFG_QOPS_FMT_CMD
+    bool "UniRTOS AT+QCFG qops fmt function"
+    depends on QAPP_UNIRTOS_STD_FUN
+    depends on QOSA_NW_FUNC
+    default n
+
+config QAPP_UNIRTOS_AT_QSCANEX_CMD
+    bool "UniRTOS AT+QSCANEX CMD"
+    select QAPP_UNIRTOS_STD_FUNC
+    depends on QAPP_UNIRTOS_NW_AT_FUNC
+    default n
+
+config QAPP_UNIRTOS_AT_QANTINFO_CMD
+    bool "UniRTOS AT+QANTINFO CMD"
+    select QAPP_UNIRTOS_STD_FUNC
+    select QOSA_NW_ANTENNA_INFO_FUNC
+    depends on QAPP_UNIRTOS_NW_AT_FUNC
+    default n
+
+config QAPP_UNIRTOS_SPINET_AT_FUNC
+    bool "UniRTOS AT+QSPINETCFG function"
+    select QAPP_UNIRTOS_STD_FUNC
+    select QCM_VNET_SPINET_FUNC
+    default n
+
+config QAPP_UNIRTOS_AGORA_RTC_AT_FUNC
+    bool "UniRTOS AGORA RTC at function"
+    depends on QAPP_UNIRTOS_STD_FUNC
+    select QAPP_AGORA_RTSA_SDK_DEMO_FUNC
+    default n
+
+config QAPP_UNIRTOS_EG21_AT_FUNC
+    bool "EG21 compatibility AT function"
+    select QAPP_UNIRTOS_STD_FUNC
+    default n
+    help
+      EG21 compatible AT commands. Handlers live in apps/unirtos_std_eg21,
+      split into platform/app/modem; add a new command to the matching
+      section of apps/unirtos_std_eg21/inc/unirtos_atcmd_eg21_def.h.
+
 
 if QOSA_FEATURE_ALLOW_CHANGE
 orsource "unirtos_std_config.Kconfig"

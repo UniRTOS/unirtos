@@ -13,8 +13,8 @@
 * <tr><td>2025-09-16 <td>1.0 <td>felix.huang <td> Init
 * </table>
 **********************************************************************/
-#ifndef __QOSA_FOTA_H__
-#define __QOSA_FOTA_H__
+#ifndef __QOSA_FLASH_H__
+#define __QOSA_FLASH_H__
 
 #include "qosa_def.h"
 #include "qosa_sys.h"
@@ -154,6 +154,15 @@ typedef struct
 qosa_flash_count_info_t *qosa_get_flash_erase_count(void);
 
 /**
+ * @brief Initialize LFS erase statistics tracking and register the flash operation callback.
+ *
+ * @return int Operation execution result.
+ * @retval QOSA_FLASH_OK Initialization succeeded or was already completed.
+ * @retval Other error codes Initialization failed.
+ */
+int qosa_flash_erase_count_init(void);
+
+/**
  * @brief Start Flash stress test task
  *
  * This function is used to create and start the Flash stress test task. If the task already exists, it will not be created again.
@@ -246,5 +255,20 @@ qosa_int32_t qosa_flash_Protection_interface_get(qosa_uint32_t address, qosa_siz
  * 
  */
 qosa_bool_t qosa_flash_repair_erase_test(const char * partition_name, qosa_uint8_t type, qosa_uint32_t erase_num);
+
+/**
+ * @brief Get the flash Quad Enable (QE) status. Implemented on the platform side.
+ *
+ * @return QOSA_TRUE - QE enabled, QOSA_FALSE - QE disabled.
+ */
+qosa_bool_t qosa_flash_qe_get(void);
+
+/**
+ * @brief Set the flash Quad Enable (QE) status, with read-back verification.
+ *
+ * @param enable QOSA_TRUE to enable QE, QOSA_FALSE to disable QE.
+ * @return QOSA_TRUE on success (read-back confirmed), QOSA_FALSE on failure.
+ */
+qosa_bool_t qosa_flash_qe_set(qosa_bool_t enable);
 
 #endif

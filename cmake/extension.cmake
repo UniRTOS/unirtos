@@ -161,6 +161,7 @@ function(collect_qos_application_projects base_dir out_var)
         apps
         app_init
         unirtos_std
+        unirtos_std_gw
         include
         common
         template

@@ -42,7 +42,7 @@ typedef enum
 } qcm_ping_error_e;
 
 /**
- * @struct ping_task_msg_t
+ * @struct qcm_ping_config_type
  * @brief Configuration for sending ping packets
  */
 typedef struct
@@ -51,6 +51,7 @@ typedef struct
     qosa_uint32_t ping_response_time_out; /*!< Wait time for ping response, ms      */
     qosa_uint32_t num_pings;              /*!< Number of times to ping              */
     qosa_uint32_t ttl;                    /*!< Time To Live for the ping packet     */
+    qosa_int8_t   dns_ping_type;          /*!< DNS resolution type for ping operation, 0: IPv4; 1: IPv6; -1: default first result */
 } qcm_ping_config_type;
 
 /**

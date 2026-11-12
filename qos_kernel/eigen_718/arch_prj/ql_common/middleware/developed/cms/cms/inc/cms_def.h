@@ -215,28 +215,28 @@ typedef enum _EPAT_cmsChanId_Enum
 
     CMS_CHAN_5 = 5,
 
-#if defined(UNIRTOS_OPEN_MODE_SUPPORT) && defined(UNIRTOS_COMMON_MODIFY)
-    UNIRTOS_CMS_VIRT_CHAN = 7, // For virtual AT port
-#endif /* defined(UNIRTOS_OPEN_MODE_SUPPORT) && defined(UNIRTOS_COMMON_MODIFY) */
 
 #if defined(QL_UART0_AT_SUPPORT)
-    CMS_CHAN_6      = 6,
-    CMS_CHAN_UART0  = 6,
-
-    CMS_CHAN_8      = 8,
-    CMS_CHAN_NUM = 11,
-#else /* QL_UART0_AT_SUPPORT */
-    CMS_CHAN_NUM = 8,
+    CMS_CHAN_UART0=6,
 #endif /* QL_UART0_AT_SUPPORT */
 
+#if defined(UNIRTOS_OPEN_MODE_SUPPORT) && defined(UNIRTOS_COMMON_MODIFY)
+    UNIRTOS_CMS_VIRT_CHAN=7, // For virtual AT port
+#endif /* defined(UNIRTOS_OPEN_MODE_SUPPORT) && defined(UNIRTOS_COMMON_MODIFY) */
+    CMS_CHAN_USBMODEM=8,
+
+#ifdef UNIRTOS_COMMON_MODIFY
+    CMS_CHAN_CMUX_1=9,
+    CMS_CHAN_CMUX_2,
+    CMS_CHAN_CMUX_3,
+    CMS_CHAN_CMUX_4,
+#endif /* UNIRTOS_COMMON_MODIFY */
+
+    CMS_CHAN_NUM,
     CMS_CHAN_MAX = 15
 }cmsChanId;
 
-#if defined(QL_UART0_AT_SUPPORT)
-#define MID_WARE_USED_AT_CHAN_NUM       11  //(CMS_CHAN_NUM-1)
-#else /* QL_UART0_AT_SUPPORT */
 #define MID_WARE_USED_AT_CHAN_NUM       (CMS_CHAN_NUM-1)
-#endif /* QL_UART0_AT_SUPPORT */
 
 /*
  * CMS task OSA timer ID defination:

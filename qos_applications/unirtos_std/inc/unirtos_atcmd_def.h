@@ -26,6 +26,9 @@
 #include "unirtos_atcmd_general.h"
 #include "unirtos_atcmd_version.h"
 
+#ifdef CONFIG_QOSA_OEM_DL_FUNC
+#include "unirtos_atcmd_gw_cfg.h"
+#endif
 #ifdef CONFIG_QAPP_UNIRTOS_SECBOOT_AT_FUNC
 #include "unirtos_atcmd_secboot.h"
 #endif /*CONFIG_QAPP_UNIRTOS_SECBOOT_AT_FUNC*/
@@ -58,9 +61,21 @@
 #include "unirtos_atcmd_usbnet.h"
 #endif
 
+#ifdef CONFIG_QAPP_UNIRTOS_CMUX_AT_FUNC
+#include "unirtos_atcmd_cmux.h"
+#endif
+
+#ifdef CONFIG_QAPP_UNIRTOS_AGORA_RTC_AT_FUNC
+#include "unirtos_atcmd_agora_rtc.h"
+#endif /* CONFIG_QAPP_UNIRTOS_AGORA_RTC_AT_FUNC */
+
 #ifdef CONFIG_QAPP_UNIRTOS_DATACALL_AT_FUNC
 #include "unirtos_atcmd_datacall.h"
 #endif
+
+#ifdef CONFIG_QAPP_UNIRTOS_MIFI_AT_FUNC
+#include "unirtos_atcmd_mifi.h"
+#endif /* CONFIG_QAPP_UNIRTOS_MIFI_AT_FUNC */
 
 #ifdef CONFIG_QAPP_UNIRTOS_AT_CFUN_CMD
 #include "unirtos_atcmd_dev.h"
@@ -84,6 +99,10 @@
 #ifdef CONFIG_QAPP_UNIRTOS_PING_AT_FUNC
 #include "unirtos_atcmd_ping.h"
 #endif /* CONFIG_QAPP_UNIRTOS_PING_AT_FUNC */
+
+#ifdef CONFIG_QAPP_UNIRTOS_HY_ANDLINK_AT_FUNC
+#include "unirtos_atcmd_hy_andlink.h"
+#endif /* CONFIG_QAPP_UNIRTOS_HY_ANDLINK_AT_FUNC */
 
 #ifdef CONFIG_QAPP_UNIRTOS_LWM2M_AT_FUNC
 #include "unirtos_atcmd_lwm2m.h"
@@ -155,6 +174,10 @@
 #include "unirtos_atcmd_lbs.h"
 #endif /* CONFIG_QAPP_UNIRTOS_LBS_AT_FUNC */
 
+#ifdef CONFIG_QAPP_UNIRTOS_FIREWALL_AT_FUNC
+#include "unirtos_atcmd_firewall.h"
+#endif /* CONFIG_QAPP_UNIRTOS_FIREWALL_AT_FUNC */
+
 #ifdef CONFIG_QAPP_UNIRTOS_UART_AT_FUNC
 #include "unirtos_atcmd_uart.h"
 #endif /* CONFIG_QAPP_UNIRTOS_UART_AT_FUNC */
@@ -170,6 +193,10 @@
 #ifdef CONFIG_QAPP_UNIRTOS_LICENSE_AT_FUNC
 #include "unirtos_atcmd_license.h"
 #endif /* CONFIG_QAPP_UNIRTOS_LICENSE_AT_FUNC */
+
+#ifdef CONFIG_QAPP_UNIRTOS_QINGYA_CODE_DECODER_AT_FUNC
+#include "unirtos_atcmd_qingya.h"
+#endif /* CONFIG_QAPP_UNIRTOS_QINGYA_CODE_DECODER_AT_FUNC */
 
 #ifdef CONFIG_QAPP_UNIRTOS_AT_LPM_FUNC
 #include "unirtos_atcmd_lpm.h"
@@ -187,9 +214,17 @@
 #include "unirtos_atcmd_wifiscan.h"
 #endif /* CONFIG_QAPP_UNIRTOS_WIFISCAN_AT_FUNC */
 
+#ifdef CONFIG_QAPP_UNIRTOS_WIFI_AT_FUNC
+#include "unirtos_atcmd_wifi.h"
+#endif /* CONFIG_QAPP_UNIRTOS_WIFI_AT_FUNC */
+
 #ifdef CONFIG_QAPP_UNIRTOS_AT_QDBGCFG_CMD
 #include "unirtos_atcmd_qdbgcfg.h"
 #endif /* CONFIG_QAPP_UNIRTOS_AT_QDBGCFG_CMD */
+
+#ifdef CONFIG_QAPP_UNIRTOS_AT_QCLI_CMD
+#include "unirtos_atcmd_qcli.h"
+#endif /* CONFIG_QAPP_UNIRTOS_AT_QCLI_CMD */
 
 #ifdef CONFIG_QAPP_UNIRTOS_FACTORY_AT_FUNC
 #include "unirtos_atcmd_factory.h"
@@ -203,7 +238,11 @@
 
 #ifdef CONFIG_QOSA_UIS8852_PLATFORM_FUNC
 #include "unirtos_atcmd_uis8852.h"
-#endif
+#endif /* CONFIG_QOSA_UIS8852_PLATFORM_FUNC */
+
+#ifdef CONFIG_QOSA_UIS8360S_PLATFORM_FUNC
+#include "unirtos_atcmd_uis8360s.h"
+#endif /* CONFIG_QOSA_UIS8360S_PLATFORM_FUNC */
 
 #ifdef CONFIG_QOSA_QT2131_PLATFORM_FUNC
 #include "unirtos_atcmd_qt2131.h"
@@ -237,9 +276,9 @@
 #include "unirtos_atcmd_esim.h"
 #endif /* CONFIG_QAPP_UNIRTOS_AT_QESIM_CMD */
 
-#ifdef CONFIG_QOSA_EIGEN_PLATFORM_FUNC
+#if defined(CONFIG_QOSA_EIGEN_PLATFORM_FUNC) || defined(CONFIG_QOSA_QCX_PLATFORM_FUNC)
 #include "unirtos_atcmd_eigen.h"
-#endif /* CONFIG_QOSA_EIGEN_PLATFORM_FUNC */
+#endif /* CONFIG_QOSA_EIGEN_PLATFORM_FUNC || CONFIG_QOSA_QCX_PLATFORM_FUNC */
 
 #ifdef CONFIG_QAPP_UNIRTOS_GNSS_AT_FUNC
 #include "unirtos_atcmd_gnss.h"
@@ -251,11 +290,27 @@
 
 #ifdef CONFIG_QAPP_OEM_LT_AT_FUNC
 #include "unirtos_atcmd_LT.h"
+#include "unirtos_atcmd_lt_tcp.h"
 #endif /* CONFIG_QAPP_OEM_LT_AT_FUNC*/
+#ifdef CONFIG_QAPP_UNIRTOS_STD_NEOWAY_FUNC
+#include "unirtos_atcmd_nw.h"
+#endif /* CONFIG_QAPP_UNIRTOS_STD_NEOWAY_FUNC */
 
 #ifdef CONFIG_QAPP_UNIRTOS_AT_CALL_CONTROL_CMD
 #include "unirtos_atcmd_voice_call.h"
 #endif /* CONFIG_QAPP_UNIRTOS_AT_CALL_CONTROL_CMD */
+
+#ifdef  CONFIG_QOSA_OEM_DL_FUNC
+#include "unirtos_atcmd_gw.h"
+#endif
+
+#ifdef CONFIG_QAPP_UNIRTOS_SPINET_AT_FUNC
+#include "unirtos_atcmd_spinet.h"
+#endif /* CONFIG_QAPP_UNIRTOS_SPINET_AT_FUNC */
+
+#ifdef CONFIG_QAPP_UNIRTOS_EG21_AT_FUNC
+#include "unirtos_atcmd_eg21.h"
+#endif /* CONFIG_QAPP_UNIRTOS_EG21_AT_FUNC */
 
 void qstd_exec_qatlist_cmd(qosa_at_cmd_t *cmd);
 
@@ -323,6 +378,12 @@ qosa_at_desc_t unir_img_at_desc[] = {
     {"+CCHC",          qstd_exec_cchc_cmd,             0},
     {"+CNUM",          qstd_exec_cnum_cmd,             0},
 
+#ifdef CONFIG_QAPP_UNIRTOS_AT_STK_CMD
+    {"^STA",           qstd_exec_sta_cmd,              0},
+    {"^STGI",          qstd_exec_stgi_cmd,             0},
+    {"^STR",           qstd_exec_str_cmd,              0},
+#endif
+
 #ifdef CONFIG_QOSA_DSDS_FUNC
     {"+QDSCCID",       qstd_exec_qdsccid_cmd,          0},
     {"+QDSIMI",        qstd_exec_qdsimi_cmd,           0},
@@ -361,6 +422,13 @@ qosa_at_desc_t unir_img_at_desc[] = {
     {"+CTZR",          qstd_exec_ctzr_cmd,         0},
     {"+CTZU",          qstd_exec_ctzu_cmd,         0},
     {"+COPS",          qstd_exec_cops_cmd,         0},
+#ifdef CONFIG_QOSA_NW_EDRX_FUNC
+#ifdef CONFIG_QAPP_UNIRTOS_EDRX_AT_FUNC
+    {"+CEDRXS",        qstd_exec_cedrxs_cmd,       0},
+    {"+QPTWEDRXS",     qstd_exec_qptwedrxs_cmd,    0},
+    {"+CEDRXRDP",      qstd_exec_cedrxrdp_cmd,     0},
+#endif /*CONFIG_QAPP_UNIRTOS_EDRX_AT_FUNC*/
+#endif /* CONFIG_QOSA_NW_EDRX_FUNC */
 #ifdef CONFIG_QOSA_SIM_FUNC
     {"+QSPN",          qstd_exec_qspn_cmd,         0},
 #endif /* CONFIG_QOSA_SIM_FUNC */
@@ -372,6 +440,12 @@ qosa_at_desc_t unir_img_at_desc[] = {
     {"+CSCON",         qstd_exec_cscon_cmd,        0},
     {"+QOPS",          qstd_exec_qops_cmd,         0},
     {"+QSCAN",         qstd_exec_qscan_cmd,        0},
+#ifdef CONFIG_QAPP_UNIRTOS_AT_QSCANEX_CMD
+    {"+QSCANEX",       qstd_exec_qscanex_cmd,      0},
+#endif
+#ifdef CONFIG_QAPP_UNIRTOS_AT_QANTINFO_CMD
+    {"+QANTINFO",      qstd_exec_qantinfo_cmd,     0},
+#endif /* CONFIG_QAPP_UNIRTOS_AT_QANTINFO_CMD */
     // {"+QOPSCFG",       qstd_exec_qopscfg_cmd,      0},
     // {"+CVMOD",         qstd_exec_cvmod_cmd,        0},
     // {"+CEUS",          qstd_exec_ceus_cmd,         0},
@@ -387,6 +461,7 @@ qosa_at_desc_t unir_img_at_desc[] = {
 #endif /* #ifdef CONFIG_QAPP_UNIRTOS_QBAND_AT_FUNC */
 
 #ifdef CONFIG_QAPP_UNIRTOS_ABNORMAL_BASESTATION_AT_FUNC
+     {"+QBLACKCELL",        qstd_exec_qblackcell_cmd,       0},
      {"+QBLACKCELLCFGEX",   qstd_exec_qblackcellcfgex_cmd,  0},
      {"+QBLACKCELLWEIGHT",  qstd_exec_qblackcellweight_cmd, 0},
 #endif /*CONFIG_QAPP_UNIRTOS_ABNORMAL_BASESTATION_AT_FUNC*/
@@ -404,6 +479,14 @@ qosa_at_desc_t unir_img_at_desc[] = {
 
 #ifdef CONFIG_QAPP_UNIRTOS_WIFISCAN_AT_FUNC
     {"+QWIFISCAN",     qstd_exec_qwifiscan_cmd,        0},
+#endif
+
+#ifdef CONFIG_QAPP_UNIRTOS_WIFI_AT_FUNC
+    {"+QWIFI",         qstd_exec_qwifi_cmd,            0},
+    {"+QWSSID",        qstd_exec_qwssid_cmd,           0},
+    {"+QWAUTH",        qstd_exec_qwauth_cmd,           0},
+    {"+QWMOCH",        qstd_exec_qwmoch_cmd,           0},
+    {"+QWCLIP",        qstd_exec_qwclip_cmd,           0},
 #endif
 
 #ifdef CONFIG_QAPP_UNIRTOS_QINDCFG_AT_FUNC
@@ -435,6 +518,49 @@ qosa_at_desc_t unir_img_at_desc[] = {
     {"+CGCONTRDP",     qstd_exec_cgcontrdp_cmd,    0},
 #endif
 
+//#ifdef CONFIG_QAPP_UNIRTOS_MIFI_AT_FUNC
+#if defined(CONFIG_QAPP_UNIRTOS_MIFI_AT_FUNC) && defined(CONFIG_QOSA_ASR1805_PLATFORM_FUNC)
+
+#ifdef CONFIG_QAPP_UNIRTOS_MIFI_NET_AT_FUNC
+    {"+QMIFINET",      qstd_exec_qmifinet_cmd,      0},
+#endif
+
+#ifdef CONFIG_QAPP_UNIRTOS_MIFI_SYSTEST_AT_FUNC
+    {"+QLAPPTEST",     qstd_exec_qlapptest_cmd,     0},
+    {"+QLAPPTESTEX",   qstd_exec_qlapptestex_cmd,   0},
+    {"+QLAPPTESTACT",  qstd_exec_qlapptestact_cmd,  0},
+    {"+QSLEEPTEST",    qstd_exec_qsleeptest_cmd,    0},
+    {"+QLEDTEST",      qstd_exec_qledtest_cmd,      0},
+    {"+QKEYTEST",      qstd_exec_qkeytest_cmd,      0},
+    {"+QBATTERYTEST",  qstd_exec_qbatterytest_cmd,  0},
+    {"+QBATTERYSOC",   qstd_exec_qbatterysoc_cmd,   0},
+    {"+OGMR",          qstd_exec_ogmr_cmd,           0},
+    {"+QODMVER",       qstd_exec_qodmver_cmd,        0},
+    {"+QODMSUB",       qstd_exec_qodmsub_cmd,        0},
+#endif
+
+#ifdef CONFIG_QOSA_ASR1805_PLATFORM_FUNC   /* 8360 by unirtos_atcmd_uis8360s.c */
+    {"+QWIFITEST",     qstd_exec_qwifitest_cmd,     0},
+#endif
+
+#ifdef CONFIG_QAPP_UNIRTOS_MIFI_WIFI_AT_FUNC
+    {"+QWIFI",         qstd_exec_wifi_cmd,           0},
+    {"+QWSSID",        qstd_exec_qwssid_cmd,         0},
+    {"+QWAUTH",        qstd_exec_qwauth_cmd,         0},
+#endif
+
+#ifdef CONFIG_QAPP_UNIRTOS_MIFI_SIM_AT_FUNC
+    {"+QSWSIM",        qstd_exec_qswsim_cmd,         0},
+    {"+QSIMBAN",       qstd_exec_qsimban_cmd,        0},
+    {"+QSIMPOLL",      qstd_exec_qsimpoll_cmd,       0},
+#endif
+
+#ifdef CONFIG_QAPP_UNIRTOS_MIFI_OPAUTH_AT_FUNC
+    {"+QOPAUTHSIMINFO", qstd_exec_qopauthsiminfo_cmd, 0},
+#endif
+
+#endif /* CONFIG_QAPP_UNIRTOS_MIFI_AT_FUNC */
+
 #ifdef CONFIG_QAPP_UNIRTOS_PPP_AT_FUNC
     {"+QPPPDROP",      qstd_exec_qpppdrop_cmd,     0},
 #endif /* CONFIG_QAPP_UNIRTOS_PPP_AT_FUNC */
@@ -453,6 +579,9 @@ qosa_at_desc_t unir_img_at_desc[] = {
     {"+CNMA",          qstd_exec_cnma_cmd,         0},
     {"+CNMI",          qstd_exec_cnmi_cmd,         0},
     {"+CPMS",          qstd_exec_cpms_cmd,         0},
+#ifdef CONFIG_QAPP_UNIRTOS_AT_CPNER_CMD
+    {"+CPNER",         qstd_exec_cpner_cmd,        0},
+#endif /* CONFIG_QAPP_UNIRTOS_AT_CPNER_CMD */
     {"+CSCA",          qstd_exec_csca_cmd,         0},
     // {"+CSCB",          qstd_exec_cscb_cmd,         0},
     {"+CSDH",          qstd_exec_csdh_cmd,         0},
@@ -481,7 +610,8 @@ qosa_at_desc_t unir_img_at_desc[] = {
     {"+NSOCL",      unir_exec_nb_nsocl_cmd,        0},
     {"+NSONMI",     unir_exec_nb_nsonmi_cmd,       0},
     {"+NSOSTATUS",  unir_exec_nb_nsostatus_cmd,    0},
-    {"+QIDNSCFG",   unir_exec_nb_tcpip_qidnscfg_cmd, 0},
+    {"+QIDNSCFG",   unir_exec_nb_qidnscfg_cmd,     0},
+    {"+QDNS",       unir_exec_nb_qdns_cmd,         0},
 #endif /* CONFIG_QAPP_UNIRTOS_TCPIP_NB_AT_FUNC */
 
 #ifdef CONFIG_QAPP_UNIRTOS_NB_AT_FUNC
@@ -489,6 +619,30 @@ qosa_at_desc_t unir_img_at_desc[] = {
     {"+CCLK",       qstd_exec_nb_cclk_cmd,         0},
     {"+NRB",        qstd_exec_nrb_cmd,             0},
 #endif /* CONFIG_QAPP_UNIRTOS_NB_AT_FUNC */
+
+#ifdef CONFIG_QAPP_UNIRTOS_AT_NPSMR_CMD
+    {"+NPSMR",      qstd_exec_npsmr_cmd,              0 },
+#endif /* CONFIG_QAPP_UNIRTOS_AT_NPSMR_CMD */
+
+#ifdef CONFIG_QAPP_UNIRTOS_AT_NCONFIG_CMD
+    {"+NCONFIG",    qstd_exec_nconfig_cmd,             0 },
+#endif /* CONFIG_QAPP_UNIRTOS_AT_NCONFIG_CMD */
+
+#ifdef CONFIG_QAPP_UNIRTOS_AT_NPIN_CMD
+    {"+NPIN",       qstd_exec_npin_cmd,            0},
+#endif /* CONFIG_QAPP_UNIRTOS_AT_NPIN_CMD */
+
+#ifdef CONFIG_QAPP_UNIRTOS_AT_NBAND_CMD
+    {"+NBAND",         qstd_exec_nband_cmd,        0},
+#endif /* CONFIG_QAPP_UNIRTOS_AT_NBAND_CMD */
+
+#ifdef CONFIG_QAPP_UNIRTOS_AT_NCSEARFCN_CMD
+    {"+NCSEARFCN",     qstd_exec_ncsearfcn_cmd,    0},
+#endif /* CONFIG_QAPP_UNIRTOS_AT_NCSEARFCN_CMD */
+
+#ifdef CONFIG_QAPP_UNIRTOS_AT_NEARFCN_CMD
+    {"+NEARFCN",        qstd_exec_nearfcn_cmd,      0},
+#endif /* CONFIG_QAPP_UNIRTOS_AT_NEARFCN_CMD */
 
 #ifdef CONFIG_QAPP_UNIRTOS_JD_AT_FUNC
     {"+QJDCFG",   qstd_exec_qjdcfg_cmd,             0},
@@ -532,12 +686,17 @@ qosa_at_desc_t unir_img_at_desc[] = {
     {"+QSSLCLOSE" , qstd_exec_ssl_qsslclose_cmd, 0},
     {"+QSSLOPENEEX" , qstd_exec_ssl_qsslopenex_cmd, 0},
 #endif /* CONFIG_QAPP_UNIRTOS_SSL_AT_FUNC */
+#endif /* CONFIG_QAPP_UNIRTOS_TCPIP_AT_FUNC */
+
 #ifdef CONFIG_QAPP_UNIRTOS_LBS_AT_FUNC
     {"+QLBSCFG", qsd_exec_lbs_qlbscfg_cmd_func, 0},
     {"+QLBS", qsd_exec_lbs_qlbs_cmd_func, 0},
     {"+QLBSEX", qsd_exec_lbs_qlbs_ext_input_cmd_func, 0},
 #endif /* CONFIG_QAPP_UNIRTOS_LBS_AT_FUNC */
-#endif /* CONFIG_QAPP_UNIRTOS_TCPIP_AT_FUNC */
+
+#ifdef CONFIG_QAPP_UNIRTOS_FIREWALL_AT_FUNC
+    {"+QFIREWALLCFG", qstd_exec_firewall_qfcfg_cmd, 0},
+#endif /* CONFIG_QAPP_UNIRTOS_FIREWALL_AT_FUNC */
 
 #ifdef CONFIG_QAPP_UNIRTOS_LWM2M_AT_FUNC
     {"+QLWCFG" , qstd_exec_lwm2m_qlwcfg_cmd, 0},
@@ -556,6 +715,16 @@ qosa_at_desc_t unir_img_at_desc[] = {
     {"+QLWRD" , qstd_exec_lwm2m_qlwrd_cmd, 0},
     {"+QLWRESET" , qstd_exec_lwm2m_qlwreset_cmd, 0},
 #endif /*CONFIG_QAPP_UNIRTOS_LWM2M_AT_FUNC*/
+
+#ifdef CONFIG_QAPP_UNIRTOS_HY_ANDLINK_AT_FUNC
+    {"+QADLCFG",        qstd_exec_hy_andlink_qadlcfg_cmd_func,          0},
+    {"+QADLSTART",      qstd_exec_hy_andlink_qadlstart_cmd_func,        0},
+    {"+QADLSTATUS",     qstd_exec_hy_andlink_qadlstatus_cmd_func,       0},
+    {"+QADLREPORT",     qstd_exec_hy_andlink_qadlreport_cmd_func,       0},
+    {"+QADLSTOP",       qstd_exec_hy_andlink_qadlstop_cmd_func,         0},
+    {"+QADLBINDSTATE",  qstd_exec_hy_andlink_qadlbindstate_cmd_func,    0},
+    // {"+QADLRESET",  qstd_exec_hy_andlink_qadlreset_cmd_func,    0},
+#endif /* CONFIG_QAPP_UNIRTOS_HY_ANDLINK_AT_FUNC */
 
 #ifdef CONFIG_QAPP_UNIRTOS_COAP_AT_FUNC
     {"+QCOAPCFG",          qstd_exec_coap_qcoapcfg_cmd,          0},
@@ -758,7 +927,7 @@ qosa_at_desc_t unir_img_at_desc[] = {
 #endif /* CONFIG_QAPP_UNIRTOS_UART_AT_FUNC */
 
 /** On the EIGEN718, it is a dual qcfg solution, and the AT entry for qcfg is on the platform side */
-#if defined(CONFIG_QAPP_UNIRTOS_AT_QCFG_CMD) && !defined(CONFIG_QOSA_EIGEN718_PLATFORM_FUNC)
+#if defined(CONFIG_QAPP_UNIRTOS_AT_QCFG_CMD)
     {"+QCFG",          qstd_exec_qcfg_cmd,           0 },
 #endif /* CONFIG_QAPP_UNIRTOS_AT_QCFG_CMD */
 
@@ -782,6 +951,10 @@ qosa_at_desc_t unir_img_at_desc[] = {
     {"+QINF",       qstd_exec_qinf_cmd,                0 },
 #endif /* CONFIG_QAPP_UNIRTOS_AT_QINF_CMD */
 
+#ifdef CONFIG_QAPP_UNIRTOS_AT_QCLI_CMD
+    {"+QCLI",       qstd_exec_qcli_cmd,                0 },
+#endif /* CONFIG_QAPP_UNIRTOS_AT_QCLI_CMD */
+
 #ifdef CONFIG_QAPP_UNIRTOS_AT_QGMR_CMD
     {"+QGMR",       qstd_exec_qgmr_cmd,                0 },
 #endif /* CONFIG_QAPP_UNIRTOS_AT_QGMR_CMD */
@@ -793,9 +966,9 @@ qosa_at_desc_t unir_img_at_desc[] = {
     {"*PROD",       qstd_exec_prod_cmd,              0 },
 #endif /* CONFIG_QAPP_UNIRTOS_AT_PROD_CMD */
 
-#ifdef CONFIG_QAPP_UNIRTOS_AT_QWSETMAC_CMD
+#if !defined(CONFIG_QOSA_UIS8360S_PLATFORM_FUNC) && defined(CONFIG_QAPP_UNIRTOS_AT_QWSETMAC_CMD)
     {"+QWSETMAC",     qstd_exec_qwsetmac_cmd,          0 },
-#endif /* CONFIG_QAPP_UNIRTOS_AT_QWSETMAC_CMD */
+#endif /* !CONFIG_QOSA_UIS8360S_PLATFORM_FUNC && CONFIG_QAPP_UNIRTOS_AT_QWSETMAC_CMD */
 
 #ifdef CONFIG_QAPP_UNIRTOS_AT_EGMR_CMD
     {"+EGMR",       qstd_exec_egmr_cmd,                0 },
@@ -816,6 +989,10 @@ qosa_at_desc_t unir_img_at_desc[] = {
 #ifdef CONFIG_QAPP_UNIRTOS_AT_QPOWD_CMD
     {"+QPOWD",       qstd_exec_qpowd_cmd,              0 },
 #endif /* CONFIG_QAPP_UNIRTOS_AT_QPOWD_CMD */
+
+#ifdef CONFIG_QAPP_UNIRTOS_AT_QBOOTREASON_CMD
+    {"+QBOOTREASON", qstd_exec_qbootreason_cmd,        0 },
+#endif /* CONFIG_QAPP_UNIRTOS_AT_QBOOTREASON_CMD */
 
 #ifdef CONFIG_QAPP_UNIRTOS_AT_CBC_CMD
     {"+CBC",       qstd_exec_cbc_cmd,                  0 },
@@ -875,6 +1052,10 @@ qosa_at_desc_t unir_img_at_desc[] = {
     {"+QLICENSE",               qosa_exec_qlicense_cmd,           0},
 #endif /* CONFIG_QAPP_UNIRTOS_LICENSE_AT_FUNC */
 
+#ifdef CONFIG_QAPP_UNIRTOS_QINGYA_CODE_DECODER_AT_FUNC
+    {"+QAUTHCODE",              qosa_exec_qauthcode_cmd,          0},
+#endif /* CONFIG_QAPP_UNIRTOS_QINGYA_CODE_DECODER_AT_FUNC */
+
 #ifdef CONFIG_QAPP_UNIRTOS_AT_LPM_FUNC
     {"+QSCLK",      qstd_exec_qsclk_cmd,               0 },
     {"+QSCLKEX",    qstd_exec_qsclkex_cmd,            0 },
@@ -892,12 +1073,16 @@ qosa_at_desc_t unir_img_at_desc[] = {
     {"+QDBGCFG",     qstd_exec_qdbgcfg_cmd,            0 },
 #endif /* CONFIG_QAPP_UNIRTOS_AT_QDBGCFG_CMD */
 
+#ifdef CONFIG_QAPP_UNIRTOS_AT_QDIAGPORT_CMD
+    {"+QDIAGPORT",     qstd_exec_qdiagport_cmd,          0 },
+#endif /* CONFIG_QAPP_UNIRTOS_AT_QDIAGPORT_CMD */
+
 #ifdef CONFIG_QAPP_UNIRTOS_AT_QVSIM_FUNC
     {"+QVSIM",          qstd_exec_qvsim_cmd,           0 },
     {"+QVSIMW",         qstd_exec_qvsimw_cmd,          0 },
 #endif /* CONFIG_QAPP_UNIRTOS_AT_QVSIM_FUNC */
 
-#ifdef CONFIG_QOSA_UIS8852_PLATFORM_FUNC
+#if defined(CONFIG_QOSA_UIS8852_PLATFORM_FUNC) && !defined(CONFIG_QOSA_OPENCPU_FUNC)
     //8852 platform calibration related AT instructions
     {"+PLATCFG",     qstd_exec_platcfg_cmd,            0 },
     {"+PRODTEST",    qstd_exec_prodtest_cmd,           0 },
@@ -911,6 +1096,16 @@ qosa_at_desc_t unir_img_at_desc[] = {
     {"+CALIBINFO",   qstd_exec_calibinfo_cmd,          0 },
 #endif /* CONFIG_QOSA_UIS8852_PLATFORM_FUNC */
 
+#if defined(CONFIG_QOSA_UIS8360S_PLATFORM_FUNC) && defined(CONFIG_QOSA_WIFI_FUNC)
+    {"+QWIFIFTMTEST", qstd_exec_qwififtmtest_cmd,      0 },
+    {"+QWIFITEST",    qstd_exec_qwifitest_cmd,         0 },
+    {"+QWSETCALI",    qstd_exec_qwsetcali_cmd,         0 },
+    {"+QWSETSSID",    qstd_exec_qwsetssid_uis_cmd,     0 },
+    {"+QWSETMAC",     qstd_exec_qwsetmac_uis_cmd,      0 },
+    {"+QNVW",         qstd_exec_qnvw_uis_cmd,          0 },
+    {"+QLEDTEST",     qstd_exec_qledtest_cmd,          0 },
+#endif /* CONFIG_QOSA_UIS8360S_PLATFORM_FUNC */
+
 #ifdef CONFIG_QOSA_QT2131_PLATFORM_FUNC
     {"+NFLST",       qstd_exec_nflst_cmd,              0 },
     {"+NQSTATE",     qstd_exec_nqstate_cmd,            0 },
@@ -923,8 +1118,11 @@ qosa_at_desc_t unir_img_at_desc[] = {
     {"+NGOLD",       qstd_exec_ngold_cmd,              0 },
     {"+NLOGMODFT",   qstd_exec_nlogmodft_cmd,          0 },
     {"+NVETOSUPERDS",qstd_exec_nvetosuperds_cmd,       0 },
-	{"+NUICC",       qstd_exec_nuicc_cmd,            0 },
-    {"+NSIMAC",      qstd_exec_nsimac_cmd,            0 },
+	{"+NUICC",       qstd_exec_nuicc_cmd,              0 },
+    {"+NSIMAC",      qstd_exec_nsimac_cmd,             0 },
+    {"+NFORCEBURN",  qstd_exec_nforceburn_cmd,         0 },
+    {"+NBACKUP",    qstd_exec_nbackup_cmd,             0 },
+    {"+NRECOVERY",  qstd_exec_nrecovery_cmd,           0 },
 #endif
 
 #ifdef CONFIG_QAPP_UNIRTOS_FTM_AT_FUNC
@@ -933,6 +1131,7 @@ qosa_at_desc_t unir_img_at_desc[] = {
     {"+QRFTESTMODE", qstd_exec_qrftestmode_cmd,      0 },
 #endif /* CONFIG_QAPP_UNIRTOS_FTM_AT_FUNC */
 
+
 #ifdef CONFIG_QAPP_UNIRTOS_AT_QAUDIO_CMD
     {"+QAUDPLAY",    unir_exec_qaudplay_cmd,           0 },
     {"+QAUDRD",      unir_exec_qaudrd_cmd,             0 },
@@ -940,6 +1139,12 @@ qosa_at_desc_t unir_img_at_desc[] = {
     {"+CLVL",        unir_exec_clvl_cmd,               0 },
     {"+QDAI",        unir_exec_qdai_cmd,               0 },
     {"+QAUDSW",      unir_exec_qaudsw_cmd,             0 },
+    {"+QAUDLOOP",    unir_exec_qaudloop_cmd,           0 },
+    {"+QIIC",        unir_exec_qiic_cmd,               0 },
+#ifdef CONFIG_QOSA_VOICE_CALL_FUNC
+    {"+QPSND",       unir_exec_qpsnd_cmd,              0 },
+    {"+QTONEDET",    unir_exec_qtonedet_cmd,           0 },
+#endif /* CONFIG_QOSA_VOICE_CALL_FUNC */
 #ifdef CONFIG_QOSA_TTS_SUPPORT
     {"+QTTS",        unir_exec_qtts_cmd,               0 },
     {"+QTTSETUP",    unir_exec_qttsetup_cmd,           0 },
@@ -948,15 +1153,21 @@ qosa_at_desc_t unir_img_at_desc[] = {
 
 #ifdef CONFIG_QAPP_UNIRTOS_AT_QESIM_CMD
     {"+QESIM",       unir_exec_esim_cmd,               0 },
+#elif defined(CONFIG_QAPP_UNIRTOS_AT_ESIM_EID_CMD)
+    {"+QESIM",       qstd_exec_qesim_cmd,              0 },
 #endif /* CONFIG_QAPP_UNIRTOS_AT_QESIM_CMD */
 
-#ifdef CONFIG_QOSA_EIGEN_PLATFORM_FUNC
+
+#if defined(CONFIG_QOSA_EIGEN_PLATFORM_FUNC) || defined(CONFIG_QOSA_QCX_PLATFORM_FUNC)
     {"+QUPCHECK",    qstd_exec_qupcheck_cmd,           0 },
     {"+QUPDATER",    qstd_exec_qupdater_cmd,           0 },
 #ifdef CONFIG_QAPP_UNIRTOS_AT_QGPIOV_CMD
     {"+QGPIOV",       qstd_exec_qgpiov_cmd,            0 },
 #endif /* CONFIG_QAPP_UNIRTOS_AT_QGPIOV_CMD */
-#endif /* CONFIG_QOSA_EIGEN_PLATFORM_FUNC */
+#ifdef CONFIG_QAPP_UNIRTOS_AT_QCFEM_CMD
+    {"+QCFEM",        qstd_exec_qcfem_cmd,             0 },
+#endif /* CONFIG_QAPP_UNIRTOS_AT_QCFEM_CMD */
+#endif /* CONFIG_QOSA_EIGEN_PLATFORM_FUNC || CONFIG_QOSA_QCX_PLATFORM_FUNC */
 
 #ifdef CONFIG_QAPP_UNIRTOS_GNSS_AT_FUNC
     {"+QGPSCFG" , qstd_exec_qgpscfg_cmd_func, 0},
@@ -986,19 +1197,54 @@ qosa_at_desc_t unir_img_at_desc[] = {
 #ifdef CONFIG_QAPP_OEM_LT_AT_FUNC
     {"+QNWSCAN",    unir_exec_qnwscan_cmd,             0 },
     {"+QAVGRSSI",   unir_exec_qavgrssi_cmd,            0 },
-#endif /* CONFIG_QAPP_OEM_LT_AT_FUNC */
-#ifdef CONFIG_QAPP_AUTOAPN_AT_FUNC
-    {"+QAUTOAPN",    qstd_exec_qautoapn_cmd,             0 },
+    {"+QLTCFG",      qstd_exec_qltcfg_cmd,             0 },
+#ifdef CONFIG_QOSA_OEM_SE_FUNC
+    {"+QLTACT",      qstd_exec_qltact_cmd,             0 },
 #endif
+#endif /* CONFIG_QAPP_OEM_LT_AT_FUNC */
+#ifdef CONFIG_QAPP_UNIRTOS_AUTOAPN_AT_FUNC
+    {"+QAUTOAPN",    qstd_exec_qautoapn_cmd,             0 },
+#endif/*CONFIG_QAPP_UNIRTOS_AUTOAPN_AT_FUNC*/
 #ifdef CONFIG_QAPP_UNIRTOS_AT_CALL_CONTROL_CMD
     {"D",              unir_exec_atd_cmd,          0},
     {"H",              unir_exec_ath_cmd,          0},
     {"A",              unir_exec_ata_cmd,          0},
 #endif /* CONFIG_QAPP_UNIRTOS_AT_CALL_CONTROL_CMD */
 
+#ifdef CONFIG_QAPP_UNIRTOS_CMUX_AT_FUNC
+    {"+CMUX",          qstd_exec_cmux_cmd,         0},
+#endif
+#ifdef CONFIG_QAPP_UNIRTOS_STD_NEOWAY_FUNC
+#include "unirtos_atcmd_nw_def.h"
+#endif /* CONFIG_QAPP_UNIRTOS_STD_NEOWAY_FUNC */
+
 #ifdef CONFIG_QAPP_UNIRTOS_AT_QCPULOAD_CMD
     {"+QCPULOAD",      qstd_exec_qcpuload_cmd,     0},
 #endif /* CONFIG_QAPP_UNIRTOS_AT_QCPULOAD_CMD */
+
+#ifdef CONFIG_QAPP_UNIRTOS_SPINET_AT_FUNC
+    {"+QSPINET",       qstd_exec_qspinet_cmd,      0},
+    {"+QSPINETGPIO",    qstd_exec_qspinetgpio_cmd,   0},
+#endif /* CONFIG_QAPP_UNIRTOS_SPINET_AT_FUNC */
+
+#ifdef CONFIG_QAPP_UNIRTOS_STD_DL_FUNC
+#include "unirtos_atcmd_gw_def.h"
+#endif /* CONFIG_QAPP_UNIRTOS_STD_DL_FUNC */
+
+#ifdef CONFIG_QAPP_UNIRTOS_AGORA_RTC_AT_FUNC
+    {"+QARTCCFG",          qstd_exec_qartccfg_cmd,            0},
+    {"+QARTCOPEN",         qstd_exec_qartcopen_cmd,           0},
+    {"+QARTCJOIN",         qstd_exec_qartcjoin_cmd,           0},
+    {"+QARTCLEAVE",        qstd_exec_qartcleave_cmd,          0},
+    {"+QARTCCLOSE",        qstd_exec_qartcclose_cmd,          0},
+#endif /* CONFIG_QAPP_UNIRTOS_AGORA_RTC_AT_FUNC */
+
+#ifdef CONFIG_QAPP_UNIRTOS_EG21_AT_FUNC
+    /* EG21 compatibility commands. The fragment below lists the entries; a new
+     * command only touches its domain .c/.h and the matching section of
+     * apps/unirtos_std_eg21/inc/unirtos_atcmd_eg21_def.h. */
+#include "unirtos_atcmd_eg21_def.h"
+#endif /* CONFIG_QAPP_UNIRTOS_EG21_AT_FUNC */
 
     {QOSA_NULL, QOSA_NULL, 0}
 };
