@@ -154,14 +154,14 @@ typedef enum _EPAT_CMI_SIM_PRIM_ID_TAG
 
 typedef enum CmiSimStatusTag
 {
-    CMI_SIM_UICC_NOT_POWERED = 0,       /* the UICC is not powered on */
-    CMI_SIM_UICC_START_BEFORE_PD,       /* UICC is inserted and start-up in progress before profile download */
-    CMI_SIM_UICC_READY_FOR_PD,          /* UICC start-up halted and ready for profile download */
-    CMI_SIM_UICC_PD_DONE_CONT_INIT,     /* Profile download cpmpleted, UICC startup continuing */
-    CMI_SIM_UICC_AWAIT_PIN_VER,         /* UICC awaiting PIN verification */
-    CMI_SIM_UICC_ACTIVE,                /* UICC active */
-    CMI_SIM_UICC_ERROR,                 /* UICC is inserted, but error happens */
-    CMI_SIM_UICC_REMOVED,               /* the UICC was removed */
+    CMI_SIM_UICC_NOT_POWERED = 0,      /* the UICC is not powered on */
+    CMI_SIM_UICC_RESVD,                /* reserved */
+    CMI_SIM_UICC_NO_PROFILE,           /* UICC is inserted and no profile (USIM APP) found */
+    CMI_SIM_UICC_USIM_START_INIT,      /* UICC USIM APP selected, startup init */
+    CMI_SIM_UICC_AWAIT_PIN_VER,        /* UICC awaiting PIN verification */
+    CMI_SIM_UICC_ACTIVE,               /* UICC active */
+    CMI_SIM_UICC_ERROR,                /* UICC is inserted, but error happens */
+    CMI_SIM_UICC_REMOVED,              /* the UICC was removed */
 
     CMI_SIM_UICC_STATUS_UNKNOWN
 }
@@ -203,6 +203,7 @@ typedef enum CmiSimPinStateTag
     */
     CMI_SIM_PIN_STATE_SIM_NOT_INSERTED,
     CMI_SIM_PIN_STATE_SIM_NOT_READY,
+    CMI_SIM_PIN_STATE_SIM_NO_PROFILE, /* UICC is inserted and no profile (USIM APP) found */
 
     CMI_SIM_PIN_STATE_UNKNOWN
 }

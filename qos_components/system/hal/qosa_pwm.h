@@ -51,6 +51,16 @@ typedef enum
     QOSA_PWM_SET_CLK_ERR,                                      /*!< Indicates PWM clock setting failed */
 } qosa_pwm_error_e;
 
+/**
+ * @enum qosa_pwm_stop_option_e
+ * @brief List of PWM stop option, controls pwm output level(high,low or holds current level)when stopped
+ */
+typedef enum
+{
+    QOSA_PWM_STOP_LOW      = 0U,  /**< Push pwm output low when stopped */
+    QOSA_PWM_STOP_HIGH     = 1U,  /**< Push pwm output high when stopped */
+    QOSA_PWM_STOP_HOLD     = 2U,  /**< Hold current output level when stopped */
+} qosa_pwm_stop_option_e;
 /*===========================================================================
  *  Struct
 ===========================================================================*/
@@ -66,6 +76,7 @@ typedef struct
         total_one_cycle_duration; /*!< PWM total period duration (in timer counts). Defines the total number of timer counts in one complete PWM cycle. */
     unsigned int       pwm_psc;   /*!< PWM clock division factor */
     qosa_pwm_clk_src_e clk_src;   /*!< PWM clock source selection */
+    qosa_pwm_stop_option_e pwm_stop_option; /*!< PWM stop option, controls PWM output level (high, low or holds current level) when stopped. Only valid for hardware PWM (26M clock source), not supported in 32K APWM path */
 } qosa_pwm_info_t;
 
 /*===========================================================================

@@ -107,6 +107,11 @@ void qstd_exec_qops_cmd(qosa_at_cmd_t *cmd);
 #ifdef CONFIG_QOSA_SIM_FUNC
 void qstd_exec_qspn_cmd(qosa_at_cmd_t *cmd);
 #endif /* CONFIG_QOSA_SIM_FUNC */
+#ifdef CONFIG_QAPP_UNIRTOS_EDRX_AT_FUNC
+void qstd_exec_cedrxs_cmd(qosa_at_cmd_t *cmd);
+void qstd_exec_cedrxrdp_cmd(qosa_at_cmd_t *cmd);
+void qstd_exec_qptwedrxs_cmd(qosa_at_cmd_t *cmd);
+#endif /* CONFIG_QAPP_UNIRTOS_EDRX_AT_FUNC */
 // void qstd_exec_qopscfg_cmd(qosa_at_cmd_t *cmd);
 // void qstd_exec_cvmod_cmd(qosa_at_cmd_t *cmd);
 // void qstd_exec_ceus_cmd(qosa_at_cmd_t *cmd);
@@ -115,6 +120,12 @@ void qstd_exec_qspn_cmd(qosa_at_cmd_t *cmd);
 // void qstd_exec_qnwcfg_cmd(qosa_at_cmd_t *cmd);
 void qstd_exec_qnwlock_cmd(qosa_at_cmd_t *cmd);
 void qstd_exec_qscan_cmd(qosa_at_cmd_t *cmd);
+#ifdef CONFIG_QAPP_UNIRTOS_AT_QSCANEX_CMD
+void qstd_exec_qscanex_cmd(qosa_at_cmd_t *cmd);
+#endif
+#ifdef CONFIG_QAPP_UNIRTOS_AT_QANTINFO_CMD
+void qstd_exec_qantinfo_cmd(qosa_at_cmd_t *cmd);
+#endif /* CONFIG_QAPP_UNIRTOS_AT_QANTINFO_CMD */
 void qstd_exec_qband_cmd(qosa_at_cmd_t *cmd);
 void qstd_exec_c5gnssai_cmd(qosa_at_cmd_t *cmd);
 void qstd_exec_c5gnssairdp_cmd(qosa_at_cmd_t *cmd);
@@ -122,6 +133,7 @@ void qstd_exec_qceer_cmd(qosa_at_cmd_t *cmd);
 void qstd_exec_ceer_cmd(qosa_at_cmd_t *cmd);
 void qstd_exec_qautoapn_cmd(qosa_at_cmd_t *cmd);
 
+void qstd_exec_qblackcell_cmd(qosa_at_cmd_t *cmd);
 void qstd_exec_qblackcellcfgex_cmd(qosa_at_cmd_t *cmd);
 void qstd_exec_qblackcellweight_cmd(qosa_at_cmd_t *cmd);
 

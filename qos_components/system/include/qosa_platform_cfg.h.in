@@ -228,6 +228,14 @@
  */
 #cmakedefine CONFIG_QOSA_SERIAL_EVENT_TASK_SIZE @CONFIG_QOSA_SERIAL_EVENT_TASK_SIZE@
 
+/**
+ * @brief AT port platform capability configuration
+ */
+#cmakedefine CONFIG_QOSA_AT_PORT_SUPPORT_USBAT
+#cmakedefine CONFIG_QOSA_AT_PORT_SUPPORT_USBMODEM
+#cmakedefine CONFIG_QOSA_AT_PORT_SUPPORT_UART1
+#cmakedefine CONFIG_QOSA_AT_PORT_SUPPORT_UART2
+
 /** Has Watermark enabled item merge optimization */
 #cmakedefine CONFIG_QOSA_WATERMARK_ITEM_MERGE
 

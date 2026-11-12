@@ -240,6 +240,9 @@ typedef struct _ARM_DRIVER_SPI {
   uint32_t             (*GetDataCount)    (void);                             ///< Pointer to \ref ARM_SPI_GetDataCount : Get transferred data count.
   int32_t              (*Control)         (uint32_t control, uint32_t arg);   ///< Pointer to \ref ARM_SPI_Control : Control SPI Interface.
   ARM_SPI_STATUS       (*GetStatus)       (void);                             ///< Pointer to \ref ARM_SPI_GetStatus : Get SPI status.
+#ifdef UNIRTOS_PLATFORM_MODIFY
+  void                 (*StopSend)        (void);
+#endif
 } const ARM_DRIVER_SPI;
 
 #ifdef  __cplusplus

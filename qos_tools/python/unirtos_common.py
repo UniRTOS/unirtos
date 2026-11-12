@@ -8,7 +8,8 @@ import subprocess
 import sys
 
 
-ARM_ARCH_LIST = {"rda_8910_R05", "eigen_718", "qcx216", "qcx217", "ASR","bk7258","bk7238","ecr6600"}
+ARM_ARCH_LIST = {"rda_8910_R05", "eigen_718", "qcx216", "qcx217", "ASR", "bk7258", "bk7238", "ecr6600"}
+RISCV_ARCH_LIST = {"xy4100"}
 DEFAULT_BUILD_SUBVER = "V01"
 DEFAULT_BUILD_QINF = "FFF"
 DEFAULT_BUILD_SVN = "01"
@@ -65,7 +66,13 @@ def project_info(message):
 
 
 def sdk_root() -> Path:
-    return Path(__file__).resolve().parents[2]
+    # os.path.abspath keeps a mapped/subst drive letter (e.g. R: -> SDK root) intact.
+    # Path.resolve() would expand the mapping back to the real drive, which pushes the
+    # xy4100 object paths (?-/arch_prj/gccout/platform/application/ssl/mbedtls-3.6.4/
+    # CMakeFiles/__idf_application_ssl_mbedtls-3.6.4.dir/library/*.c.o) past the Windows
+    # 260-char MAX_PATH limit. The platform flow already relies on a virtual drive for
+    # the same reason (buildlib_switch.bat maps P:), so preserve the mapping here.
+    return Path(os.path.abspath(__file__)).parents[2]
 
 
 def variants_dir(root: Path) -> Path:

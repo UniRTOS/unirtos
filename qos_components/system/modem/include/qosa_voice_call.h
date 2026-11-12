@@ -20,18 +20,54 @@
 #include "qosa_def.h"
 #if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_sys.h"
+#include "qosa_ims.h"
 
 /**
- * @brief
+ * @brief Starts a voice call asynchronously.
  *
+ * @param[in] simid
+ *          - SIM card identifier
  * @param[in] phone_number
- *          - phone number
- * @return int
+ *          - The phone number to dial (null-terminated string). Must not be NULL.
+ * @param[in] cb
+ *          - Callback function invoked when call result is available.
+ * @param[in] ctx
+ *          - User context passed to the callback.
+ * @return
+ *         - 0:  Request submitted successfully (callback will be called)
+ *         - -1: phone_number is NULL (callback will NOT be called)
  */
-int qosa_start_voice_call(const char *phone_number);
+int qosa_start_voice_call(qosa_uint8_t simid, const char *phone_number, ims_callback_t cb, void *ctx);
 
-int qosa_stop_voice_call(qosa_uint8_t  simid);
+/**
+ * @brief Stops the current voice call on the specified SIM asynchronously.
+ *
+ * @param[in] simid
+ *          - SIM card identifier
+ * @param[in] cb
+ *          - Callback function invoked when call result is available.
+ * @param[in] ctx
+ *          - User context passed to the callback.
+ * @return
+ *         - 0:  Request submitted successfully (callback will be called)
+ *         - -1: simid is invalid (callback will NOT be called)
+ */
+int qosa_stop_voice_call(qosa_uint8_t simid, ims_callback_t cb, void *ctx);
 
-int qosa_answer_call(void);
-#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+/**
+ * @brief Answers an incoming voice call asynchronously.
+ *
+ * @param[in] simid
+ *          - SIM card identifier
+ * @param[in] cb
+ *          - Callback function invoked when call result is available.
+ * @param[in] ctx
+ *          - User context passed to the callback.
+ * @return
+ *         - 0:  Request submitted successfully (callback will be called)
+ *         - -1: simid is invalid (callback will NOT be called)
+ */
+int qosa_answer_call(qosa_uint8_t simid, ims_callback_t cb, void *ctx);
+
+#endif /* Wi-Fi platform exclusion */
 #endif /* __QOSA_VOICE_CALL__H__ */

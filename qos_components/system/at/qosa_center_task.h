@@ -64,6 +64,12 @@ typedef enum
     /*!< Used for UniRTOS PING AT command execution result return */
     QOSA_CENTER_EVENT_PING_RESULT_CMD,
 
+    /*!< Used for UniRTOS HY_ANDLINK AT command execution result return */
+    QOSA_CENTER_EVENT_HY_ANDLINK_RESULT_CMD,
+
+    /*!< Used for UniRTOS MQTT HY_ANDLINK AT command execution result return */
+    QOSA_CENTER_EVENT_MQTT_HY_ANDLINK_RESULT_CMD,
+
     /*!< Used for UniRTOS HTTP AT command execution result return */
     QOSA_CENTER_EVENT_HTTP_RESULT_CMD,
 
@@ -120,6 +126,13 @@ typedef enum
 
     /*!< Used for UniRTOS MQTT AT command execution result return */
     QOSA_CENTER_EVENT_MQTT_RESULT_CMD,
+#ifdef  CONFIG_QAPP_OEM_RWR_AT_FUNC
+    /*!< Used for neoway MQTT and TCP AT command execution result return */
+    QOSA_CENTER_EVENT_MQTT_NEOWAY_RESULT_CMD,
+
+    QOSA_CENTER_EVENT_TCPIP_NEOWAY_RESULT_CMD,
+#endif
+
 
     /*!< NTP AT instruction command execution result return */
     QOSA_CENTER_EVENT_NTP_RESULT_CMD,
@@ -160,6 +173,9 @@ typedef enum
     /*!< Used for UniRTOS FLASH TEST AT command execution result return */
     QOSA_CENTER_EVENT_FLASHTEST_TASK_RESULT_CMD,
 
+    /*!< Used for UniRTOS CPU USAGE AT command execution result return */
+    QOSA_CENTER_EVENT_CPU_USAGE_RESULT_CMD,
+
     /*!< Used for UniRTOS FLASH TEST AT command execution result return */
     QOSA_CENTER_EVENT_QESIM_RESULT_CMD,
 
@@ -175,6 +191,12 @@ typedef enum
     /*!< Used for UniRTOS ims event reported */
     QOSA_CENTER_EVENT_IMS_IND_CMD,
 
+    /*!< Used for UniRTOS GW TCPIP ($MYNET) AT command execution result return */
+    QOSA_CENTER_EVENT_GW_TCPIP_RESULT_CMD,
+
+    /*!< Used for UniRTOS GW FTP ($MYFTP) AT command data-mode entry/exit + result return */
+    QOSA_CENTER_EVENT_GW_FTP_RESULT_CMD,
+
     /*!< Place the system app event before this event */
     QOSA_CENTER_EVENT_SYSTEM_MAX_CMD,
     /*!< APPS customer-defined use of core AT task business, only for AT result return, cannot do time-consuming actions */
@@ -188,7 +210,7 @@ typedef enum
     QOSA_CENTER_EVENT_APPS_USE_RESERVER7_CMD,
     QOSA_CENTER_EVENT_APPS_USE_RESERVER8_CMD,
     QOSA_CENTER_EVENT_APPS_USE_RESERVER9_CMD,
-
+    QOSA_CENTER_EVENT_FIREWALL_RESULT_CMD,
     QOSA_CENTER_EVENT_MAX_CMD
 } qosa_center_cmd_event_enum_e;
 

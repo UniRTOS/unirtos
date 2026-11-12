@@ -11,14 +11,13 @@
 /*TCPIP STACK*/
 #define MBEDTLS_TCPIP_LWIP
 
-
 #if defined(MBEDTLS_OS_FREERTOS)
 #include "cmsis_os2.h"
 #define MBEDTLS_PLATFORM_CALLOC_MACRO callocEc //mbedtls_calloc //
 #define MBEDTLS_PLATFORM_FREE_MACRO	  freeEc //mbedtls_free //
 #endif
 
-//other part need 
+//other part need
 //#define MBEDTLS_SHA1_C
 //#define MBEDTLS_SHA256_C
 //#define MBEDTLS_MD5_C
@@ -27,21 +26,7 @@
 //#define MBEDTLS_AES_C
 //#define MBEDTLS_BASE64_C
 
-#if defined(FEATURE_APP_TLS_ENABLE) || defined(FEATURE_MQTT_TLS_ENABLE) 
-
-#if defined(FEATURE_APP_TLS_ENABLE)
-#define MBEDTLS_SSL_MAX_CONTENT_LEN         (16*1024)   /**< Size of the input / output buffer */
-#elif defined(FEATURE_MQTT_TLS_ENABLE)
-#define MBEDTLS_SSL_MAX_CONTENT_LEN         (4*1024)   /**< Size of the input / output buffer */
-#else 
-#define MBEDTLS_SSL_MAX_CONTENT_LEN         512     //(4*1024)   /**< Size of the input / output buffer */
-#endif
-
 #if defined(FEATURE_APP_TLS_ENABLE) || defined(FEATURE_MQTT_TLS_ENABLE)
-#define MBEDTLS_SSL_MAX_OUT_CONTENT_LEN         (4*1024)   /**< Size of the input / output buffer */
-#else
-#define MBEDTLS_SSL_MAX_OUT_CONTENT_LEN         512     //(4*1024)   /**< Size of the input / output buffer */
-#endif
 
 #if defined(FEATURE_PLAT_CTLWM2M_AT_ENABLE)
 #define MBEDTLS_SSL_PROTO_DTLS
@@ -2650,9 +2635,9 @@
  * \{
  */
 
-/* MPI / BIGNUM options */
-#define MBEDTLS_MPI_WINDOW_SIZE            6 /**< Maximum windows size used. */
-#define MBEDTLS_MPI_MAX_SIZE            1024 /**< Maximum number of bytes for usable MPIs. */
+/* MPI / BIGNUM options */ //defined in bignum.h
+//#define MBEDTLS_MPI_WINDOW_SIZE            6 /**< Maximum windows size used. */
+//#define MBEDTLS_MPI_MAX_SIZE            1024 /**< Maximum number of bytes for usable MPIs. */
 
 /* CTR_DRBG options */
 //#define MBEDTLS_CTR_DRBG_ENTROPY_LEN               48 /**< Amount of entropy used per seed by default (48 with SHA-512, 32 with SHA-256) */
@@ -2667,10 +2652,10 @@
 //#define MBEDTLS_HMAC_DRBG_MAX_REQUEST        1024 /**< Maximum number of requested bytes per call */
 //#define MBEDTLS_HMAC_DRBG_MAX_SEED_INPUT      384 /**< Maximum size of (re)seed buffer */
 
-/* ECP options */
-#define MBEDTLS_ECP_MAX_BITS             521 /**< Maximum bit size of groups */
-#define MBEDTLS_ECP_WINDOW_SIZE            4 /**< Maximum window size used */
-#define MBEDTLS_ECP_FIXED_POINT_OPTIM      1 /**< Enable fixed-point speed-up */
+/* ECP options */ //defined in ecp.h
+//#define MBEDTLS_ECP_MAX_BITS             521 /**< Maximum bit size of groups */
+//#define MBEDTLS_ECP_WINDOW_SIZE            4 /**< Maximum window size used */
+//#define MBEDTLS_ECP_FIXED_POINT_OPTIM      1 /**< Enable fixed-point speed-up */
 
 /* Entropy options */
 #define MBEDTLS_ENTROPY_MAX_SOURCES                2 /**< Maximum number of sources supported */

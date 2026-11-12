@@ -237,6 +237,26 @@ qosa_usbnet_err_e qosa_usbnet_set_nat_mode(qosa_uint8_t simid, qosa_bool_t nat_m
 qosa_usbnet_err_e qosa_usbnet_get_nat_mode(qosa_uint8_t simid, qosa_bool_t *nat_mode, qosa_uint32_t *cid);
 
 /**
+ * @brief Set USBNET RI mode
+ *
+ * @param[in] ri_mode
+ *          - RI mode enable, QOSA_FALSE: disable, QOSA_TRUE: enable
+ * @return qosa_usbnet_err_e
+ *          - Return QOSA_USBNET_ERR_OK on success, return corresponding error code on failure
+ */
+qosa_usbnet_err_e qosa_usbnet_set_usbnet_ri_mode(qosa_bool_t ri_mode);
+
+/**
+ * @brief Get USBNET RI mode configuration
+ *
+ * @param[out] ri_mode
+ *          - RI mode enable, QOSA_FALSE: disable, QOSA_TRUE: enable
+ * @return qosa_usbnet_err_e
+ *          - Return QOSA_USBNET_ERR_OK on success, return corresponding error code on failure
+ */
+qosa_usbnet_err_e qosa_usbnet_get_usbnet_ri_mode(qosa_bool_t *ri_mode);
+
+/**
  * @brief Set USBNET application protocol, such as ECM, MBIM, RNDIS, NCM
  *
  * @param[in] simid

@@ -747,10 +747,10 @@ static QURL_FTP_INLINE qurl_ecode_t ftp_state_use_port(qurl_conn_t *conn_ptr, qu
     /*Parse this connection address: blocking mode*/
     hints.ai_family = 0; /*[lzm][todo]To be assigned*/
     hints.ai_socktype = SOCK_STREAM;
-#ifndef CONFIG_QOSA_ASR160X_PLATFORM_FUNC
+#if !defined(CONFIG_QOSA_ASR160X_PLATFORM_FUNC) && !defined(CONFIG_QOSA_ASR1803_PLATFORM_FUNC)
     //Only for the ASR1903 platform and lwip1.4.1 lwip such as 1606. Once ASR1903 is upgraded to lwip2.0 later, it can be changed back to support.
     hints.ai_flags = AI_ADDRCONFIG;
-#endif /* CONFIG_QOSA_ASR1903_PLATFORM_FUNC */
+#endif /* !defined(CONFIG_QOSA_ASR160X_PLATFORM_FUNC) && !defined(CONFIG_QOSA_ASR1803_PLATFORM_FUNC) */
     ret = qurl_socket_resolve(host, QOSA_NULL, &hints, &ai_ptr, core_ptr->usr_cfg.nw_id);
     if (ret != 0)
     {
@@ -1376,7 +1376,11 @@ static QURL_FTP_INLINE qurl_ecode_t ftp_state_retr(qurl_conn_t *conn_ptr, long f
             }
             else
             {
+#ifdef CONFIG_QCM_QURL_FTP_OFFSET_SETTING
+                if (filesize <= core_ptr->cfg.resume_from)
+#else
                 if (filesize < core_ptr->cfg.resume_from)
+#endif
                 {
                     return QURL_ECODE_DOWNLOAD_RESUME_ERR;
                 }
@@ -2481,10 +2485,10 @@ static qurl_ecode_t ftp_state_pasv_resp(qurl_conn_t *conn_ptr, int ftpcode)
     qurl_snprintf(port_str, sizeof(port_str), "%u", ftp_ctrl_ptr->newport);
     hints.ai_family = conn_ptr->conn_conn[QURL_SOCKET_INDEX_1].resolve_addrtype;
     hints.ai_socktype = SOCK_STREAM;
-#ifndef CONFIG_QOSA_ASR160X_PLATFORM_FUNC
+#if !defined(CONFIG_QOSA_ASR160X_PLATFORM_FUNC) && !defined(CONFIG_QOSA_ASR1803_PLATFORM_FUNC)
     //To be deleted after ASR LWIP replacement
     hints.ai_flags = AI_ADDRCONFIG;
-#endif /* CONFIG_QOSA_ASR1903_PLATFORM_FUNC */
+#endif /* !defined(CONFIG_QOSA_ASR160X_PLATFORM_FUNC) && !defined(CONFIG_QOSA_ASR1803_PLATFORM_FUNC) */
     ret = qurl_socket_resolve(ftp_ctrl_ptr->newhost_ptr, port_str, &hints, &ai_ptr, core_ptr->usr_cfg.nw_id);
     if (ret != 0)
     {

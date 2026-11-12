@@ -9,5 +9,4 @@
  * Standard AT command implementation
  */
 #cmakedefine CONFIG_QAPP_UNIRTOS_STD_FUNC
-
 #endif /* _APPS_CONFIG_H_ */

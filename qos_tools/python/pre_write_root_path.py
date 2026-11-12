@@ -27,7 +27,7 @@ def write_plat_unirtos_root_path(plat, sdk_path):
 
     # 4. Build JSON data
     config_data = {
-        "SDK_PATH": sdk_path
+        "SDK_PATH": os.path.abspath(sdk_path)
     }
 
     # 5. Write JSON file
@@ -43,7 +43,7 @@ def prepare_proc(build_arch_root, sdk_path):
     except Exception as e:
         error_proc(f"[pre_write_root_path] write unirtos root path error: {e}", "CommandError", "EROOT")
         help_proc()
-        return
+        sys.exit(1)
 
     print("=======================================")
     print("========prepare success================")

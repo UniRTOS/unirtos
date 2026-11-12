@@ -68,8 +68,14 @@ typedef enum
     QOSA_EVENT_MODEM_IMS_RING_STATUS,    /*!< Ring reports that there is an incoming call */
     QOSA_EVENT_MODEM_IMS_DISCONNECT_STATUS,    /*!< NO CARRIER reports that there is an incoming call */
     QOSA_EVENT_MODEM_IMS_CONN_ID_EVNET,        /*!< CONN ID reports that there is an incoming call */
+    QOSA_EVENT_MODEM_SMS_CBM,                  /*!< Cell broadcast or CMAS message notification, @ref qosa_sms_cbm_notify_event_t */
     QOSA_EVENT_URC_CNT_LOW,              /*!< URC CNT is a LOW notification. */
-
+    QOSA_EVENT_MODEM_NW_EDRX_DYN_PARM,     /*!< EDRX status change notification, @ref qosa_nw_edrx_status_event_t */
+    QOSA_EVENT_SECONDARY_PDP_ACT,        /*!< Secondary PDP activation status changed, @ref qosa_datacall_secondary_pdp_act_event_t */
+#ifdef CONFIG_QOSA_SIM_STK_FUNC
+    QOSA_EVENT_MODEM_SIM_STK_PROACTIVE_CMD,    /*!< SIM proactive command event, @ref qosa_sim_stk_proactive_event_t */
+    QOSA_EVENT_MODEM_SIM_STK_PROACTIVE_END,    /*!< SIM proactive command session end event */
+#endif
     QOSA_EVENT_MAX                       /* the max number of the event to be registered */
 } qosa_notify_event_e;
 

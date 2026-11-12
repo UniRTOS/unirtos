@@ -37,7 +37,7 @@ int _gettimeofday( struct timeval *tv, void *tzvp )
     }
 
     /* Get time from RTC */
-    if (qosa_get_system_time(&current_tm) != 0) {
+    if (qosa_get_system_time(&current_tm) == 0) {
         return -1;
     }
 

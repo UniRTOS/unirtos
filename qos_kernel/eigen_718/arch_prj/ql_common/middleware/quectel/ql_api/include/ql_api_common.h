@@ -52,7 +52,7 @@ extern "C" {
 #define	QOSA_FLASH_CP_IMG_ADDR                  (CP_FLASH_LOAD_ADDR&(~CP_FLASH_XIP_ADDR))
 #define	QOSA_FLASH_AP_IMG_ADDR                  UNIR_AP_IMG_ADDR
 #define	QOSA_FLASH_LFS_ADDR                     FLASH_FS_REGION_START
-#define	QOSA_FLASH_UPDATER_ADDR                 UPDATER_FLASH_LOAD_ADDR
+#define	QOSA_FLASH_UPDATER_ADDR                 UNIR_UPDATER_ADDR
 #define	QOSA_FLASH_FOTA_ADDR                    FLASH_FOTA_REGION_START
 #define	QOSA_FLASH_REL_ADDR                     NVRAM_PHYSICAL_BASE
 #define	QOSA_FLASH_PLAT_INFO_ADDR               FLASH_MEM_PLAT_INFO_NONXIP_ADDR

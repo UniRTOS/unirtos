@@ -53,6 +53,13 @@ config QCM_MQTT_TASK_STACK_SIZE
     help
       Set the stack size for the MQTT business layer task.
 
+# // FIREWALL business layer task stack size
+config QCM_FIREWALL_TASK_STACK_SIZE
+    int "Stack size for FIREWALL business layer task"
+    default 4096
+    help
+      Set the stack size for the FIREWALL business layer task.
+
 # // NTP TASK stack size
 config QCM_NTP_TASK_SIZE
     int "Stack size for NTP task"
@@ -107,5 +114,17 @@ config QCM_URC_RI_TASK_STACK_SIZE
     help
       Set the stack size for the URC RI task.
 
+# // GW FTP ENABLE AT$MYFTPGET OFFSET>=FILESIZE
+config QCM_QURL_FTP_OFFSET_SETTING
+    bool "qurl ftp support offset>=filesize?"
+    default n
+    help
+      set qurl ftp support offset>=filesize
 
+# // GW NETWORK ENABLE NETWORK GET CELL BACKFILL
+config QCM_NETWORK_GET_CELL_FAIL_BACKFILL
+    bool "network cell backfill?"
+    default n
+    help
+      set network support cell backfill
 endmenu

@@ -124,6 +124,14 @@ WHEN              WHO         WHAT, WHERE, WHY
 #define UNIRTOS_OCPU_CUST_END_ADDR  (UNIRTOS_OCPU_CUST_XIP_ADDR + UNIRTOS_OCPU_CUST_FLASH_LEN)
 #endif /* UNIRTOS_OPEN_MODE_SUPPORT */
 
+#if defined(CONFIG_QOSA_SECURITY_BOOT_KERNEL) || defined(CONFIG_QOSA_SECURITY_BOOT_BL)
+#ifdef UNIRTOS_OPEN_MODE_SUPPORT
+// APP Secure header
+#define UNIRTOS_APP_SEC_HEAD_ADDR (APP_SECUREBOOT_LOAD_ADDR + AP_FLASH_XIP_ADDR)
+#define UNIRTOS_APP_SEC_HEAD_LEN  (APP_SECUREBOOT_LOAD_SIZE)  //4K
+#define UNIRTOS_APP_SEC_END_ADDR  (UNIRTOS_APP_SEC_HEAD_ADDR + UNIRTOS_APP_SEC_HEAD_LEN)
+#endif /* UNIRTOS_OPEN_MODE_SUPPORT*/
+#endif /* defined (CONFIG_QOSA_SECURITY_BOOT_KERNEL) || defined (CONFIG_QOSA_SECURITY_BOOT_BL)*/
 /* ======================== MEM_MAP DEF CHECK TABLE ========================*/
 
 // chaim 2024.10.1 flash partion check
@@ -222,16 +230,32 @@ otherwise not need modify these
 #define PKGFLX_UPDATER_PKGIMG_LNA        (UPDATER_FLASH_LOAD_ADDR)
 #define PKGFLX_UPDATER_PKGIMG_LIMIT_SIZE (UPDATER_FLASH_LOAD_SIZE)
 
+#ifdef CONFIG_QOSA_SECURITY_BOOT_KERNEL
+// Updater Secure header
+#define PKGFLX_UPDATER_SEC_HEAD_PKGIMG_LNA        (UPDATER_SECUREBOOT_LOAD_ADDR + AP_FLASH_XIP_ADDR)
+#define PKGFLX_UPDATER_SEC_HEAD_PKGIMG_LIMIT_SIZE (UPDATER_SECUREBOOT_LOAD_SIZE)  //4K
+#ifdef UNIRTOS_OPEN_MODE_SUPPORT
+// APP Secure header
+#define PKGFLX_APP_SEC_HEAD_PKGIMG_LNA        (APP_SECUREBOOT_LOAD_ADDR + AP_FLASH_XIP_ADDR)
+#define PKGFLX_APP_SEC_HEAD_PKGIMG_LIMIT_SIZE (APP_SECUREBOOT_LOAD_SIZE)  //4K
+#endif /* UNIRTOS_OPEN_MODE_SUPPORT*/
+#endif /* CONFIG_QOSA_SECURITY_BOOT_KERNEL*/
+// External flash start address
+#define EF_EXT_FLASH_BASE_ADDR  (0x80000000)
+#define EFID01_EXT_FLASH_BASE_ADDR  (0x80000000)
+
+// EFS start address, currently set to external flash start address, can be modified
+#define EF_EFS_IMG_BURNADDR_LNA (0x80000000)
+#define EFID01_EFS_IMG_BURNADDR_LNA (0x80000000)
+// EFS image size, needs to be less than or equal to external Flash size
+#define EF_EFS_IMG_LIMIT_SIZE   (0x200000)
+#define EFID01_EFS_IMG_LIMIT_SIZE   (0x200000)
+
 // EXT UPDATER start address, currently set to external flash start address, can be modified
-#define EF_EXT_UPDATER_IMG_BURNADDR_LNA (0x80200000)
+#define EF_EXT_UPDATER_IMG_BURNADDR_LNA (EF_EXT_FLASH_BASE_ADDR + EF_EFS_IMG_LIMIT_SIZE)
+#define EFID01_EXT_UPDATER_IMG_BURNADDR_LNA (EFID01_EXT_FLASH_BASE_ADDR + EFID01_EFS_IMG_LIMIT_SIZE)
 // EXT UPDATER image size, needs to be less than or equal to external Flash size
 #define EF_EXT_UPDATER_IMG_LIMIT_SIZE   (0x24000)
-
-// External flash start address
-#define EF_EXT_FLASH_BASE_ADDR           (0x80000000)
-// EFS start address, currently set to external flash start address, can be modified
-#define EF_EFS_IMG_BURNADDR_LNA          (0x80000000)
-// EFS image size, needs to be less than or equal to external Flash size
-#define EF_EFS_IMG_LIMIT_SIZE            (0x80000)
+#define EFID01_EXT_UPDATER_IMG_LIMIT_SIZE   (0x24000)
 
 #endif /* __QUEC_MEM_MAP_718HM_H__ */

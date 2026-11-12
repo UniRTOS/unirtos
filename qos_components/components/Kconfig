@@ -48,6 +48,9 @@ config QCM_UTILS_TLV_FUNC
     bool "Enable TLV support"
     default n
 
+config QCM_UTILS_TTLV_FUNC
+    bool "Enable TTLV support"
+    default n
 config QCM_UTILS_UTF8_FUNC
     bool "Enable UTF-8 validation support"
     default n
@@ -64,6 +67,14 @@ config QCM_MINI_HTTP_FUNC
     bool "Enable mini HTTP function"
     select QCM_SOCKET_ADP_FUNC
     default n
+config QCM_QUECTHING_FUNC
+    bool "Enable QuecThing function"
+    depends on QCM_MQTT_FUNC
+    depends on QCM_UTILS_UTF8_FUNC
+    depends on QCM_UTILS_UTILS_FUNC
+    depends on QCM_UTILS_BASE64_FUNC
+    select QCM_UTILS_TTLV_FUNC
+    default n
 
 config QCM_LBS_FUNC
     bool "Enable LBS function"
@@ -71,6 +82,16 @@ config QCM_LBS_FUNC
     select QCM_UTILS_TLV_FUNC
     select QCM_UTILS_UTILS_FUNC
     depends on (QCM_QURL_FUNC || QCM_MINI_HTTP_FUNC)
+    default n
+
+config QCM_FIREWALL_FUNC
+    bool "Enable firewall function"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
+    select QCM_SOCKET_ADP_FUNC
+    select QCM_UTILS_UTILS_FUNC
+    select QCM_FILE_API_FUNC
+    select QCM_URC_FUNC
+    select QOSA_EVENT_NOTIFY_FUNC
     default n
 
 config QCM_MMS_FUNC
@@ -161,7 +182,7 @@ config QCM_UART_LOG_FUNC
     bool "Enable UART log function"
     depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     default n
-	
+
 config QCM_SPI_NOR_FUNC
     bool "Enable SPI NOR function"
     select QOSA_SPI_FUNC
@@ -212,6 +233,24 @@ config QCM_ESIM_FUNC
     select QCM_QURL_FUNC
     default n
 
+config QCM_MIFI_FUNC
+    bool "Enable MiFi function"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
+    select QOSA_NW_FUNC
+    select QOSA_MIFI_FUNC
+    default n
+
+config QCM_MIFI_SIMPOLL_FUNC
+    bool "Enable MiFi SIM poll function"
+    depends on QCM_MIFI_FUNC
+    select QOSA_MODEM_DEV_FUNC
+    default n
+
+config QCM_MIFI_POWER_SAVER_FUNC
+    bool "Enable UniRTOS mifi power saver function"
+    depends on QCM_MIFI_FUNC
+    default n
+
 config QCM_MBEDTLS_LIBRARY_FUNC
     bool "Enable mbedTLS function"
     default n
@@ -246,6 +285,144 @@ config QCM_MONGOOS_LIB
 
 config QCM_LLM_PROXY
     bool "llm proxy support"
+    default n
+
+config QCM_GNSS_CC1161_UART_PORT
+    int "CC1161 GNSS UART port number"
+    depends on QCM_GNSS_FUNC
+    default 2 if QOSA_ASR160X_PLATFORM_FUNC
+    default 1 if QOSA_ASR1805_PLATFORM_FUNC
+    default 2 if QOSA_EIGEN718_PLATFORM_FUNC
+    default 2
+
+config QCM_GNSS_CC1161_UART_FUNC
+    int "CC1161 GNSS UART pin function"
+    depends on QCM_GNSS_FUNC
+    default 3 if QOSA_ASR160X_PLATFORM_FUNC
+    default 2 if QOSA_ASR1805_PLATFORM_FUNC
+    default 2 if QOSA_EIGEN718_PLATFORM_FUNC
+    default 3
+
+config QCM_GNSS_CC1161_UART_TX_PIN
+    int "CC1161 GNSS UART TX pin"
+    depends on QCM_GNSS_FUNC
+    default 201 if QOSA_ASR160X_PLATFORM_FUNC
+    default 201 if QOSA_ASR1805_PLATFORM_FUNC
+    default 56 if QOSA_EIGEN718_PLATFORM_FUNC
+    default 201
+
+config QCM_GNSS_CC1161_UART_RX_PIN
+    int "CC1161 GNSS UART RX pin"
+    depends on QCM_GNSS_FUNC
+    default 200 if QOSA_ASR160X_PLATFORM_FUNC
+    default 200 if QOSA_ASR1805_PLATFORM_FUNC
+    default 55 if QOSA_EIGEN718_PLATFORM_FUNC
+    default 200
+
+config QCM_GNSS_CC1161_VMAIN_PIN
+    int "CC1161 GNSS VMAIN pin"
+    depends on QCM_GNSS_FUNC
+    default 203 if QOSA_ASR160X_PLATFORM_FUNC
+    default 203 if QOSA_ASR1805_PLATFORM_FUNC
+    default 101 if QOSA_EIGEN718_PLATFORM_FUNC
+    default 203
+
+config QCM_GNSS_CC1161_VMAIN_FUNC
+    int "CC1161 GNSS VMAIN pin function"
+    depends on QCM_GNSS_FUNC
+    default 0
+
+config QCM_GNSS_CC1161_VMAIN_GPIO
+    int "CC1161 GNSS VMAIN GPIO number"
+    depends on QCM_GNSS_FUNC
+    default 11 if QOSA_ASR160X_PLATFORM_FUNC
+    default 17 if QOSA_ASR1805_PLATFORM_FUNC
+    default 24 if QOSA_EIGEN718_PLATFORM_FUNC
+    default 11
+
+config QCM_GNSS_CC1161_RESET_PIN
+    int "CC1161 GNSS reset pin"
+    depends on QCM_GNSS_FUNC
+    default 202 if QOSA_ASR160X_PLATFORM_FUNC
+    default 202 if QOSA_ASR1805_PLATFORM_FUNC
+    default 54 if QOSA_EIGEN718_PLATFORM_FUNC
+    default 202
+
+config QCM_GNSS_CC1161_RESET_GPIO
+    int "CC1161 GNSS reset GPIO number"
+    depends on QCM_GNSS_FUNC
+    default 20 if QOSA_ASR160X_PLATFORM_FUNC
+    default 6 if QOSA_ASR1805_PLATFORM_FUNC
+    default 3 if QOSA_EIGEN718_PLATFORM_FUNC
+    default 20
+
+config QCM_GNSS_CC1161_VBACK_PIN
+    int "CC1161 GNSS VBACK pin (0 = not connected)"
+    depends on QCM_GNSS_FUNC
+    default 128 if QOSA_ASR160X_PLATFORM_FUNC
+    default 0 if QOSA_ASR1805_PLATFORM_FUNC
+    default 85 if QOSA_EIGEN718_PLATFORM_FUNC
+    default 128
+
+config QCM_GNSS_CC1161_VBACK_GPIO
+    int "CC1161 GNSS VBACK GPIO number (128 = not connected)"
+    depends on QCM_GNSS_FUNC
+    default 128 if QOSA_ASR160X_PLATFORM_FUNC
+    default 128 if QOSA_ASR1805_PLATFORM_FUNC
+    default 28 if QOSA_EIGEN718_PLATFORM_FUNC
+    default 128
+
+config QCM_GNSS_CC1161_CLK32_PIN
+    int "CC1161 GNSS 32K clock pin (0 = not connected)"
+    depends on QCM_GNSS_FUNC
+    default 63 if QOSA_ASR160X_PLATFORM_FUNC
+    default 204 if QOSA_ASR1805_PLATFORM_FUNC
+    default 0 if QOSA_EIGEN718_PLATFORM_FUNC
+    default 63
+
+config QCM_GNSS_CC1161_CLK32_FUNC
+    int "CC1161 GNSS 32K clock pin function"
+    depends on QCM_GNSS_FUNC
+    default 0 if QOSA_ASR160X_PLATFORM_FUNC
+    default 3 if QOSA_ASR1805_PLATFORM_FUNC
+    default 0 if QOSA_EIGEN718_PLATFORM_FUNC
+    default 0
+
+config QCM_WEBUI_FUNC
+    bool "Enable WebUI function"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
+    select QCM_SOCKET_ADP_FUNC
+    select QCM_MIFI_FUNC
+    select QCM_MIFI_POWER_SAVER_FUNC
+    select QCM_MIFI_SIMPOLL_FUNC
+    select QOSA_WIFI_FUNC
+    default n
+
+config QCM_ALIYUN_LINK_SDK_FUNC
+    bool "Aliyun Link SDK"
+    default n
+
+config QCM_AGORA_RTSA_SDK_FUNC
+    bool "Agora RTSA SDK"
+    default n
+
+config QCM_OPAUTH_FUNC
+    bool "Enable operator auth function"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
+    select QCM_SOCKET_ADP_FUNC
+    select QCM_VTLS_FUNC
+    select QCM_WEBUI_FUNC
+    default n
+
+config QCM_VNET_FUNC
+    bool "VNET function"
+    default n
+
+config QCM_VNET_SPINET_FUNC
+    bool "Enable VNET SPI function"
+    select QOSA_SPI_FUNC
+    select QCM_VNET_FUNC
+    select QOSA_NETDEV_CORE_FUNC
     default n
 
 orsource "comp_config.Kconfig"

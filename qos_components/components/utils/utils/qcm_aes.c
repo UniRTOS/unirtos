@@ -737,6 +737,118 @@ exit:
 #endif /* CONFIG_UNIR_PROJECT_FEATURE_SSL */
 }
 
+/**
+ * @brief 使用 AES 算法对输入数据执行 CBC (Cipher Block Chaining) 模式的加密。
+ *
+ * @param key         AES 加密密钥的指针.
+ * @param keybits     密钥的位长度. 有效值通常为 128, 192, 或 256.
+ * @param iv          16 字节初始化向量 (IV) 的指针.
+ * @param inputdata   待加密的原始输入数据的指针(16字节的倍数).
+ * @param outputdata  输出缓冲区的指针(16字节的倍数).
+ * @param inlen       输入数据长度.
+ * @param outlen      输出数据长度.
+ *
+ * @return  0: 操作成功完成;-1: 操作失败;
+ */
+int qcm_aes_cbc_encryption(
+    qosa_uint8_t *key,
+    qosa_uint32_t keybits,
+    qosa_uint8_t  iv[16],
+    qosa_uint8_t *inputdata,
+    qosa_uint8_t *outputdata,
+    int           inlen,
+    int          *outlen
+)
+{
+#ifdef CONFIG_UNIR_PROJECT_FEATURE_SSL
+    mbedtls_aes_context aes_ctx;
+#else  /* CONFIG_UNIR_PROJECT_FEATURE_SSL */
+    qcm_aes_context aes_ctx;
+#endif /* CONFIG_UNIR_PROJECT_FEATURE_SSL */
+
+    int ret = -1;
+
+    // 执行 AES-CBC 加密
+    qcm_aes_init(&aes_ctx);
+    // 为 AES 加密操作设置(扩展)密钥
+    qcm_aes_setkey_enc(&aes_ctx, key, keybits);
+    // 执行 CBC 模式加密
+    // - ctx: AES 上下文
+    // - MBEDTLS_AES_ENCRYPT: 指定为加密操作
+    // - inlen: 输入数据长度
+    // - iv: 初始化向量 (这里是全 0)
+    // - inputdata: 输入数据
+    // - (unsigned char *)outputdata: 输出缓冲区
+    ret = qcm_aes_crypt_cbc(&aes_ctx, MBEDTLS_AES_ENCRYPT, inlen, iv, inputdata, (unsigned char *)outputdata);
+    if (ret != 0)
+    {
+        return ret;
+    }
+
+    *outlen = qosa_strlen((char*)outputdata);
+
+    return ret;
+}
+
+/**
+ * @brief 使用 AES 算法对输入数据执行 CBC (Cipher Block Chaining) 模式的解密。
+ *
+ * @param key         AES 解密密钥的指针.
+ * @param keybits     密钥的位长度. 有效值通常为 128, 192, 或 256.
+ * @param iv          16 字节初始化向量 (IV) 的指针.
+ * @param inputdata   待解密的原始输入数据的指针(16字节的倍数).
+ * @param outputdata  输出缓冲区的指针(16字节的倍数).
+ * @param inlen       输入数据长度.
+ * @param outlen      输出数据长度.
+ *
+ * @return  0: 操作成功完成;-1: 操作失败;
+ */
+int qcm_aes_cbc_decryption(
+    qosa_uint8_t *key,
+    qosa_uint32_t keybits,
+    qosa_uint8_t  iv[16],
+    qosa_uint8_t *inputdata,
+    qosa_uint8_t *outputdata,
+    int           inlen,
+    int          *outlen
+)
+{
+#ifdef CONFIG_UNIR_PROJECT_FEATURE_SSL
+    mbedtls_aes_context aes_ctx;
+#else  /* CONFIG_UNIR_PROJECT_FEATURE_SSL */
+    qcm_aes_context aes_ctx;
+#endif /* CONFIG_UNIR_PROJECT_FEATURE_SSL */
+
+    int ret = -1;
+
+    if ((QOSA_NULL == inputdata) || (QOSA_NULL == outputdata))
+    {
+        return ret;
+    }
+
+    // 执行 AES-CBC 解密
+    qcm_aes_init(&aes_ctx);
+    // 为 AES 解密操作设置(扩展)密钥
+    qcm_aes_setkey_dec(&aes_ctx, key, keybits);
+    // 执行 CBC 模式解密
+    // - ctx: AES 上下文
+    // - MBEDTLS_AES_ENCRYPT: 指定为解密操作
+    // - inlen: 输入数据长度
+    // - iv: 初始化向量 (这里是全 0)
+    // - inputdata: 输入数据
+    // - (unsigned char *)outputdata: 输出缓冲区
+    ret = qcm_aes_crypt_cbc(&aes_ctx, MBEDTLS_AES_DECRYPT, inlen, (qosa_uint8_t *)iv, (qosa_uint8_t *)inputdata, (qosa_uint8_t *)outputdata);
+    if (ret != 0)
+    {
+        return ret;
+    }
+
+    *outlen = qosa_strlen((char*)outputdata);
+
+    return ret;
+}
+
+
 void qcm_aes_string_encryption(qosa_uint8_t key[16], int key_length, qosa_uint8_t inputdata[16], qosa_uint8_t outputdata[16])
 {
     int ret = 0;

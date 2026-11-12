@@ -73,7 +73,7 @@ typedef enum
 typedef struct
 {
     qosa_uint8_t            res_path[256]; /*!< The path where the resource file is located. If there is no resource file, fill in NULL. */
-    qosa_tts_language_e     langusge;      /*!< Language selection */
+    qosa_tts_language_e     language;      /*!< Language selection */
     qosa_tts_callback_t     callback;      /*!< callback function */
     qosa_bool_t             dat_output;    /*!< Whether to synchronize and output the data to the callback function */
     qosa_uint64_t           options;       /*!< Each platform provides its own explanation. */
@@ -116,7 +116,7 @@ typedef struct
 qosa_aud_errcode_e qosa_tts_open(qosa_tts_cfg_t *config);
 
 /**
- * @brief TTS paly
+ * @brief TTS play
  *
  * @param[in] qosa_tts_encoding_e code
  *          - Play text format
@@ -186,5 +186,13 @@ qosa_aud_errcode_e qosa_tts_param_cfg_set(qosa_tts_config_e type, int val);
  */
 qosa_aud_errcode_e qosa_tts_resource_init(qosa_int8_t *path_name, qosa_uint8_t *ram_addr);
 
-#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+/**
+ * @brief Abort or clear the abort request of the current TTS synthesis
+ *
+ * @param[in] qosa_bool_t enable
+ *          - QOSA_TRUE: request to abort current synthesis (userCallback fails fast)
+ *          - QOSA_FALSE: clear the abort request
+ */
+void qosa_tts_abort(qosa_bool_t enable);
+#endif /* Wi-Fi platform exclusion */
 #endif /* __QOSA_TTS_H__ */

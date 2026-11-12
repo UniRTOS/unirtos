@@ -31,6 +31,7 @@ void unir_exec_nb_nsorf_cmd(qosa_at_cmd_t *cmd);
 void unir_exec_nb_nsocl_cmd(qosa_at_cmd_t *cmd);
 void unir_exec_nb_nsonmi_cmd(qosa_at_cmd_t *cmd);
 void unir_exec_nb_nsostatus_cmd(qosa_at_cmd_t *cmd);
-void unir_exec_nb_tcpip_qidnscfg_cmd(qosa_at_cmd_t *cmd);
+void unir_exec_nb_qidnscfg_cmd(qosa_at_cmd_t *cmd);
+void unir_exec_nb_qdns_cmd(qosa_at_cmd_t *cmd);
 
 #endif /* __UNIRTOS_ATCMD_TCPIP_NB_H__ */

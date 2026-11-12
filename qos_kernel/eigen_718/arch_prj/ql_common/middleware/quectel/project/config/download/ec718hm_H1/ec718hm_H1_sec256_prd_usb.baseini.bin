@@ -1,0 +1,66 @@
+[config]
+line_0_com = COM9
+agbaud=921600
+
+filter_embedusb=0
+filter_externcom=1
+line_0_snd_ass_com=COM65535
+baud=130000
+path_convert_cfg_avail = 1
+;pathconv_to_file_basedir_pairs=agentboot:agpath
+pathconv_to_file_basedir_pairs=bootloader:headpath;system:headpath
+
+[agentboot]
+;tool_basedir = 1
+agpath = .\agentboot_usb\agentboot.bin
+
+[storage_cfg]
+#will be update when load
+format_path = format_ec718m_none.json
+
+[bootloader]
+headpath = .\bl_sec_header.bin
+blpath = .\image_ec718\ap_bootloader.bin
+blloadskip = 0
+burnaddr=0xf
+;system.bin file infomation
+[system]
+headpath = .\sys_sec_header.bin
+syspath = .\image_ec718\ap_demo-flash.bin
+sysloadskip = 0
+burnaddr = 0xf
+
+[cp_system]
+cp_syspath = .\image_ec718\cp-demo-flash.bin
+cp_sysloadskip = 0
+burnaddr = 0xf
+
+[security]
+hashtype = 1
+extern_sec_head_used=1
+curve_type = curve_256
+[control]
+prempt_detect_time = 6
+msg_waittime = 2
+max_preamble_cnt = 8
+lpc_recover_en = 0
+;cfg reset to 2, skip reset pin
+pullup_qspi =1
+trc_ser= 1
+rom_version= 0000000103030000
+rom_version_append_list= 0000000203030000;0000000303030000
+assist_second_port_cmd=at+ecrst=delay,599
+dribble_dld_en=0
+;pr_runtime_ctrl_en = 1
+;chip_ctl_para_en = 0
+;board_ctl_para_en = 1
+;verify_flash_size_need = 1
+;io_vol_18_or_33 = 1
+;ext_flash_pwrctl_need = 1
+;ext_flash_pwrctl_gpio = 35
+;ext_flash_pwrctl_dly = 2
+
+[flexfile0]
+filepath = .\MergeRfTable.bin
+burnaddr = 0x7e5000
+

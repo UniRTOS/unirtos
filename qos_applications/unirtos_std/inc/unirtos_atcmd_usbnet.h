@@ -22,6 +22,7 @@ void unirtos_usbnet_at_init(void);
 void qstd_exec_qnetdevctl_cmd(qosa_at_cmd_t *cmd);
 void unirtos_exec_qcfg_usbnet_cmd(qosa_at_cmd_t *cmd);
 void unirtos_exec_qcfg_nat_cmd(qosa_at_cmd_t *cmd);
+void unirtos_exec_qcfg_usbnet_ri_cmd(qosa_at_cmd_t *cmd);
 void unirtos_exec_qcfg_netmaskset_cmd(qosa_at_cmd_t *cmd);
 void unirtos_exec_qcfg_usbnetmac_cmd(qosa_at_cmd_t *cmd);
 

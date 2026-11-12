@@ -20,6 +20,7 @@
 #include "qosa_def.h"
 #if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_sim_config.h"
+#include "qosa_system_config.h"
 #include "qosa_modem.h"
 
 /**
@@ -63,10 +64,10 @@
 #define QOSA_SIM_C_APDU_DATA_LEN_MAX       (255)
 
 /** Maximum length of R-APDU */
-#define QOSA_SIM_R_APDU_LEN_MAX            (1026)
+#define QOSA_SIM_R_APDU_LEN_MAX            (2050)
 
 /** Maximum length of R-APDU data field */
-#define QOSA_SIM_R_APDU_DATA_LEN_MAX       (1024)
+#define QOSA_SIM_R_APDU_DATA_LEN_MAX       (2048)
 
 /** Minimum length of R-APDU */
 #define QOSA_SIM_R_APDU_LEN_MIN            (2)
@@ -99,7 +100,7 @@
 #define QOSA_SIM_HOT_SWAP_UNSPECIFIED_GPIO (0xffffffff) /*!< Hot swap detection uses product default configuration pins, cannot be modified */
 
 /** The maximum number of files queried by writesim */
-#define QOSA_SIM_WRITE_SIM_FILE_COUNT_MAX  (8)
+#define QOSA_SIM_WRITE_SIM_FILE_COUNT_MAX  (9)
 
 /**
  * @brief SIM card callback function pointer type definition
@@ -152,8 +153,8 @@ typedef enum sim_err
 typedef enum sim_type
 {
     QOSA_SIM_TYPE_INVALID = -1, /*!< Invalid SIM type */
-    QOSA_SIM,  /*!< Subscriber Identity Module */
-    QOSA_USIM, /*!< Universal Subscriber Identity Module */
+    QOSA_SIM,                   /*!< Subscriber Identity Module */
+    QOSA_USIM,                  /*!< Universal Subscriber Identity Module */
 } qosa_sim_type_e;
 
 /**
@@ -266,12 +267,11 @@ typedef enum
  */
 typedef enum
 {
-    QOSA_SIM_SIMWPROTECT_DISABLE            = 0,    /*!< not active */
-    QOSA_SIM_SIMWPROTECT_ENABLE_BITMAP      = 1,    /*!< active, bitmap valid*/
-    QOSA_SIM_SIMWPROTECT_ENABLE_DEFAULT     = 2,    /*!< active , bitmap invalid; the file protection list uses the default value */
-    QOSA_SIM_SIMWPROTECT_MAX                        /*!< invalid mode */
+    QOSA_SIM_SIMWPROTECT_DISABLE = 0,        /*!< not active */
+    QOSA_SIM_SIMWPROTECT_ENABLE_BITMAP = 1,  /*!< active, bitmap valid*/
+    QOSA_SIM_SIMWPROTECT_ENABLE_DEFAULT = 2, /*!< active , bitmap invalid; the file protection list uses the default value */
+    QOSA_SIM_SIMWPROTECT_MAX                 /*!< invalid mode */
 } qosa_simwprotect_enable_mode_e;
-
 
 /*-------------------------------------- basic struct --------------------------------------*/
 /**
@@ -356,6 +356,19 @@ typedef struct sim_insert_status_event
     qosa_sim_insert_stat_e stat;   /*!< SIM card insertion status */
 } qosa_sim_insert_status_event_t;
 
+/**
+ * @struct qosa_sim_stk_proactive_event_t
+ * @brief Data content carried by event EVENT_MODEM_SIM_STK_PROACTIVE_CMD report
+ *
+ */
+typedef struct sim_stk_proactive_event
+{
+    qosa_uint8_t  simid;    /*!< SIM card ID */
+    qosa_uint8_t  cmd_type; /*!< proactive command type */
+    qosa_uint16_t cmd_len;  /*!< proactive command length */
+    qosa_uint8_t *cmd_data; /*!< Raw BER-TLV proactive command data, valid only during the synchronous notify callback */
+} qosa_sim_stk_proactive_event_t;
+
 /*-------------------------------------- pa --------------------------------------*/
 
 /**
@@ -417,14 +430,14 @@ typedef struct sim_phone_number
 /**
  * @struct qosa_sim_simwprotect_t
  * @brief Used to configure write protection for sim files
- * @note ASR1903 bitmap: bit0: epsnsc, 6fe4; bit1: keys, 6f08; bit2: keyps, 6f09; bit3: kc, 4f20; bit4: kcGprs, 4f52; bit5: loci, 6f7e; bit6: psloci, 6f73; bit7: epsloci,6fe3
+ * @note ASR1903 and ASR160x bitmap: bit0: epsnsc, 6fe4; bit1: keys, 6f08; bit2: keyps, 6f09; bit3: kc, 4f20; bit4: kcGprs, 4f52; bit5: loci, 6f7e; bit6: psloci, 6f73; bit7: epsloci,6fe3
  * @note UIS8852 bitmap: bit0: 6F7B;bit1: 6F7E;bit2: 6F73;bit3: 6F08; bit4: 6F09; bit5: 6FE4; bit6: 6FE3; bit7: 6F5B
  * @note ec718 configuration via bitmap is not supported; default optimization is applied to 6FE3 and 6FE4 file writes.
  */
 typedef struct qosa_sim_simwprotect
 {
-    qosa_simwprotect_enable_mode_e  enable;      /*!< 0:not active 1:active, bitmap valid 2:active , bitmap invalid; the file protection list uses the default value. */
-    qosa_uint8_t                    bit_map;     /*!< Files that need to be write protected */
+    qosa_simwprotect_enable_mode_e  enable;  /*!< 0:not active 1:active, bitmap valid 2:active , bitmap invalid; the file protection list uses the default value. */
+    qosa_uint8_t                    bit_map; /*!< Files that need to be write protected */
 } qosa_sim_simwprotect_t;
 
 /*-------------------------------------- cnf --------------------------------------*/
@@ -563,8 +576,8 @@ typedef struct sim_get_file_update_count_cnf
  */
 typedef struct sim_get_simwprotect_mode_cnf
 {
-    QOSA_MODEM_COMMON_CNF_HDR;                  /*!< common header, simid and err_code */
-    qosa_sim_simwprotect_t simwprotect_cfg;     /*!< SIM Write protect configure */
+    QOSA_MODEM_COMMON_CNF_HDR;              /*!< common header, simid and err_code */
+    qosa_sim_simwprotect_t simwprotect_cfg; /*!< SIM Write protect configure */
 } qosa_sim_get_simwprotect_mode_cnf_t;
 
 /*-------------------------------------- api --------------------------------------*/
@@ -1593,5 +1606,180 @@ qosa_sim_err_e qosa_sim_get_simwprotect_mode(qosa_uint8_t simid, sim_callback_pt
  */
 qosa_sim_err_e qosa_sim_set_simwprotect_mode(qosa_uint8_t simid, qosa_sim_simwprotect_t simwprotect_cfg, sim_callback_ptr cb, void *ctx);
 
-#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+/** SIM slot ID definitions */
+#define QOSA_SIM_SLOT_0 0
+#define QOSA_SIM_SLOT_1 1
+#define QOSA_SIM_SLOT_2 2
+
+/** SIM autopoll state definitions */
+#define QOSA_SIMPOLL_ST_NOT_START  0
+#define QOSA_SIMPOLL_ST_RUNNING    1
+#define QOSA_SIMPOLL_ST_SUCCESS    2
+#define QOSA_SIMPOLL_ST_TERMINATED 3
+
+/**
+ * @struct qosa_simpoll_cfg_t
+ * @brief SIM autopoll configuration
+ */
+typedef struct {
+    qosa_uint8_t poll_en;  /*!< 1=enable autopoll, 0=disable */
+    qosa_uint8_t reserved[3];
+} qosa_simpoll_cfg_t;
+
+/**
+ * @brief Get whether the specified SIM slot is forbidden
+ *
+ * @param[in] qosa_uint8_t slot_id
+ *          - SIM slot ID (0/1/2)
+ *
+ * @return int
+ *        - >=0 slot not forbidden, <0 error or forbidden
+ */
+int qosa_sim_get_slot_forbid(qosa_uint8_t slot_id);
+
+/**
+ * @brief Set SIM slot forbid state
+ *
+ * @param[in] qosa_uint8_t slot_id
+ *          - SIM slot ID (0/1/2)
+ * @param[in] int forbid
+ *          - 1=forbid (disable), 0=enable
+ *
+ * @return int
+ *        - 0 if successful, non-zero if failed
+ */
+int qosa_sim_set_slot_forbid(qosa_uint8_t slot_id, int forbid);
+
+/**
+ * @brief Get current SIM slot ID
+ *
+ * @return int
+ *        - >=0 current slot ID, <0 error
+ */
+int qosa_sim_get_slot(void);
+
+/**
+ * @brief Set current SIM slot
+ *
+ * @param[in] int slot_id
+ *          - SIM slot ID to activate
+ *
+ * @return int
+ *        - 0 if successful, non-zero if failed
+ */
+int qosa_sim_set_slot(int slot_id);
+
+/**
+ * @brief Check if SIM card is ready
+ *
+ * @return int
+ *        - 1 if ready, 0 if not ready
+ */
+int qosa_sim_is_ready(void);
+
+/**
+ * @brief Get autopoll configuration
+ *
+ * @param[out] qosa_simpoll_cfg_t *cfg
+ *          - Configuration to fill
+ *
+ * @return int
+ *        - 0 if successful, non-zero if failed
+ */
+int qosa_sim_autopoll_get_cfg(qosa_simpoll_cfg_t *cfg);
+
+/**
+ * @brief Set autopoll configuration
+ *
+ * @param[in] qosa_simpoll_cfg_t *cfg
+ *          - Configuration to apply
+ *
+ * @return int
+ *        - 0 if successful, non-zero if failed
+ */
+int qosa_sim_autopoll_set_cfg(qosa_simpoll_cfg_t *cfg);
+
+/**
+ * @brief Get autopoll execution status
+ *
+ * @return int
+ *        - QOSA_SIMPOLL_ST_NOT_START, QOSA_SIMPOLL_ST_RUNNING,
+ *          QOSA_SIMPOLL_ST_SUCCESS, QOSA_SIMPOLL_ST_TERMINATED, or <0 on error
+ */
+int qosa_sim_get_autopoll_status(void);
+
+#ifdef CONFIG_QOSA_ESIM_EID_QUERY_FUNC
+/**
+ * @brief Get eSIM EID through APDU command sequence.
+ *
+ * @param [in] simid
+ *           - SIM card ID, identifying the SIM card to query
+ * @param [out] eid
+ *           - Output buffer used to store EID string
+ *
+ * @return int
+ *           - QOSA_OK: Operation successful
+ *           - QOSA_ERROR_GENERAL: Operation failed
+ */
+int qosa_qesim_get_eid(qosa_uint8_t simid, char *eid);
+#endif /* CONFIG_QOSA_ESIM_EID_QUERY_FUNC */
+
+
+#ifdef CONFIG_QOSA_SIM_STK_FUNC
+/**
+ * @brief Send a raw BER-TLV terminal response to the SIM card (ETSI TS 102.223).
+ *
+ * @param[in] tr_data  Pointer to the terminal response BER-TLV bytes.
+ * @param[in] tr_len   Length of @p tr_data in bytes.
+ * @return qosa_sim_err_e  QOSA_SIM_ERR_OK on success, QOSA_SIM_ERR_EXECUTE on failure.
+ */
+qosa_sim_err_e qosa_sim_stk_send_terminal_response(const qosa_uint8_t *tr_data, qosa_uint8_t tr_len);
+/**
+ * @brief Send STK ENVELOPE / Menu Selection command to SIM (ETSI TS 102.223 搂11.8.5).
+ *
+ * Builds the Menu Selection ENVELOPE BER-TLV and sends it to the SIM.  Call this
+ * when the host has received a SETUP MENU (cmd_type=37) proactive command and the
+ * user has chosen an item (AT^STR=211,0,<itemId>).
+ *
+ * @param[in] item_id  Selected item identifier from the SETUP MENU (1-based, SIM-defined).
+ * @return qosa_sim_err_e  QOSA_SIM_ERR_OK on success, QOSA_SIM_ERR_EXECUTE on failure.
+ */
+qosa_sim_err_e qosa_sim_stk_send_envelope(qosa_uint8_t item_id);
+#endif /* CONFIG_QOSA_SIM_STK_FUNC */
+
+/**
+ * @brief Set BIP mode
+ *
+ *  BIP (Bearer Independent Protocol) enable/disable configuration.
+ *
+ * @param[in] simid
+ *          - SIM ID
+ *
+ * @param[in] enable
+ *          - bip configuration. Whether to enable bip: 1 enabled, 0 disabled.
+ *
+ * @return qosa_sim_err_e
+ *       - Returns QOSA_SIM_ERR_OK on success
+ *       - Returns other values on failure
+ */
+qosa_sim_err_e qosa_sim_set_bip_mode(qosa_uint8_t simid, qosa_bool_t enable);
+
+/**
+ * @brief Get BIP mode
+ *
+ *  BIP (Bearer Independent Protocol) enable/disable configuration.
+ *
+ * @param[in] simid
+ *          - SIM ID
+ *
+ * @param[out] enable
+ *          - bip configuration. Whether bip is enabled: 1 enabled, 0 disabled.
+ *
+ * @return qosa_sim_err_e
+ *       - Returns QOSA_SIM_ERR_OK on success
+ *       - Returns other values on failure
+ */
+qosa_sim_err_e qosa_sim_get_bip_mode(qosa_uint8_t simid, qosa_bool_t *enable);
+
+#endif /* Wi-Fi platform exclusion */
 #endif /* __QOSA_SIM_H__ */

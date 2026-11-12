@@ -105,6 +105,7 @@ enum
     HTTP_CLIENT_DNS_QUERY_FAILED,      /*!< DNS query failed */
     HTTP_CLIENT_BUSY,                  /*!< Client busy */
     HTTP_CLIENT_TIMEOUT,               /*!< Connection timeout or data waiting timeout */
+    HTTP_CLIENT_URL_MALFORMED_INPUT,   /*!< URL format error */
 };
 
 /**

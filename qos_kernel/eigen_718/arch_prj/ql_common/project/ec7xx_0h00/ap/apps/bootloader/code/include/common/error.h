@@ -29,6 +29,9 @@
 #define IHNotFound 0x6d
 #define ImageToBigError 0x6e
 #define ImageHeadToBigError 0x6f
+#define InvalidSecVerMagicError 0x70
+#define InvalidSecVerError 0x71
+#define InvalidPubkeyError 0x72
 
 #define CmdMisMatchError 0x80
 #define CommandIDError 0x81

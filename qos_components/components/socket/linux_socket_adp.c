@@ -530,6 +530,121 @@ exit:
 }
 
 /**
+ * @brief Create a server (listen) socket bound to a specific IP address and port.
+ *
+ * Unlike qcm_socket_create() this function does NOT require an active PDP
+ * data call.  It is intended for server-side sockets (HTTP server, etc.)
+ * that need to bind to a LAN gateway IP or INADDR_ANY.
+ *
+ * The returned handle is a valid qcm_socket handle ¡ª use qcm_socket_listen(),
+ * qcm_socket_accept(), qcm_socket_read(), qcm_socket_send() and
+ * qcm_socket_close() with it.
+ *
+ * @param[in] family   Address family (QCM_AF_INET or QCM_AF_INET6)
+ * @param[in] bind_ip  Dotted-decimal IPv4 address to bind to.
+ *                     NULL or empty string ¡ú INADDR_ANY.
+ * @param[in] port     Port number (host byte order), e.g. 80.
+ * @param[in] block    QOSA_TRUE for blocking, QOSA_FALSE for non-blocking.
+ *
+ * @return qcm_socket handle (>= 1) on success, negative error code on failure.
+ */
+int qcm_socket_create_server(int family, const char *bind_ip, int port, qosa_bool_t block)
+{
+	int sockfd = -1;
+	int s = -1;
+	int ret = 0;
+	int reuseFlag = 1;
+	int flags = 0;
+	qcm_socket_t *sock = QOSA_NULL;
+	struct sockaddr_in addr;
+
+	qcm_socket_monitor_init_check();
+
+	sockfd = socket(family, SOCK_STREAM, 0);
+	if (sockfd < 0)
+	{
+		QLOGE("socket() failed, errno=%d", errno);
+		return QCM_SOCK_INTERNAL_ERROR;
+	}
+	QLOGV("sockfd=%d", sockfd);
+
+	s = qcm_socket_get_new_fd();
+	if (s <= 0)
+	{
+		ret = QCM_SOCK_INTERNAL_ERROR;
+		goto exit;
+	}
+
+	sock = qcm_socket_get_prt(s);
+	if (QOSA_NULL == sock)
+	{
+		ret = QCM_SOCK_INTERNAL_ERROR;
+		goto exit;
+	}
+
+	sock->type       = QCM_SOCK_STREAM;
+	sock->socket_fd  = sockfd;
+	sock->family     = family;
+	sock->state      = QCM_SOC_STATE_NONE;
+	sock->local_port = port;
+	sock->block      = block;
+
+	setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &reuseFlag, sizeof(int));
+	setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &reuseFlag, sizeof(int));
+
+	qosa_memset(&addr, 0, sizeof(addr));
+	addr.sin_family = family;
+	addr.sin_port   = htons(port);
+
+	if (bind_ip && bind_ip[0] != '\0')
+	{
+		inet_aton(bind_ip, &addr.sin_addr);
+		QLOGI("binding to %s:%d", bind_ip, port);
+	}
+	else
+	{
+		addr.sin_addr.s_addr = INADDR_ANY;
+		QLOGI("binding to INADDR_ANY:%d", port);
+	}
+
+	ret = bind(sockfd, (struct sockaddr *)&addr, sizeof(addr));
+	if (ret < 0)
+	{
+		QLOGE("bind() failed, errno=%d", errno);
+		ret = QCM_SOCK_INTERNAL_ERROR;
+		goto exit;
+	}
+
+	sock->local_addr.ip_vsn = QOSA_PDP_IPV4;
+	sock->local_addr.addr.ipv4_addr = addr.sin_addr;
+
+	if (block == QOSA_FALSE)
+	{
+		flags = fcntl(sockfd, F_GETFL, 0);
+		fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
+	}
+
+	if (sockfd > g_fd_max)
+	{
+		g_fd_max = sockfd;
+	}
+
+	return s;
+
+exit:
+	if (sockfd >= 0)
+	{
+		close(sockfd);
+	}
+	if (s > 0)
+	{
+		qcm_socket_free(s);
+	}
+	return ret;
+}
+
+
+/**
  * @brief This function is used to perform the socket connection action. Before executing this function, DNS resolution should be successfully completed.
  *
  * @param[in] int s

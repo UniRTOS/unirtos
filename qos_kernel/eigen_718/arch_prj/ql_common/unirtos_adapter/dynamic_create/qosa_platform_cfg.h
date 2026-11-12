@@ -228,6 +228,14 @@
  */
 /* #undef CONFIG_QOSA_SERIAL_EVENT_TASK_SIZE */
 
+/**
+ * @brief AT port platform capability configuration
+ */
+#define CONFIG_QOSA_AT_PORT_SUPPORT_USBAT
+#define CONFIG_QOSA_AT_PORT_SUPPORT_USBMODEM
+#define CONFIG_QOSA_AT_PORT_SUPPORT_UART1
+#define CONFIG_QOSA_AT_PORT_SUPPORT_UART2
+
 /** Has Watermark enabled item merge optimization */
 #define CONFIG_QOSA_WATERMARK_ITEM_MERGE
 

@@ -1,4 +1,4 @@
-﻿/*****************************************************************/ /**
+/*****************************************************************/ /**
 * @file ql_socket.c
 * @brief The encapsulation of this file should make the upper application layer as unaware as possible of the differences in the standard socket API interface layer.
 * The header files and other resources called by this layer are all from the system, which can reduce modifications due to platform differences when replacing the platform later.
@@ -658,6 +658,112 @@ exit:
         qcm_socket_free(s);
     }
     return ret;
+}
+
+/**
+ * @brief Create a server (listen) socket bound to a specific IP address.
+ *
+ * Unlike qcm_socket_create() this does NOT require an active PDP data call
+ * and does NOT auto-bind to the PDP IP.  It is intended for server sockets
+ * (HTTP server, etc.) that need to bind to a LAN gateway IP or INADDR_ANY.
+ *
+ * @param[in] family   Address family (QCM_AF_INET only)
+ * @param[in] bind_ip  Dotted-decimal IPv4 address, or NULL/"" for INADDR_ANY
+ * @param[in] port     Port number in host byte order
+ * @param[in] block    QOSA_TRUE for blocking, QOSA_FALSE for non-blocking
+ *
+ * @return qcm_socket handle (>= 1) on success, negative error code on failure.
+ */
+int qcm_socket_create_server(int family, const char *bind_ip, int port, qosa_bool_t block)
+{
+	int s = 0;
+	int ret = 0;
+	int sockfd = -1;
+	qcm_socket_t *sock = QOSA_NULL;
+	int reuseFlag = 1;
+	struct sockaddr_in v4_addr;
+	int flags = 0;
+
+	qcm_socket_monitor_init_check();
+
+	if (family != QCM_AF_INET) {
+		QLOGE("create_server: only AF_INET supported");
+		return QCM_SOCK_INVALID_PARAM;
+	}
+
+	sockfd = socket(family, QCM_SOCK_STREAM, QCM_TCP_PROTOCOL);
+	if (sockfd < 0) {
+		QLOGE("create_server: socket failed, sockfd=%d", sockfd);
+		return QCM_SOCK_INTERNAL_ERROR;
+	}
+
+	s = qcm_socket_get_new_fd();
+	if (s <= 0) {
+		ret = QCM_SOCK_INTERNAL_ERROR;
+		goto exit;
+	}
+
+	sock = qcm_socket_get_prt(s);
+	if (QOSA_NULL == sock) {
+		ret = QCM_SOCK_INTERNAL_ERROR;
+		goto exit;
+	}
+
+	sock->type       = QCM_SOCK_STREAM;
+#if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) || defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
+	sock->pdpcid     = 0;
+	sock->sim_id     = 0;
+#endif
+	sock->socket_fd  = sockfd;
+	sock->family     = family;
+	sock->state      = QCM_SOC_STATE_NONE;
+	sock->local_port = port;
+
+	setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &reuseFlag, sizeof(int));
+	setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &reuseFlag, sizeof(int));
+
+	qosa_memset(&v4_addr, 0, sizeof(v4_addr));
+	v4_addr.sin_family = family;
+	v4_addr.sin_port   = htons(port);
+	if (bind_ip != NULL && bind_ip[0] != '\0') {
+		v4_addr.sin_addr.s_addr = inet_addr(bind_ip);
+	} else {
+		v4_addr.sin_addr.s_addr = INADDR_ANY;
+	}
+
+	ret = bind(sockfd, (struct sockaddr *)&v4_addr, sizeof(v4_addr));
+	if (ret < 0) {
+		QLOGE("create_server: bind %s:%d failed, ret=%d",
+		      bind_ip ? bind_ip : "0.0.0.0", port, ret);
+		ret = QCM_SOCK_INTERNAL_ERROR;
+		goto exit;
+	}
+
+	/* Register the same event callback used by qcm_socket_create so that
+	 * lwIP TCP events are dispatched through the socket monitor
+	 * thread instead of crashing on a NULL q_func. */
+	unir_set_socket2(sockfd, ql_apptcpip_soc_callback_func, sock);
+
+	if (block == QOSA_FALSE) {
+		flags = fcntl(sock->socket_fd, F_GETFL, 0);
+		fcntl(sock->socket_fd, F_SETFL, flags | O_NONBLOCK);
+	}
+	sock->block = block;
+
+	if (sockfd > g_fd_max) {
+		g_fd_max = sockfd;
+	}
+
+	return s;
+
+exit:
+	if (sockfd >= 0) {
+		close(sockfd);
+	}
+	if (s > 0) {
+		qcm_socket_free(s);
+	}
+	return ret;
 }
 
 /**
@@ -2192,6 +2298,30 @@ int qcm_socket_get_opt(int s, qcm_socke_option_e opt, void *value)
             ret = QCM_SOCK_SUCCESS;
         }
         break;
+        case QCM_SOCK_LOCAL_PORT_OPT: {
+            ret = QCM_SOCK_INVALID_PARAM;
+            if (sock->family == QCM_AF_INET)
+            {
+                struct sockaddr_in local_sa;
+                socklen_t          local_sa_len = sizeof(struct sockaddr_in);
+                qosa_memset(&local_sa, 0, sizeof(struct sockaddr_in));
+                getsockname(sock->socket_fd, (struct sockaddr *)&local_sa, &local_sa_len);
+                *((qosa_uint16_t *)value) = ntohs(local_sa.sin_port);
+                ret = QCM_SOCK_SUCCESS;
+            }
+#if (LWIP_IPV6)
+            else if (sock->family == QCM_AF_INET6)
+            {
+                struct sockaddr_in6 local_sa6;
+                socklen_t           local_sa6_len = sizeof(struct sockaddr_in6);
+                qosa_memset(&local_sa6, 0, sizeof(struct sockaddr_in6));
+                getsockname(sock->socket_fd, (struct sockaddr *)&local_sa6, &local_sa6_len);
+                *((qosa_uint16_t *)value) = ntohs(local_sa6.sin6_port);
+                ret = QCM_SOCK_SUCCESS;
+            }
+#endif
+        }
+        break;
         default: {
             ret = QCM_SOCK_INVALID_PARAM;
         }
@@ -2915,15 +3045,6 @@ static void qcm_socket_monitor_init_check(void)
     }
 }
 
-int g_tcp_recv_window_size = QCM_TCPIP_TCP_WINDOW_SIZE_MIN * 1024;
-int g_tcp_send_window_size = QCM_TCPIP_TCP_WINDOW_SIZE_MIN * 1024;
-int tcp_mss_value = 1360;
-#if defined(CONFIG_QOSA_QCX216_PLATFORM_FUNC) || defined(CONFIG_QOSA_QCX217_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR1903_PLATFORM_FUNC)                       \
-    || defined(CONFIG_QOSA_RDA8910_R06_PLATFORM_FUNC) || defined(CONFIG_QOSA_EIGEN718_PLATFORM_FUNC) || defined(CONFIG_QOSA_UIS8852_PLATFORM_FUNC) \
-    || defined(CONFIG_QOSA_ASR160X_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR1805_PLATFORM_FUNC)
-extern qosa_uint8_t tcp_tw_recycle;
-#endif /* CONFIG_QOSA_QCX216_PLATFORM_FUNC || CONFIG_QOSA_QCX217_PLATFORM_FUNC || CONFIG_QOSA_ASR1903_PLATFORM_FUNC || CONFIG_QOSA_RDA8910_R06_PLATFORM_FUNC || defined(CONFIG_QOSA_EIGEN718_PLATFORM_FUNC) */
-
 /**
  * @brief Set TCP retransmission count
  *
@@ -2991,20 +3112,12 @@ void qcm_socket_get_retrains_period(qosa_uint32_t *retrains_period)
  */
 void qcm_socket_set_twrecycle(qosa_uint32_t fast_recyle)
 {
-#if defined(CONFIG_QOSA_QCX216_PLATFORM_FUNC) || defined(CONFIG_QOSA_QCX217_PLATFORM_FUNC) || defined(CONFIG_QOSA_EIGEN718_PLATFORM_FUNC)
-    QOSA_UNUSED(fast_recyle);
-#else  /* CONFIG_QOSA_QCX216_PLATFORM_FUNC || CONFIG_QOSA_QCX217_PLATFORM_FUNC || defined(CONFIG_QOSA_EIGEN718_PLATFORM_FUNC) */
     unir_set_lwip_tcp_twrecycle(fast_recyle);
-#endif /* CONFIG_QOSA_QCX216_PLATFORM_FUNC || CONFIG_QOSA_QCX217_PLATFORM_FUNC || defined(CONFIG_QOSA_EIGEN718_PLATFORM_FUNC) */
 }
 
 void qcm_socket_get_twrecycle(qosa_uint32_t *fast_recyle)
 {
-#if defined(CONFIG_QOSA_QCX216_PLATFORM_FUNC) || defined(CONFIG_QOSA_QCX217_PLATFORM_FUNC) || defined(CONFIG_QOSA_EIGEN718_PLATFORM_FUNC)
-    QOSA_UNUSED(fast_recyle);
-#else  /* CONFIG_QOSA_QCX216_PLATFORM_FUNC || CONFIG_QOSA_QCX217_PLATFORM_FUNC || defined(CONFIG_QOSA_EIGEN718_PLATFORM_FUNC) */
     *fast_recyle = unir_get_lwip_tcp_twrecycle();
-#endif /* CONFIG_QOSA_QCX216_PLATFORM_FUNC || CONFIG_QOSA_QCX217_PLATFORM_FUNC || defined(CONFIG_QOSA_EIGEN718_PLATFORM_FUNC) */
 }
 
 /**
@@ -3016,13 +3129,13 @@ void qcm_socket_get_twrecycle(qosa_uint32_t *fast_recyle)
  */
 void qcm_socket_set_udp_filter_mode(qosa_uint32_t mode)
 {
-#if defined(CONFIG_QOSA_ASR1903_PLATFORM_FUNC) || defined(CONFIG_QOSA_UIS8852_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR1805_PLATFORM_FUNC)
+#if defined(CONFIG_QOSA_UIS8852_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR1805_PLATFORM_FUNC)
     QOSA_UNUSED(mode);
 #elif (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
     QOSA_UNUSED(mode);
 #else  /* CONFIG_QOSA_ASR1903_PLATFORM_FUNC || CONFIG_QOSA_UIS8852_PLATFORM_FUNC || CONFIG_QOSA_ASR1805_PLATFORM_FUNC */
     unir_set_lwip_udp_filter_mode(mode);
-#endif /* defined(CONFIG_QOSA_ASR1903_PLATFORM_FUNC) || defined(CONFIG_QOSA_UIS8852_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR1805_PLATFORM_FUNC) */
+#endif /*defined(CONFIG_QOSA_UIS8852_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR1805_PLATFORM_FUNC) */
 }
 
 /**
@@ -3113,9 +3226,16 @@ void qcm_socket_set_platform_opt(qcm_socket_t *sock)
 {
     QOSA_UNUSED(sock);
 #if defined(CONFIG_QOSA_QCX216_PLATFORM_FUNC) || defined(CONFIG_QOSA_QCX217_PLATFORM_FUNC) || defined(CONFIG_QOSA_EIGEN718_PLATFORM_FUNC)
+    /* Invert cfg -> SO_TCP_TIME_WAIT, because lwIP enable_time_wait
+     * but AT+QICFG="tcp/twrecycle" means rapid termination of TIME_WAIT state. SW10QCX216-620 */
+    qosa_uint32_t twrecycle = 0;
+
     setsockopt(sock->socket_fd, SOL_SOCKET, SO_TCP_MAX_RETRY_TIMES, (void *)&(g_socket_system_cfg.retry_count), sizeof(int));
     setsockopt(sock->socket_fd, SOL_SOCKET, SO_TCP_INIT_RETRY_TIME, (void *)&(g_socket_system_cfg.retry_time), sizeof(int));
-    setsockopt(sock->socket_fd, SOL_SOCKET, SO_TCP_TIME_WAIT, (void *)&g_socket_system_cfg.fast_release_timewait, sizeof(int));
+
+    qcm_socket_get_twrecycle(&twrecycle);
+    twrecycle = twrecycle ? 0 : 1;
+    setsockopt(sock->socket_fd, SOL_SOCKET, SO_TCP_TIME_WAIT, (void *)&twrecycle, sizeof(twrecycle));
 
     if (g_socket_system_cfg.delay_ack == 1)
     {

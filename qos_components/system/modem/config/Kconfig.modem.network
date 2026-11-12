@@ -106,38 +106,49 @@ config UNIRTOS_JAMM_DETECT_SINR_MIN
     help
         minimum jamming detect supported by network
 
-
-config QOSA_OPER_EU_AREA 
-    bool " European Operator"
+config QOSA_OPER_EUROPE_AREA
+    bool "Europe Operator"
     default n
     help
-        Region Division Operator
-config QOSA_OPER_LA_AREA 
+      Enable Europe region operator configuration for QOSA.
+
+config QOSA_OPER_LATIN_AMERICA_AREA
     bool "Latin America Operator"
     default n
     help
-         Region Division Operator
-config QOSA_OPER_NA_AREA
+      Enable Latin America region operator configuration for QOSA.
+
+config QOSA_OPER_NORTH_AMERICA_AREA
     bool "North America Operator"
     default n
     help
-        Region Division Operator
-config QOSA_OPER_OC_AREA
+      Enable North America region operator configuration for QOSA.
+
+config QOSA_OPER_OCEANIA_AREA
     bool "Oceania Operator"
     default n
     help
-        Region Division Operator
-config QOSA_OPER_CN_AREA
-    bool "Asia Area Operator"
+      Enable Oceania region operator configuration for QOSA.
+
+config QOSA_OPER_ASIA_AREA
+    bool "Asia Operator"
     default n
     help
-        Region Division Operator Asia including India
+      Enable Asia region operator configuration for QOSA (including India).
+
 config QOSA_OPER_GL_AREA
-    bool "GLOBAL OPER  Operator"
+    bool "Legacy global operator option (use Global Operator)"
+    select QOSA_OPER_GLOBAL_AREA
     default n
     help
-        Enable global operator area configuration for QOSA,This allows the modem to use global network/PLMN settings.
+      Compatibility input for existing modem.config files using GL_AREA.
+      New project configurations should use QOSA_OPER_GLOBAL_AREA.
+
+config QOSA_OPER_GLOBAL_AREA
+    bool "Global Operator"
+    default n
+    help
+      Enable global operator configuration for QOSA.
+      This allows the modem to use global network/PLMN settings.
+
 endmenu
- 
-
-

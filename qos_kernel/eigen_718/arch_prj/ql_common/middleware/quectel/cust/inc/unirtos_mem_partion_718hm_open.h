@@ -53,23 +53,20 @@ flash xip address(from both ap/cp view): 0x00800000---0x00c00000
 /**********************************************************************************
  * First 分配各个FLASH分区大小
  */
-#if defined(QL_AP_LIB_OC)
-
-#define UNIR_AP_IMG_SIZE        (0x1D6000)
-#define UNIR_APP_OPEN_CPU_SIZE  (0xC8000)
-#define UNIRTOS_CUST_FLASH_SIZE (0x0)
-#define UNIR_LFS_SIZE           (0x39000)
-#define UNIR_UPDATER_SIZE       (0X24000)
-#define UNIR_HIB_BACKUP_SIZE    (0x18000)
-#elif defined QL_AP_LIB_IMS
-// curr no define open mode
+#if defined(QL_AP_LIB_IMS)
 #define UNIR_AP_IMG_SIZE        (0x577000)
 #define UNIR_APP_OPEN_CPU_SIZE  (0xC8000)
 #define UNIRTOS_CUST_FLASH_SIZE (0x0)
 #define UNIR_LFS_SIZE           (0x90000)
 #define UNIR_UPDATER_SIZE       (0X24000)
 #define UNIR_HIB_BACKUP_SIZE    (0x18000)
-
+#elif defined(QL_AP_LIB_OC)
+#define UNIR_AP_IMG_SIZE        (0x5B3000)
+#define UNIR_APP_OPEN_CPU_SIZE  (0xC8000)
+#define UNIRTOS_CUST_FLASH_SIZE (0x0)
+#define UNIR_LFS_SIZE           (0x90000)
+#define UNIR_UPDATER_SIZE       (0X24000)
+#define UNIR_HIB_BACKUP_SIZE    (0x18000)
 #else
 #error "please define AP type in GccBuild_ec7xx.bat-->Makefile_Path.vars-->quec_partion_7xx.h"
 #endif

@@ -25,12 +25,9 @@
  */
 #ifndef MBEDTLS_NET_SOCKETS_H
 #define MBEDTLS_NET_SOCKETS_H
+#include "mbedtls/private_access.h"
 
-#if !defined(MBEDTLS_CONFIG_FILE)
-#include "mbedtls/config.h"
-#else
-#include MBEDTLS_CONFIG_FILE
-#endif
+#include "mbedtls/build_info.h"
 
 #include "mbedtls/ssl.h"
 
@@ -84,7 +81,13 @@ extern "C" {
  * structures for hand-made UDP demultiplexing).
  */
 typedef struct mbedtls_net_context {
-    int fd;             /**< The underlying file descriptor                 */
+    /** The underlying file descriptor.
+     *
+     * This field is only guaranteed to be present on POSIX/Unix-like platforms.
+     * On other platforms, it may have a different type, have a different
+     * meaning, or be absent altogether.
+     */
+    int fd;
 }
 mbedtls_net_context;
 
@@ -111,7 +114,7 @@ void mbedtls_net_init(mbedtls_net_context *ctx);
  *
  * \note           Sets the socket in connected mode even with UDP.
  */
-int mbedtls_net_connect( mbedtls_net_context *ctx, const char *host, const char *port, int proto, uint8_t cid );//EC add cid
+int mbedtls_net_connect(mbedtls_net_context *ctx, const char *host, const char *port, int proto, uint8_t cid );//EC add cid
 
 /**
  * \brief          Create a receiving socket on bind_ip:port in the chosen

@@ -394,6 +394,8 @@ typedef struct
 
     qosa_uint32_t bbox_num;               /*!< The number of digital boxes that need to be reasoned out */
 
+    qosa_uint32_t img_rotation_direction;  /*!< Image rotation direction for AI inference*/
+
 } camera_task_ai_recognition_req_t;
 
 /**

@@ -50,6 +50,16 @@ WHEN              WHO         WHAT, WHERE, WHY
 
 #include "mbedtls/rsa.h"
 #include "mbedtls/pk.h"
+#include "mbedtls/cipher.h"
+#include "mbedtls/md.h"
+#include "mbedtls/pkcs5.h"
+#include "psa/crypto.h"
+
+extern const char *mbedtls_ssl_get_alpn_protocol(const mbedtls_ssl_context *ssl);
+typedef const char *(* _api_mbedtls_ssl_get_alpn_protocol_t)(const mbedtls_ssl_context *ssl);
+
+extern int mbedtls_ssl_conf_alpn_protocols(mbedtls_ssl_config *conf, const char **protos);
+typedef int (* _api_mbedtls_ssl_conf_alpn_protocols_t)(mbedtls_ssl_config *conf, const char **protos);
 
 extern int mbedtls_pk_parse_public_key(mbedtls_pk_context *ctx, const unsigned char *key, size_t keylen);
 typedef int (*_api_mbedtls_pk_parse_public_key_t)(mbedtls_pk_context *ctx, const unsigned char *key, size_t keylen);
@@ -60,13 +70,13 @@ typedef mbedtls_pk_type_t (*_api_mbedtls_pk_get_type_t)(const mbedtls_pk_context
 extern int mbedtls_rsa_pkcs1_encrypt(mbedtls_rsa_context *ctx,
                                int (*f_rng)(void *, unsigned char *, size_t),
                                void *p_rng,
-                               int mode, size_t ilen,
+                               size_t ilen,
                                const unsigned char *input,
                                unsigned char *output);
 typedef int (*_api_mbedtls_rsa_pkcs1_encrypt_t)(mbedtls_rsa_context *ctx,
                                int (*f_rng)(void *, unsigned char *, size_t),
                                void *p_rng,
-                               int mode, size_t ilen,
+                               size_t ilen,
                                const unsigned char *input,
                                unsigned char *output);
 
@@ -141,8 +151,8 @@ typedef int (* _api_mbedtls_x509_crt_parse_t)(mbedtls_x509_crt *chain, const uns
 extern void mbedtls_ssl_conf_ca_chain(mbedtls_ssl_config *conf,mbedtls_x509_crt *ca_chain,mbedtls_x509_crl *ca_crl);
 typedef void (* _api_mbedtls_ssl_conf_ca_chain_t)(mbedtls_ssl_config *conf,mbedtls_x509_crt *ca_chain,mbedtls_x509_crl *ca_crl);
 
-extern int mbedtls_pk_parse_key(mbedtls_pk_context *ctx,const unsigned char *key, size_t keylen,const unsigned char *pwd, size_t pwdlen);
-typedef int (* _api_mbedtls_pk_parse_key_t)(mbedtls_pk_context *ctx,const unsigned char *key, size_t keylen,const unsigned char *pwd, size_t pwdlen);
+extern int mbedtls_pk_parse_key(mbedtls_pk_context *ctx,const unsigned char *key, size_t keylen,const unsigned char *pwd, size_t pwdlen,mbedtls_f_rng_t *f_rng, void *p_rng);
+typedef int (* _api_mbedtls_pk_parse_key_t)(mbedtls_pk_context *ctx,const unsigned char *key, size_t keylen,const unsigned char *pwd, size_t pwdlen,mbedtls_f_rng_t *f_rng, void *p_rng);
 
 extern int mbedtls_ssl_conf_own_cert(mbedtls_ssl_config *conf,mbedtls_x509_crt *own_cert,mbedtls_pk_context *pk_key);
 typedef int (* _api_mbedtls_ssl_conf_own_cert_t)(mbedtls_ssl_config *conf,mbedtls_x509_crt *own_cert,mbedtls_pk_context *pk_key);
@@ -275,14 +285,14 @@ typedef int (* _api_mbedtls_ssl_conf_psk_t)(mbedtls_ssl_config *conf,
 extern void mbedtls_sha1_init( mbedtls_sha1_context *ctx );
 typedef void (* _api_mbedtls_sha1_init_t)( mbedtls_sha1_context *ctx );
 
-extern void mbedtls_sha1_starts( mbedtls_sha1_context *ctx );
-typedef void (* _api_mbedtls_sha1_starts_t)( mbedtls_sha1_context *ctx );
+extern int mbedtls_sha1_starts( mbedtls_sha1_context *ctx );
+typedef int (* _api_mbedtls_sha1_starts_t)( mbedtls_sha1_context *ctx );
 
-extern void mbedtls_sha1_update( mbedtls_sha1_context *ctx ,const unsigned char *input, size_t ilen );
-typedef void (* _api_mbedtls_sha1_update_t)( mbedtls_sha1_context *ctx ,const unsigned char *input, size_t ilen );
+extern int mbedtls_sha1_update( mbedtls_sha1_context *ctx ,const unsigned char *input, size_t ilen );
+typedef int (* _api_mbedtls_sha1_update_t)( mbedtls_sha1_context *ctx ,const unsigned char *input, size_t ilen );
 
-extern void mbedtls_sha1_finish( mbedtls_sha1_context *ctx , unsigned char output[20] );
-typedef void (* _api_mbedtls_sha1_finish_t)( mbedtls_sha1_context *ctx , unsigned char output[20] );
+extern int mbedtls_sha1_finish( mbedtls_sha1_context *ctx , unsigned char output[20] );
+typedef int (* _api_mbedtls_sha1_finish_t)( mbedtls_sha1_context *ctx , unsigned char output[20] );
 
 extern void mbedtls_aes_free( mbedtls_aes_context *ctx );
 typedef void (* _api_mbedtls_aes_free_t)( mbedtls_aes_context *ctx);
@@ -312,5 +322,117 @@ extern int mbedtls_aes_setkey_dec( mbedtls_aes_context *ctx, const unsigned char
     unsigned int keybits );
 typedef int (* _api_mbedtls_aes_setkey_dec_t)( mbedtls_aes_context *ctx, const unsigned char *key,
     unsigned int keybits );
+
+extern void mbedtls_psa_crypto_free(void);
+typedef void (*_api_mbedtls_psa_crypto_free_t)(void);
+
+extern psa_status_t psa_crypto_init(void);
+typedef psa_status_t (*_api_psa_crypto_init_t)(void);
+
+extern void mbedtls_ssl_conf_tls13_key_exchange_modes(mbedtls_ssl_config *conf, const int kex_modes);
+typedef void (*_api_mbedtls_ssl_conf_tls13_key_exchange_modes_t)(mbedtls_ssl_config *conf, const int kex_modes);
+
+void mbedtls_ssl_set_export_keys_cb(mbedtls_ssl_context *ssl, mbedtls_ssl_export_keys_t *f_export_keys, void *p_export_keys);
+typedef void (*_api_mbedtls_ssl_set_export_keys_cb_t)(mbedtls_ssl_context *ssl, mbedtls_ssl_export_keys_t *f_export_keys, void *p_export_keys);
+
+extern int mbedtls_platform_set_calloc_free(void *(*calloc_func)(size_t, size_t),
+                                            void (*free_func)(void *));
+typedef int (*_api_mbedtls_platform_set_calloc_free_t)(void *(*calloc_func)(size_t, size_t),
+                                                       void (*free_func)(void *));
+
+extern int mbedtls_ssl_close_notify(mbedtls_ssl_context *ssl);
+typedef int (*_api_mbedtls_ssl_close_notify_t)(mbedtls_ssl_context *ssl);
+
+extern void mbedtls_ssl_conf_read_timeout(mbedtls_ssl_config *conf, uint32_t timeout);
+typedef void (*_api_mbedtls_ssl_conf_read_timeout_t)(mbedtls_ssl_config *conf, uint32_t timeout);
+
+extern uint32_t mbedtls_ssl_get_verify_result(const mbedtls_ssl_context *ssl);
+typedef uint32_t (*_api_mbedtls_ssl_get_verify_result_t)(const mbedtls_ssl_context *ssl);
+
+#if defined(MBEDTLS_CIPHER_C)
+extern const mbedtls_cipher_info_t *mbedtls_cipher_info_from_string(const char *cipher_name);
+typedef const mbedtls_cipher_info_t *(*_api_mbedtls_cipher_info_from_string_t)(const char *cipher_name);
+
+extern void mbedtls_cipher_init(mbedtls_cipher_context_t *ctx);
+typedef void (*_api_mbedtls_cipher_init_t)(mbedtls_cipher_context_t *ctx);
+
+extern void mbedtls_cipher_free(mbedtls_cipher_context_t *ctx);
+typedef void (*_api_mbedtls_cipher_free_t)(mbedtls_cipher_context_t *ctx);
+
+extern int mbedtls_cipher_setup(mbedtls_cipher_context_t *ctx, const mbedtls_cipher_info_t *cipher_info);
+typedef int (*_api_mbedtls_cipher_setup_t)(mbedtls_cipher_context_t *ctx, const mbedtls_cipher_info_t *cipher_info);
+
+extern int mbedtls_cipher_setkey(mbedtls_cipher_context_t *ctx, const unsigned char *key,
+                                 int key_bitlen, const mbedtls_operation_t operation);
+typedef int (*_api_mbedtls_cipher_setkey_t)(mbedtls_cipher_context_t *ctx, const unsigned char *key,
+                                            int key_bitlen, const mbedtls_operation_t operation);
+
+extern int mbedtls_cipher_set_iv(mbedtls_cipher_context_t *ctx, const unsigned char *iv, size_t iv_len);
+typedef int (*_api_mbedtls_cipher_set_iv_t)(mbedtls_cipher_context_t *ctx, const unsigned char *iv, size_t iv_len);
+
+extern int mbedtls_cipher_reset(mbedtls_cipher_context_t *ctx);
+typedef int (*_api_mbedtls_cipher_reset_t)(mbedtls_cipher_context_t *ctx);
+
+extern int mbedtls_cipher_update(mbedtls_cipher_context_t *ctx, const unsigned char *input,
+                                 size_t ilen, unsigned char *output, size_t *olen);
+typedef int (*_api_mbedtls_cipher_update_t)(mbedtls_cipher_context_t *ctx, const unsigned char *input,
+                                            size_t ilen, unsigned char *output, size_t *olen);
+
+extern int mbedtls_cipher_finish(mbedtls_cipher_context_t *ctx, unsigned char *output, size_t *olen);
+typedef int (*_api_mbedtls_cipher_finish_t)(mbedtls_cipher_context_t *ctx, unsigned char *output, size_t *olen);
+
+#if defined(MBEDTLS_GCM_C) || defined(MBEDTLS_CHACHAPOLY_C)
+extern int mbedtls_cipher_update_ad(mbedtls_cipher_context_t *ctx, const unsigned char *ad, size_t ad_len);
+typedef int (*_api_mbedtls_cipher_update_ad_t)(mbedtls_cipher_context_t *ctx, const unsigned char *ad, size_t ad_len);
+
+extern int mbedtls_cipher_write_tag(mbedtls_cipher_context_t *ctx, unsigned char *tag, size_t tag_len);
+typedef int (*_api_mbedtls_cipher_write_tag_t)(mbedtls_cipher_context_t *ctx, unsigned char *tag, size_t tag_len);
+
+extern int mbedtls_cipher_check_tag(mbedtls_cipher_context_t *ctx, const unsigned char *tag, size_t tag_len);
+typedef int (*_api_mbedtls_cipher_check_tag_t)(mbedtls_cipher_context_t *ctx, const unsigned char *tag, size_t tag_len);
+#endif /* MBEDTLS_GCM_C || MBEDTLS_CHACHAPOLY_C */
+#endif /* MBEDTLS_CIPHER_C */
+
+#if defined(MBEDTLS_MD_C)
+extern const mbedtls_md_info_t *mbedtls_md_info_from_type(mbedtls_md_type_t md_type);
+typedef const mbedtls_md_info_t *(*_api_mbedtls_md_info_from_type_t)(mbedtls_md_type_t md_type);
+
+extern const mbedtls_md_info_t *mbedtls_md_info_from_ctx(const mbedtls_md_context_t *ctx);
+typedef const mbedtls_md_info_t *(*_api_mbedtls_md_info_from_ctx_t)(const mbedtls_md_context_t *ctx);
+
+extern void mbedtls_md_init(mbedtls_md_context_t *ctx);
+typedef void (*_api_mbedtls_md_init_t)(mbedtls_md_context_t *ctx);
+
+extern void mbedtls_md_free(mbedtls_md_context_t *ctx);
+typedef void (*_api_mbedtls_md_free_t)(mbedtls_md_context_t *ctx);
+
+extern int mbedtls_md_setup(mbedtls_md_context_t *ctx, const mbedtls_md_info_t *md_info, int hmac);
+typedef int (*_api_mbedtls_md_setup_t)(mbedtls_md_context_t *ctx, const mbedtls_md_info_t *md_info, int hmac);
+
+extern unsigned char mbedtls_md_get_size(const mbedtls_md_info_t *md_info);
+typedef unsigned char (*_api_mbedtls_md_get_size_t)(const mbedtls_md_info_t *md_info);
+
+extern int mbedtls_md_starts(mbedtls_md_context_t *ctx);
+typedef int (*_api_mbedtls_md_starts_t)(mbedtls_md_context_t *ctx);
+
+extern int mbedtls_md_update(mbedtls_md_context_t *ctx, const unsigned char *input, size_t ilen);
+typedef int (*_api_mbedtls_md_update_t)(mbedtls_md_context_t *ctx, const unsigned char *input, size_t ilen);
+
+extern int mbedtls_md_finish(mbedtls_md_context_t *ctx, unsigned char *output);
+typedef int (*_api_mbedtls_md_finish_t)(mbedtls_md_context_t *ctx, unsigned char *output);
+
+#if defined(MBEDTLS_PKCS5_C) && !defined(MBEDTLS_DEPRECATED_REMOVED)
+typedef int (*_api_mbedtls_pkcs5_pbkdf2_hmac_t)(mbedtls_md_context_t *ctx,
+                                                const unsigned char *password, size_t plen,
+                                                const unsigned char *salt, size_t slen,
+                                                unsigned int iteration_count,
+                                                uint32_t key_length, unsigned char *output);
+#endif /* MBEDTLS_PKCS5_C && !MBEDTLS_DEPRECATED_REMOVED */
+#endif /* MBEDTLS_MD_C */
+
+#if defined(MBEDTLS_PKCS5_C) && !defined(MBEDTLS_DEPRECATED_REMOVED)
+extern void mbedtls_strerror(int errnum, char *buffer, size_t buflen);
+typedef void (*_api_mbedtls_strerror_t)(int errnum, char *buffer, size_t buflen);
+#endif /* MBEDTLS_PKCS5_C && !MBEDTLS_DEPRECATED_REMOVED */
 
 #endif /* __UNIRTOS_MBEDTLS_H__ */

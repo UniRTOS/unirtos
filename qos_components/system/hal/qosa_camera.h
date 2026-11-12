@@ -333,6 +333,28 @@ qosa_camera_error_e qosa_camera_convert_to_jpeg(
 );
 
 /**
+ * @brief Decode JPEG image data to raw camera image format
+ *
+ * @param pInBuf Input JPEG data buffer pointer
+ * @param uInLength Input JPEG data length in bytes
+ * @param pOutBuf Output raw image data buffer pointer
+ * @param pOutLength Pointer to output buffer length, updated with decoded data length
+ * @param pOutWidth Pointer to decoded image width in pixels
+ * @param pOutHeight Pointer to decoded image height in pixels
+ * @param image_format Output image format option enumeration
+ * @return qosa_camera_error_e Return operation result status code
+ */
+qosa_camera_error_e qosa_camera_decode_jpeg(
+    qosa_uint8_t                   *pInBuf,
+    qosa_uint32_t                   uInLength,
+    qosa_uint8_t                   *pOutBuf,
+    qosa_uint32_t                  *pOutLength,
+    qosa_uint32_t                  *pOutWidth,
+    qosa_uint32_t                  *pOutHeight,
+    qosa_camera_output_format_opt_e image_format
+);
+
+/**
  * @brief Calculate suggested output buffer length for JPEG encoding
  *
  * @param quality JPEG compression quality, typically in range 1-100, higher values mean better quality

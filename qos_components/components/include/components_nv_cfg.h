@@ -42,6 +42,9 @@
 // URC config
 #define QCM_URC_CFG                             QCM_CFG_JSON_ROOT_NODE_NAME"/qcm_urc_cfg"
 
+//mifi config
+#define QCM_MIFI_CFG                            QCM_CFG_JSON_ROOT_NODE_NAME"/mifi_net_cfg"
+#define QCM_MIFI_SIM_INFO                       QCM_CFG_JSON_ROOT_NODE_NAME"/mifi_sim_info"
 // clang-format on
 
 // GNSS config

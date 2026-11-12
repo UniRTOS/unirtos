@@ -34,7 +34,13 @@
 #ifndef CHAP_H
 #define CHAP_H
 
-#include "ppp.h"
+/*
+ * chap-new.h only needs to know that ppp_pcb exists (because it uses a pointer), not what it contains. Replacing #include "ppp.h" with a forward declaration breaks the circular include and fixes the compilation problem
+ */
+#ifndef PPP_PCB_TYPEDEF_DEFINED
+#define PPP_PCB_TYPEDEF_DEFINED
+typedef struct ppp_pcb_s ppp_pcb;
+#endif
 
 #ifdef __cplusplus
 extern "C"

@@ -37,14 +37,15 @@ typedef struct {
 	uint8_t  PublicKey[33];
 	uint8_t  Rsv_2[23];
 #else /* defined (CONFIG_QOSA_SECURITY_BOOT_BL) || defined (CONFIG_QOSA_SECURITY_BOOT_KERNEL)*/
-    uint8_t  Rsv_1[64];
+    uint8_t  Rsv_1[8];
+    uint8_t  PublicKey[56];
 #endif/* defined (CONFIG_QOSA_SECURITY_BOOT_BL) || defined (CONFIG_QOSA_SECURITY_BOOT_KERNEL)*/
 }ImageBodyInfo;
 
 typedef struct {
     uint32_t ReservedAreaId;
     uint32_t ReservedSize;
-    uint32_t Reserved[2];    
+    uint32_t Reserved[2];
 }ReservedArea;
 
 typedef struct {
@@ -66,6 +67,8 @@ typedef struct DownloadCtrl
 extern uint32_t LoadVerifyImageHead(void);
 extern uint32_t LoadIVerifymageBody(void);
 #endif
+extern int8_t LoadSysImageSecVer(void);
+extern int8_t LoadBootloaderSecVer(void);
 
 extern ImageHead GImageHead;
 //0x00800000----0x00820000 reserved 128KB for OBM
@@ -112,20 +115,21 @@ extern ImageHead GImageHead;
 #define SYSIMG_HEAD_FLASH_OFFSET_ADDR  (BLIMG_HEAD_FLASH_OFFSET_ADDR+BLIMG_HEAD_AREA_SIZE)
 
 //BOOTLOADER IMAGE
+#define BOOTLOADER_FLASH_OFFSET_ADDR  (BOOTLOADER_FLASH_LOAD_ADDR - AP_FLASH_XIP_ADDR)
 
 //SYSTEM IMAGE
-//#define SYSIMG_HEAD_MAX_SIZE 0x2000  
+//#define SYSIMG_HEAD_MAX_SIZE 0x2000
 
 
 // header and image region
 
-//ap 
+//ap
 #define AP_HEAD_FLASH_OFFSET_ADDR  SYSIMG_HEAD_FLASH_OFFSET_ADDR
 #define AP_BODY_FLASH_OFFSET_ADDR  (AP_FLASH_LOAD_ADDR - AP_FLASH_XIP_ADDR)
 #define AP_BODY_MAX_SIZE           AP_FLASH_LOAD_SIZE
 
 //cp
-#define CP_BODY_FLASH_OFFSET_ADDR  (CP_FLASH_LOAD_ADDR - CP_FLASH_XIP_ADDR) 
+#define CP_BODY_FLASH_OFFSET_ADDR  (CP_FLASH_LOAD_ADDR - CP_FLASH_XIP_ADDR)
 
 
 #ifdef CONFIG_QOSA_SECURITY_BOOT_BL

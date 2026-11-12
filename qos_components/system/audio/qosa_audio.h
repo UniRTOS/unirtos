@@ -128,11 +128,20 @@ typedef enum {
     QOSA_AUDIO_OUTPUT_EXTERNAL,   /*!< Set as external codec output */
     QOSA_AUDIO_OUTPUT_INTERNAL,   /*!< Set as built-in codec output */
     QOSA_AUDIO_OUTPUT_PWM,        /*!< Set to output in PWM mode */
-#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
     QOSA_AUDIO_OUTPUT_SPI,        /*!< Set to output in SPI mode */
-#endif
     QOSA_AUDIO_OUTPUT_MAX,
 } qosa_audio_output_type_e;
+
+/**
+ * @brief Audio routing direction relative to the local device and call peer.
+ */
+typedef enum
+{
+    QOSA_AUD_ROUTE_NEAR = 0, /*!< Playback to local side / record local TX microphone */
+    QOSA_AUD_ROUTE_FAR,      /*!< Playback to call peer / record remote RX downlink */
+    QOSA_AUD_ROUTE_BOTH,     /*!< Playback to both sides / record mixed TX and RX */
+    QOSA_AUD_ROUTE_MAX,
+} qosa_aud_route_e;
 
 
 /**
@@ -161,7 +170,16 @@ typedef struct
 } qosa_aud_cb_param_t;
 
 typedef void (*qosa_aud_callback_t)(qosa_aud_cb_param_t *param);
-#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
+
+/** DTMF detection callback; tone is an ASCII digit, '*', '#', or A-D ,'F'. */
+typedef void (*qosa_aud_dtmf_callback_t)(char tone);
+
+typedef struct
+{
+    qosa_bool_t               enable;   /*!< Keep remote downlink detection enabled until disabled. */
+    qosa_aud_dtmf_callback_t  callback; /*!< Required when enabled. */
+} qosa_aud_dtmf_cfg_t;
+
 /**
  * @struct  qosa_aud_stream_opt_t
  * @brief   Configuration for using audio stream playback
@@ -186,25 +204,22 @@ typedef struct qosa_aud_stream_opt
         };
     };
 }qosa_aud_stream_opt_t;
-#endif
+
 /**
  * @struct  qosa_aud_stream_cfg_t
  * @brief audio Data flow parameter configuration structure
  */
 typedef struct
 {
-    qosa_bool_t         is_record; /*!< Record/Playback */
-    qosa_uint16_t       samprate;  /*!< sampling rate */
-    qosa_uint8_t        channels;  /*!< channel number */
-    qosa_bool_t         sync_mode; /*!< Synchronous mode (blocking playback) / Asynchronous mode (non-blocking) */
-    qosa_aud_fmt_e      format;    /*!< stream format */
-    qosa_aud_callback_t callback;  /*!< callback function */
-    qosa_uint8_t       *ctx;       /*!< Corresponding to the ctx in qosa_aud_cb_param_t */
-#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
+    qosa_bool_t             is_record; /*!< Record/Playback */
+    qosa_uint16_t           samprate;  /*!< sampling rate */
+    qosa_uint8_t            channels;  /*!< channel number */
+    qosa_bool_t             sync_mode; /*!< Synchronous mode (blocking playback) / Asynchronous mode (non-blocking) */
+    qosa_aud_fmt_e          format;    /*!< stream format */
+    qosa_aud_callback_t     callback;  /*!< callback function */
+    qosa_uint8_t            *ctx;      /*!< Corresponding to the ctx in qosa_aud_cb_param_t */
     qosa_aud_stream_opt_t   options;   /*!< Use bits 12 to 15 to represent the number of pre-filled silent frames. */
-#else
-    qosa_uint64_t       options;   /*!< reseved */
-#endif
+    qosa_aud_route_e        route;     /*!< Near, far, or both audio route */
 } qosa_aud_stream_cfg_t;
 
 /**
@@ -215,7 +230,8 @@ typedef struct
 {
     qosa_uint32_t head_size; /*!< File header size */
     qosa_uint32_t samprate;  /*!< sampling rate */
-    qosa_uint8_t  channles;  /*!< channel number */
+    qosa_uint8_t  channels;  /*!< channel number */
+    qosa_uint32_t data_size; /*!< PCM valid data length (for WAV format only) */
 } qosa_aud_head_info_t;
 
 /*===========================================================================
@@ -312,7 +328,7 @@ qosa_int32_t qosa_aud_driver_register(osa_aud_drv_cb_t *ops);
  *         - Other error codes: Return the corresponding error code based on the specific operation.
  */
 qosa_aud_errcode_e qosa_aud_set_volume(qosa_aud_vol_level_e volume);
-#if (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))   
+
 /**
  * @brief Set linear volume function
  *
@@ -326,7 +342,7 @@ qosa_aud_errcode_e qosa_aud_set_volume(qosa_aud_vol_level_e volume);
  *         - Other error codes: Return corresponding error code based on specific operation
  */
 qosa_aud_errcode_e qosa_aud_apply_pcm_gain(qosa_bool_t en, qosa_int16_t level);
-#endif
+
 /**
  * @brief Obtain volume level
  *
@@ -335,6 +351,22 @@ qosa_aud_errcode_e qosa_aud_apply_pcm_gain(qosa_bool_t en, qosa_int16_t level);
  * @return qosa_aud_vol_level_e Volume level
  */
 qosa_aud_vol_level_e qosa_aud_get_volume(void);
+
+/**
+ * @brief Set mute state for voice-call uplink and downlink paths.
+ * @param[in] uplink_mute  QOSA_TRUE to mute TX, QOSA_FALSE to unmute.
+ * @param[in] downlink_mute QOSA_TRUE to mute RX, QOSA_FALSE to unmute.
+ * @return QOSA_AUD_SUCCESS on success, otherwise an audio error code.
+ */
+qosa_aud_errcode_e qosa_aud_voice_mute_set(qosa_bool_t uplink_mute, qosa_bool_t downlink_mute);
+
+/**
+ * @brief Get mute state for voice-call uplink and downlink paths.
+ * @param[out] uplink_mute  QOSA_TRUE if TX is muted.
+ * @param[out] downlink_mute QOSA_TRUE if RX is muted.
+ * @return QOSA_AUD_SUCCESS on success, otherwise an audio error code.
+ */
+qosa_aud_errcode_e qosa_aud_voice_mute_get(qosa_bool_t *uplink_mute, qosa_bool_t *downlink_mute);
 
 /**
  * @brief PA callback registration function
@@ -349,11 +381,27 @@ qosa_aud_vol_level_e qosa_aud_get_volume(void);
 qosa_aud_errcode_e qosa_aud_bind_pa_cb(qosa_aud_pa_callback_t callback);
 
 /**
+ * @brief Enable or disable remote (RX) DTMF detection.
+ * @param cfg Detection configuration; callback is required when enabled.
+ * @return QOSA_AUD_SUCCESS on success, otherwise an audio error code.
+ * @note The callback runs in the platform audio/voice callback context.
+ */
+qosa_aud_errcode_e qosa_aud_dtmf_detect_set_cfg(const qosa_aud_dtmf_cfg_t *cfg);
+
+/**
+ * @brief Query the current remote (RX) DTMF detection configuration.
+ * @param cfg [out] Receives the current configuration; callback is the
+ *        registered handler, or QOSA_NULL when detection is disabled.
+ * @return QOSA_AUD_SUCCESS on success, otherwise an audio error code.
+ */
+qosa_aud_errcode_e qosa_aud_dtmf_detect_get_cfg(qosa_aud_dtmf_cfg_t *cfg);
+
+/**
  * @brief Select audio stream output method
  *
  * @param qosa_audio_output_type_e type
  *         - type: Output method
- *		   - ctrl: Output mode control(pwm: qosa_pwm_aud_cfg_t;  EXTERNAL:qosa_aud_i2s_cfg_t)
+ *		   - ctrl: Output mode control(pwm: qosa_pwm_aud_cfg_t;  EXTERNAL:qosa_aud_i2s_cfg_t; spi:(char)port)
  *
  * @return qosa_aud_errcode_e error code
  *         - QOSA_AUD_INVALID_PARAM: parameter error

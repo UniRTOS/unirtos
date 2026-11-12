@@ -104,9 +104,22 @@ flash xip address(from both ap/cp view): 0x00800000---0x00c00000
 #endif /* QOSA_EXT_UPDATER_SUPPORT */
 #define UNIR_HIB_BACKUP_SIZE    (0x0)
 
+#elif defined(QL_OEM_VERSION_YLB)
+#define UNIR_AP_IMG_SIZE        (0x1BF000)
+#if defined QL_CP_OC_GLO_BIN_MODE
+/* GLO: AP_PARTION_START多了0x5000, NVRAM多了0xD000, 共需减少0x12000 */
+#define UNIR_APP_OPEN_CPU_SIZE  (0x7A000)
+#else
+#define UNIR_APP_OPEN_CPU_SIZE  (0x8C000)
+#endif /* QL_CP_OC_GLO_BIN_MODE */
+#define UNIRTOS_CUST_FLASH_SIZE (0x0)
+#define UNIR_LFS_SIZE           (0xF4000)
+#define UNIR_UPDATER_SIZE       (0X24000)
+#define UNIR_HIB_BACKUP_SIZE    (0x0)
+
 //2.原厂特性,各lib下的公版
 #elif defined(QL_AP_LIB_OC)
-#ifndef __QUECTEL_PROJECT_EG800ZCN_LG__
+#if !defined(__QUECTEL_PROJECT_EG800ZCN_LG__) && !defined(__QUECTEL_PROJECT_EG800ZEU_LG__)
 //公版非GNSS项目分区划分
 #define UNIR_AP_IMG_SIZE        (0x1D6000)
 #define UNIR_APP_OPEN_CPU_SIZE  (0xC8000)
@@ -114,7 +127,7 @@ flash xip address(from both ap/cp view): 0x00800000---0x00c00000
 #define UNIR_LFS_SIZE           (0x89000)
 #define UNIR_UPDATER_SIZE       (0X24000)
 #define UNIR_HIB_BACKUP_SIZE    (0x18000)
-#else /* __QUECTEL_PROJECT_EG800ZCN_LG__ */
+#else  /* !defined(__QUECTEL_PROJECT_EG800ZCN_LG__) && !defined(__QUECTEL_PROJECT_EG800ZEU_LG__) */
 //公版GNSS项目分区划分
 #define UNIR_AP_IMG_SIZE        (0x1D6000)
 #define UNIR_APP_OPEN_CPU_SIZE  (0xC8000)
@@ -123,7 +136,7 @@ flash xip address(from both ap/cp view): 0x00800000---0x00c00000
 #define UNIR_GNSS_IMG_SIZE      (0x30000)
 #define UNIR_UPDATER_SIZE       (0X24000)
 #define UNIR_HIB_BACKUP_SIZE    (0x18000)
-#endif /* __QUECTEL_PROJECT_EG800ZCN_LG__ */
+#endif /* !defined(__QUECTEL_PROJECT_EG800ZCN_LG__) && !defined(__QUECTEL_PROJECT_EG800ZEU_LG__) */
 #elif defined(QL_AP_LIB_OC_GLO)
 #define UNIR_AP_IMG_SIZE        (0x1D6000)
 #define UNIR_APP_OPEN_CPU_SIZE  (0xC8000)
@@ -172,12 +185,12 @@ flash xip address(from both ap/cp view): 0x00800000---0x00c00000
  * Second： 由于AP分区起始是固定的,再根据上面确定的分区大小，确定各个分区的FLASH起始地址
  */
 #define UNIR_AP_IMG_ADDR (UNIR_AP_PARTION_START)
-#ifdef __QUECTEL_PROJECT_EG800ZCN_LG__
+#if defined(__QUECTEL_PROJECT_EG800ZCN_LG__) || defined(__QUECTEL_PROJECT_EG800ZEU_LG__)
 #define UNIR_GNSS_IMG_ADDR     (UNIR_AP_IMG_ADDR + UNIR_AP_IMG_SIZE)
 #define UNIR_APP_OPEN_CPU_ADDR (UNIR_GNSS_IMG_ADDR + UNIR_GNSS_IMG_SIZE)
-#else  /* __QUECTEL_PROJECT_EG800ZCN_LG__ */
+#else  /* defined(__QUECTEL_PROJECT_EG800ZCN_LG__) || defined(__QUECTEL_PROJECT_EG800ZEU_LG__) */
 #define UNIR_APP_OPEN_CPU_ADDR (UNIR_AP_IMG_ADDR + UNIR_AP_IMG_SIZE)
-#endif /* __QUECTEL_PROJECT_EG800ZCN_LG__ */
+#endif /* defined(__QUECTEL_PROJECT_EG800ZCN_LG__) || defined(__QUECTEL_PROJECT_EG800ZEU_LG__) */
 #define UNIRTOS_CUST_FLASH_ADDR      (UNIR_APP_OPEN_CPU_ADDR + UNIR_APP_OPEN_CPU_SIZE)
 #define UNIR_LFS_ADDR                (UNIRTOS_CUST_FLASH_ADDR + UNIRTOS_CUST_FLASH_SIZE)
 #define UNIR_UPDATER_ADDR            (UNIR_LFS_ADDR + UNIR_LFS_SIZE)

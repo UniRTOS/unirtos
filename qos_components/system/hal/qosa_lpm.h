@@ -232,6 +232,17 @@ typedef struct
     qosa_lpm_psm_sleep_status_e sleep_status; /*!< PSM sleep status */
 } qosa_lpm_psm_event_t;
 
+#ifdef CONFIG_QOSA_NBIOT_CUST_FUNC
+/**
+ * @brief PSM runtime state enumeration
+ */
+typedef enum
+{
+    QOSA_PSM_STATE_INACTIVE = 0,  /* Module is NOT in PSM mode */
+    QOSA_PSM_STATE_ACTIVE   = 1,  /* Module is in PSM mode */
+} qosa_psm_state_e;
+#endif /* CONFIG_QOSA_NBIOT_CUST_FUNC */
+
 /*===========================================================================
  * Function
 ===========================================================================*/
@@ -377,4 +388,28 @@ qosa_lpm_sleep_log_e qosa_lpm_get_sleep_debug(void);
 qosa_lpm_error_e qosa_lpm_set_sleep_debug(qosa_lpm_sleep_log_e log_mode);
 
 #endif /* CONFIG_QOSA_LPM_SLEEP_LOG_FUNC */
+
+#ifdef CONFIG_QOSA_NBIOT_CUST_FUNC
+/**
+ * @brief Get current PSM runtime state
+ *
+ * This state is stored in AON memory and survives deep sleep/hibernate.
+ *
+ * @return qosa_psm_state_e
+ *       - QOSA_PSM_STATE_ACTIVE if module is currently in PSM mode.
+ *       - QOSA_PSM_STATE_INACTIVE otherwise.
+ */
+qosa_psm_state_e qosa_psm_state_get(void);
+
+/**
+ * @brief Set current PSM runtime state
+ *
+ * This state is stored in AON memory and survives deep sleep/hibernate.
+ *
+ * @param[in] state
+ *          - QOSA_PSM_STATE_ACTIVE to mark entering PSM.
+ *          - QOSA_PSM_STATE_INACTIVE to mark exiting PSM.
+ */
+void qosa_psm_state_set(qosa_psm_state_e state);
+#endif /* CONFIG_QOSA_NBIOT_CUST_FUNC */
 #endif /* _QOSA_LPM_H_ */

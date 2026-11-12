@@ -156,5 +156,32 @@ qosa_dev1_error_e qosa_dev_set_airplanecontrol_config(qosa_uint8_t simid, qosa_u
  * @return qosa_dev1_error_e
  */
 qosa_dev1_error_e qosa_dev_get_airplanecontrol_config(qosa_uint8_t simid, qosa_dev_airplanecontrol_param_t *config);
-#endif//!(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+
+#ifdef CONFIG_QOSA_NBIOT_CUST_FUNC
+#include "cmidev.h"
+
+/**
+ * @brief Get extended device configuration synchronously
+ *
+ * @param[in] simid
+ *          - SIM card ID
+ * @param[out] cnf
+ *          - Extended device configuration result (CmiDevGetExtCfgCnf)
+ * @return qosa_dev1_error_e
+ */
+qosa_dev1_error_e qosa_dev_get_ext_cfg_sync(qosa_uint8_t simid, CmiDevGetExtCfgCnf *cnf);
+
+/**
+ * @brief Set extended device configuration synchronously
+ *
+ * @param[in] simid
+ *          - SIM card ID
+ * @param[in] req
+ *          - Extended device configuration request (CmiDevSetExtCfgReq)
+ * @return qosa_dev1_error_e
+ */
+qosa_dev1_error_e qosa_dev_set_ext_cfg_sync(qosa_uint8_t simid, CmiDevSetExtCfgReq *req);
+#endif /* CONFIG_QOSA_NBIOT_CUST_FUNC */
+
+#endif /* Wi-Fi platform exclusion */
 #endif /* __QOSA_DEV1_H__ */

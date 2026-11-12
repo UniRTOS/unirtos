@@ -89,10 +89,14 @@
 
 
 /**UNIRTOS Region Division Operator */
-#cmakedefine CONFIG_QOSA_OPER_CN_AREA 
-#cmakedefine CONFIG_QOSA_OPER_LA_AREA 
-#cmakedefine CONFIG_QOSA_OPER_EU_AREA 
-#cmakedefine CONFIG_QOSA_OPER_NA_AREA
-#cmakedefine CONFIG_QOSA_OPER_OC_AREA
-#cmakedefine CONFIG_QOSA_OPER_GL_AREA 
+#cmakedefine CONFIG_QOSA_OPER_ASIA_AREA
+#cmakedefine CONFIG_QOSA_OPER_EUROPE_AREA
+#cmakedefine CONFIG_QOSA_OPER_NORTH_AMERICA_AREA
+#cmakedefine CONFIG_QOSA_OPER_LATIN_AMERICA_AREA
+#cmakedefine CONFIG_QOSA_OPER_OCEANIA_AREA
+#cmakedefine CONFIG_QOSA_OPER_GLOBAL_AREA
+
+/* Add Starlink EHPLMNs for SD2C */
+#cmakedefine CONFIG_QOSA_NW_STARLINK_EHPLMN
+
 #endif

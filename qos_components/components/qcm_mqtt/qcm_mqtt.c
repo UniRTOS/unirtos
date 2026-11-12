@@ -26,7 +26,9 @@
 #include "qcm_proj_config.h"
 #include "qosa_log.h"
 #include "qosa_nvitem.h"
-
+#ifdef CONFIG_QOSA_OEM_RWR_FUNC
+#include "qosa_led_event.h"
+#endif /* CONFIG_QOSA_OEM_RWR_FUNC */
 /** Redefine the TAG of this file */
 #define QOS_LOG_TAG LOG_TAG_MQTT_API
 
@@ -99,7 +101,7 @@ qcm_mqtt_eercode_e qcm_mqtt_malloc_data(qcm_mqtt_data_t *data_ptr, qosa_uint32_t
     {
         return QCM_MQTT_RES_ERROR_PARAM_INVALID;
     }
-	
+
     data_ptr->data_len = data_len;
     data_ptr->data_ptr = qosa_malloc(data_ptr->data_len + 1);
     if (data_ptr->data_ptr == QOSA_NULL)
@@ -704,6 +706,9 @@ static void qcm_mqtt_client_remove_request_all(qcm_mqtt_client_t *client_ptr)
 static void qcm_mqtt_client_free(qcm_mqtt_client_t *client_ptr)
 {
     QLOGV("enter");
+#ifdef CONFIG_QOSA_OEM_RWR_FUNC
+    QOSA_LED_UPDATE_MQTT_STATUS(client_ptr->user_option.sim_id, client_ptr->client_id, 0);
+#endif /* CONFIG_QOSA_OEM_RWR_FUNC */
     qcm_mqtt_client_remove_request_all(client_ptr);
 
     while (qosa_q_cnt(&client_ptr->new_msg_pub))
@@ -2030,6 +2035,9 @@ static qcm_mqtt_eercode_e qcm_mqtt_client_parse_incoming(qcm_mqtt_client_t *clie
                 if (connack_pkt.return_code == MQTT_CONNECTION_ACCEPTED)
                 {
                     client_ptr->client_state = QCM_MQTT_STATE_MQTT_CONNECTED;
+#ifdef CONFIG_QOSA_OEM_RWR_FUNC
+                    QOSA_LED_UPDATE_MQTT_STATUS(client_ptr->user_option.sim_id, client_ptr->client_id, 1);
+#endif /* CONFIG_QOSA_OEM_RWR_FUNC */
 #ifdef CONFIG_QCM_MQTT5_FUNC
                     if (connack_pkt.options != QOSA_NULL)
                     {
@@ -2122,7 +2130,7 @@ static qcm_mqtt_eercode_e qcm_mqtt_client_parse_incoming(qcm_mqtt_client_t *clie
 #ifdef CONFIG_QCM_MQTT5_FUNC
                 //Todo To be used
                 qosa_free(puback_pkt.options);
-#endif /* CONFIG_QCM_MQTT5_FUNC */                
+#endif /* CONFIG_QCM_MQTT5_FUNC */
                 qcm_mqtt_client_remove_request(client_ptr, MQTT_PUBLISH, puback_pkt.msg_id);
                 qcm_mqtt_client_response_commone(client_ptr, QCM_MQTT_CLIENT_PUBLISH_EVENT, QCM_MQTT_RES_OK, &send_resp);
             }
@@ -4620,6 +4628,7 @@ qcm_mqtt_eercode_e qcm_mqtt_client_read_subcribe_message(qosa_uint8_t client_id,
         return QCM_MQTT_RES_ERROR_STORE_FAIL;
     }
 
+    recv_pub->qos = new_msg_ptr->new_msg.header.bits.qos;
     recv_pub->msg_id = new_msg_ptr->new_msg.msg_id;
     recv_pub->topic.data_len = new_msg_ptr->new_msg.topic.data_len;
     recv_pub->topic.data_ptr = new_msg_ptr->new_msg.topic.data_ptr;
@@ -4632,6 +4641,58 @@ qcm_mqtt_eercode_e qcm_mqtt_client_read_subcribe_message(qosa_uint8_t client_id,
 
     qosa_q_delete(&client_ptr->new_msg_pub, &new_msg_ptr->link);
     qosa_free(new_msg_ptr);
+    qosa_mutex_unlock(g_mqtt_context.mutex);
+
+    return QCM_MQTT_RES_OK;
+}
+
+/**
+ * @brief Peek the topic of the received publish message with the specified store_id without consuming the message.
+ *
+ * @param[in] qosa_uint8_t client_id
+ *           - MQTT client handle.
+ * @param[in] qosa_uint8_t store_id
+ *           - Store ID of the cached publish message to be queried.
+ * @param[out] const char **topic
+ *           - Output the topic pointer of the cached publish message. The pointer belongs to MQTT internal cache and must not be freed by caller.
+ * @param[out] qosa_uint32_t *topic_len
+ *           - Output the topic length of the cached publish message.
+ *
+ * @return qcm_mqtt_eercode_e
+ *        - Returns QCM_MQTT_RES_OK for success.
+ *        - Returns QCM_MQTT_RES_ERROR_PARAM_IS_NULL if output parameters are NULL or the MQTT client does not exist.
+ *        - Returns QCM_MQTT_RES_ERROR_STORE_FAIL if the specified store_id is not found.
+ */
+qcm_mqtt_eercode_e qcm_mqtt_client_peek_subcribe_message(qosa_uint8_t client_id, qosa_uint8_t store_id, const char **topic, qosa_uint32_t *topic_len)
+{
+    qcm_mqtt_client_t      *client_ptr = QOSA_NULL;
+    qcm_mqtt_new_message_t *new_msg_ptr = QOSA_NULL;
+    qosa_uint8_t            find_store = store_id;
+    qcm_mqtt_check_and_create_task();
+
+    if (topic == QOSA_NULL || topic_len == QOSA_NULL)
+    {
+        return QCM_MQTT_RES_ERROR_PARAM_IS_NULL;
+    }
+
+    client_ptr = (qcm_mqtt_client_t *)qcm_mqtt_client_get_ptr(client_id);
+    if (client_ptr == QOSA_NULL)
+    {
+        return QCM_MQTT_RES_ERROR_PARAM_IS_NULL;
+    }
+
+    qosa_mutex_lock(g_mqtt_context.mutex, QOSA_WAIT_FOREVER);
+
+    new_msg_ptr = qosa_q_linear_search(&client_ptr->new_msg_pub, qcm_mqtt_client_compare_store_id, (void *)&find_store);
+    if (new_msg_ptr == QOSA_NULL)
+    {
+        qosa_mutex_unlock(g_mqtt_context.mutex);
+        return QCM_MQTT_RES_ERROR_STORE_FAIL;
+    }
+
+    *topic = new_msg_ptr->new_msg.topic.data_ptr;
+    *topic_len = new_msg_ptr->new_msg.topic.data_len;
+
     qosa_mutex_unlock(g_mqtt_context.mutex);
 
     return QCM_MQTT_RES_OK;
