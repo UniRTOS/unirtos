@@ -133,6 +133,10 @@ if(CONFIG_QCM_LLM_PROXY)
     add_subdirectory_if_exist(qcm_llm_proxy)
 endif()
 
+if(CONFIG_AGORA_RTC_AGENT)
+    add_subdirectory_if_exist(agora-rtc-agent)
+endif()
+
 # Virtual function Make sure to put it at the end.
 add_subdirectory_if_exist(virt_func)
 

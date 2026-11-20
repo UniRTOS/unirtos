@@ -1,0 +1,15 @@
+menu "TP"
+	config TP
+		bool "Enable TP"
+		default n
+
+	config TP_RST_GPIO_ID
+		depends on TP
+		int "Set TP RST GPIO PIN"
+		default 9
+
+	config TP_INT_GPIO_ID
+		depends on TP
+		int "Set TP INT GPIO PIN"
+		default 6
+endmenu

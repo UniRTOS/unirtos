@@ -1,0 +1,15 @@
+menu "Beken Components Network Provisioning"
+	config BK_NETWORK_PROVISIONING
+		bool "Enable Beken Network Provisioning"
+		default n
+
+	config BK_BLE_PROVISIONING
+		bool "Enable BLE Service for Network Provisioning"
+		depends on BK_NETWORK_PROVISIONING
+		default n
+
+	config BK_NETWORK_PROVISIONING_BLE_EXAMPLE
+		bool "Enable Network Provisioning BLE Example"
+		depends on BK_BLE_PROVISIONING
+		default n
+endmenu

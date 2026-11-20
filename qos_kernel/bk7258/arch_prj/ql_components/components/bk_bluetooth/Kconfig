@@ -1,0 +1,85 @@
+menu "Bk_ble"
+	config BLUETOOTH_AP
+		bool "bluetooth ap"
+		default y
+
+    config BLUETOOTH_HOST_ONLY
+		bool "bluetooth host only"
+		depends on BLUETOOTH_AP
+		default y
+
+	config BT
+		bool "Enable Bt"
+		depends on BLUETOOTH_HOST_ONLY
+		default n
+
+	config BLE
+		bool "Enable Ble"
+		depends on BLUETOOTH_HOST_ONLY
+		default y
+
+	config BLUETOOTH_AUTO_ENABLE
+		bool "bluetooth auto enable"
+		depends on BLUETOOTH_AP
+		default y
+
+
+	config BLUETOOTH_MULTI_CONTROLLER
+		bool "multi bluetooth controller"
+		depends on (BLE || BT)
+		default n
+
+	choice BLUETOOTH_MULTI_CONTROLLER_MODE
+		prompt "multi bluetooth controller mode"
+		depends on BLUETOOTH_MULTI_CONTROLLER
+		default BLUETOOTH_MULTI_CONTROLLER_MODE_PRI_ALL_SEC_NONE
+
+		config BLUETOOTH_MULTI_CONTROLLER_MODE_PRI_ALL_SEC_NONE
+			bool "primary all, secondary none"
+		config BLUETOOTH_MULTI_CONTROLLER_MODE_PRI_NONE_SEC_ALL
+			bool "primary none, secondary all"
+		config BLUETOOTH_MULTI_CONTROLLER_MODE_PRI_BLE_SEC_BT
+			bool "primary ble, secondary bt"
+		config BLUETOOTH_MULTI_CONTROLLER_MODE_PRI_BT_SEC_BLE
+			bool "primary bt, secondary ble"
+	endchoice
+
+	config BLUETOOTH_HOST_ENABLE_H5
+		bool "host enable h5"
+		depends on (BLUETOOTH_MULTI_CONTROLLER_MODE_PRI_NONE_SEC_ALL || BLUETOOTH_MULTI_CONTROLLER_MODE_PRI_BLE_SEC_BT || BLUETOOTH_MULTI_CONTROLLER_MODE_PRI_BT_SEC_BLE)
+		default n
+
+	config BLUETOOTH_RELEASE_CODESIZE
+		bool "reduce ble stack size"
+		depends on BLE
+		default n
+		help
+			This option is used to reduce ble stack size for IoT scenarios that
+			only use ble provisioning network.It supports two ble advertise,
+			one ble link, and ble scan at the same time.it does not support SMP and central role.
+			when config this option,BLUETOOTH_BLE_SLAVE_ONLY will be invalid.
+
+	config BLUETOOTH_BLE_SLAVE_ONLY
+		bool "only supports ble slave"
+		depends on !BLUETOOTH_RELEASE_CODESIZE
+		default n
+
+	config BLUETOOTH_BLE_SLAVE_OBSERVER
+		bool "only supports ble slave and observer"
+		depends on !BLUETOOTH_RELEASE_CODESIZE
+		default n
+
+    config BLUETOOTH_BLE_DISCOVER_AUTO
+        bool "auto ble discover. Only used when single ble host"
+        default y
+
+    config BLUETOOTH_SUPPORT_IPC
+        bool "bt support ipc"
+		depends on BLUETOOTH_AP
+        default y
+
+	config BLUTOOTH_ENABLE_BT_DUT_TEST
+		bool "enable manual bt dut test"
+		depends on BT
+		default n
+endmenu

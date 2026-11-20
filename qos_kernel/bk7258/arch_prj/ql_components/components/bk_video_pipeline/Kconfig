@@ -1,0 +1,12 @@
+menu "Video Pipeline"
+
+	config VIDEO_PIPELINE
+		bool "Enable Video Pipeline"
+		default y
+		help
+			Enable video pipeline service
+	
+
+
+
+endmenu

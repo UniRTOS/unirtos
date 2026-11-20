@@ -1,0 +1,48 @@
+menu "Bk Network Transfer"
+
+	config BK_NTWK_TRANSFER
+		bool "Enable BK Network Transfer"
+		default y
+		help
+			Enable BK Network Transfer
+
+	config MEDIA_DROP_STRATEGY_ENABLE
+		bool "Enable Media Drop Strategy"
+		default y
+		help
+			Enable media drop strategy
+
+	config DATA_NODE_SIZE
+		int "Video RX Node Size"
+		default 1472
+		help
+			Video receive node size in bytes
+
+	config DATA_POOL_LEN
+		int "Video Pool Length"
+		default 51520
+		help
+			Video pool length in bytes (default: 1472 * 35 = 51520)
+
+	config NTWK_USE_PSARM_MEM
+		bool "Use PSRAM for Network Transfer Memory Allocation"
+		depends on PSRAM
+		default n
+		help
+			Use PSRAM for memory allocation in network transfer component
+
+	config NTWK_CLIENT_SERVICE_ENABLE
+		bool "Enable Network Client Service"
+		default n
+		help
+			Enable network client service
+
+	config NTWK_PKT_USE_PSARM_MEM
+		bool "Use PSRAM for Network Transfer Packet Memory Allocation"
+		depends on PSRAM
+		default y
+		help
+			Use PSRAM for packet memory allocation in network transfer component
+
+
+endmenu

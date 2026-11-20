@@ -65,7 +65,12 @@ def project_info(message):
 
 
 def sdk_root() -> Path:
-    return Path(__file__).resolve().parents[2]
+    root = Path(__file__).resolve().parents[2]
+    current_dir = Path.cwd()
+    for candidate in (current_dir, *current_dir.parents):
+        if candidate.samefile(root):
+            return candidate
+    return root
 
 
 def variants_dir(root: Path) -> Path:

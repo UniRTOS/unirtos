@@ -1,0 +1,5 @@
+menu "QuecOS Project Configuration"
+    config QUEC_OS_SUPPORT
+        bool "Enable QuecOS Support"
+        default y
+endmenu

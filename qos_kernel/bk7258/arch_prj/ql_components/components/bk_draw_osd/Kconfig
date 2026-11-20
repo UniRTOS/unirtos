@@ -1,0 +1,10 @@
+menu "Media::Draw_osd"
+
+	config MEDIA_OSD
+		bool "Enable software draw osd component"
+		default n
+		help
+			This option enables the software draw osd component.
+
+endmenu
+

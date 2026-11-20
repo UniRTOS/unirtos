@@ -1,0 +1,50 @@
+menu "Bk_thirdparty::Wanson_armino"
+
+	config WANSON_ARMINO_ASR
+		bool "Enable Wanson ASR"
+		default n
+		help
+			Enable Wanson Automatic Speech Recognition
+
+	config WANSON_ASR_GROUP_VERSION
+		depends on WANSON_ARMINO_ASR
+		bool "Enable Wanson ASR_GROUP_VERSION"
+		default n
+		help
+			Enable Wanson ASR_GROUP_VERSION
+
+	config WANSON_CN_LICENSE
+		bool "Enable Wanson CN License"
+		default n
+		help
+			Enable Wanson CN License for authentication and usage rights
+
+	choice WANSON_ASR_WORDS_VERSION
+		depends on WANSON_ARMINO_ASR
+		prompt "Select Words Version"
+		default WANSON_ASR_GROUP_VERSION_WORDS_V1
+
+		config WANSON_ASR_WORDS_VERSION_V1
+		bool "Enable Words Version V1"
+		help
+			support wakeword "a er mi nuo"
+
+		config WANSON_ASR_WORDS_VERSION_V2
+		bool "Enable Words Version V2"
+		help
+			support wakeword "hi armino"
+
+		config WANSON_ASR_GROUP_VERSION_WORDS_V1
+		bool "Enable Wanson ASR Group Version_V1"
+		help
+			support wakeword "hi armino"
+
+		config WANSON_ASR_GROUP_VERSION_WORDS_V2
+		bool "Enable Wanson ASR Group Version_V2"
+		help
+			support wakeword "nihao armino"
+
+
+	endchoice
+
+endmenu

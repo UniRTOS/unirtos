@@ -1,0 +1,77 @@
+#pragma once
+
+#include "os/os.h"
+
+#define GATT_MAX_CONNECTION_COUNT 7
+#define GATT_MAX_PROFILE_COUNT 6
+
+enum
+{
+    GAP_CONNECT_STATUS_IDLE,
+    GAP_CONNECT_STATUS_CONNECTING,
+    GAP_CONNECT_STATUS_CONNECTED,
+    GAP_CONNECT_STATUS_DISCONNECTING,
+};
+
+typedef struct
+{
+    bk_bd_addr_t addr;
+    bk_ble_addr_type_t addr_type;
+    uint16_t conn_id;
+    uint8_t status; //see GAP_CONNECT_STATUS_IDLE
+    uint8_t local_is_master;
+    uint8_t is_authen;
+    beken_semaphore_t server_sem;
+    beken_semaphore_t client_sem;
+
+    uint32_t data_len;
+    uint8_t *data;
+
+    struct
+    {
+        uint32_t id;
+        uint32_t data_len;
+        uint8_t *data;
+    }profile_array[GATT_MAX_PROFILE_COUNT];
+
+} dm_gatt_app_env_t;
+
+typedef struct
+{
+    //for server
+    uint8_t notify_status; //0 disable; 1 notify; 2 indicate
+    uint16_t server_mtu;
+    uint16_t send_notify_status;
+    uint16_t send_read_rsp_status;
+
+    //for client
+    uint8_t job_status; //see GATTC_STATUS_IDLE
+    uint16_t client_mtu;
+    uint8_t noti_indica_switch;
+    uint8_t noti_indicate_recv_count;
+    uint16_t write_read_status;
+
+    uint8_t *read_buff;
+    uint32_t read_buff_len;
+    uint32_t read_offset;
+
+    uint16_t peer_interest_service_start_handle; //interest
+    uint16_t peer_interest_service_end_handle;
+    uint16_t peer_interest_char_handle;
+    uint16_t peer_interest_char_desc_handle;
+
+    uint16_t peer_gap_service_start_handle;
+    uint16_t peer_gap_service_end_handle;
+} dm_gatt_demo_app_env_t;
+
+int32_t bk_at_dm_ble_app_env_init();
+int32_t bk_at_dm_ble_app_env_deinit();
+dm_gatt_app_env_t *bk_at_dm_ble_alloc_app_env_by_addr(uint8_t *addr, uint32_t data_len);
+dm_gatt_app_env_t *bk_at_dm_ble_find_app_env_by_addr(uint8_t *addr);
+dm_gatt_app_env_t *bk_at_dm_ble_find_app_env_by_conn_id(uint16_t conn_id);
+uint8_t bk_at_dm_ble_del_app_env_by_addr(uint8_t *addr);
+uint8_t bk_at_dm_ble_free_all_app_env();
+dm_gatt_app_env_t *bk_at_dm_ble_alloc_addition_data_by_addr(uint8_t *addr, uint32_t data_len);
+dm_gatt_app_env_t *bk_at_dm_ble_alloc_profile_data_by_addr(uint8_t profile_id, uint8_t *addr, uint32_t data_len, uint8_t **output_param);
+uint8_t *bk_at_dm_ble_find_profile_data_by_profile_id(dm_gatt_app_env_t *env, uint32_t profile_id);
+uint8_t bk_at_dm_ble_app_env_foreach( int32_t (*func) (dm_gatt_app_env_t *env, void *arg), void *arg );

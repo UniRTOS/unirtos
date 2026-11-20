@@ -1,0 +1,32 @@
+menu "DVP"
+	config DVP_CAMERA
+		bool "Enable Camera"
+		depends on YUV_BUF
+		depends on GENERAL_DMA
+		default n
+		help
+			Enable camera interface
+
+	config DVP_CAMERA_I2C_ID
+		depends on DVP_CAMERA
+		int "Set Camera I2c Id"
+		range 0 2
+		default 0
+		help
+			The value should be changed if need to change i2c id
+
+	config DVP_CTRL_POWER_GPIO_ID
+		depends on DVP_CAMERA
+		int "the gpio id control dvp camera power"
+		default 9
+
+	config DVP_THREAD_STACK_SIZE
+		depends on DVP_CAMERA
+		int "DVP work thread stack size (bytes)"
+		range 1024 8192
+		default 2048
+		help
+			Stack size for DVP work thread that handles frame callbacks and module reset.
+			Increase if stack overflow occurs.
+
+endmenu

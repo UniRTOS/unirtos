@@ -1,0 +1,31 @@
+#TODO remove all kconfigs which are defined in armino libs
+
+menu "VolcEngineRTCLite"
+
+	config VOLC_RTC_EN
+		bool "Enable Volc RTC"
+		default n
+		help
+			Enable Volc RTC
+
+	config VOLC_RTC_ENABLE_LICENSE
+		bool "Enable volc RTC license check"
+		depends on VOLC_RTC_EN
+		default n
+		help
+			Enable volc RTC license check
+
+	config VOLC_RTC_THREAD_BIND_CPU
+		bool "Enable volc RTC thread bind cpu"
+		depends on VOLC_RTC_EN
+		default n
+		help
+			Enable volc RTC thread bind cpu
+
+	config VOLC_RTC_THREAD_BIND_CPU_ID
+		int "Volc RTC thread bind cpu id"
+		depends on VOLC_RTC_THREAD_BIND_CPU
+		default 0
+		help
+			Volc RTC thread bind cpu id
+endmenu

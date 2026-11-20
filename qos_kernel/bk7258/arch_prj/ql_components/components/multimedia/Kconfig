@@ -1,0 +1,149 @@
+menu "Media"
+
+	config MEDIA
+		bool "Enable Media"
+		default n
+		help
+			Enable media service
+
+	config LCD_FLASH_JPEG_DISPLAY
+		depends on LCD
+		bool "Enable Lcd Flash Jpeg Display"
+		default n
+		help
+			enable lcd display flash img
+
+	config LCD_DMA2D_BLEND
+		depends on DMA2D
+		bool "Enable Lcd Dma2d Blend Flash Img"
+		default n
+		help
+			enable lcd dma2d blend flash logo
+
+	config BLEND_USE_GUI
+		depends on LCD
+		bool "Enable Blend Use Gui"
+		default n
+		help
+			enable lcd dma2d blend from gui
+
+	config BLEND_GUI_OUTPUT_888
+		depends on LCD
+		bool "Enable Blend Gui Output 888"
+		default n
+		help
+			enable lcd dma2d blend from gui, gui data is rgb888
+
+	config LCD_FONT_BLEND
+		depends on LCD
+		bool "Enable Lcd Font Blend"
+		default n
+		help
+			enable lcd blend by font logo
+
+	config EXTENTED_PSRAM_LAYOUT
+		bool "Externally controlling the PSRAM range of the framebuffer"
+		default n
+		help
+			extern external fb_layout variable
+
+	config LCD_ROTATE
+		depends on LCD
+		bool "Enable Lcd rotate function"
+		default n
+
+	config LCD_HW_PFC
+		depends on LCD
+		bool "Enable Lcd hw pixel convert"
+		default n
+
+	config LCD_HW_DECODE
+		depends on LCD
+		bool "Enable Lcd hw decode"
+		default n
+
+	config SW_ROTATE_TO_YUYV_AND_DMA2D_TO_YUYV_NOT_RGB888
+		depends on LCD
+		bool "Enable SW rotate to YUYV and DMA2D to YUYV not RGB888"
+		default n
+
+	config LCD_SW_DECODE
+		depends on LCD
+		bool "Enable Lcd sw decode"
+		default n
+
+	config LCD_AUTO_FILL_FULL
+		depends on LCD
+		bool "Enable Lcd auto fill full"
+		default n
+
+	config MEDIA_PIPELINE
+		depends on LCD
+		bool "Enable MEDIA PIPELINE"
+		default n
+
+	config JPEG_DECODE_PIPELINE_TASK_STACK_SIZE
+		depends on MEDIA_PIPELINE
+		int "JPEG decode pipeline task stack size"
+		default 4096
+		help
+			Stack size in bytes for JPEG decode pipeline task (default: 4096)
+
+	config JPEG_GET_PIPELINE_TASK_STACK_SIZE
+		depends on MEDIA_PIPELINE
+		int "JPEG get pipeline task stack size"
+		default 1024
+		help
+			Stack size in bytes for JPEG get pipeline task (default: 1024)
+
+	config YUV_ROTATE_PIPELINE_TASK_STACK_SIZE
+		depends on MEDIA_PIPELINE
+		int "YUV rotate pipeline task stack size"
+		default 2048
+		help
+			Stack size in bytes for YUV rotate pipeline task (default: 2048)
+
+	config H264_ENCODE_PIPELINE_TASK_STACK_SIZE
+		depends on MEDIA_PIPELINE
+		int "H264 encode pipeline task stack size"
+		default 2048
+		help
+			Stack size in bytes for H264 encode pipeline task (default: 2048)
+
+	config MEDIA_BT_AUDIO
+		bool "BT USE AUDIO Module"
+		default n
+		help
+			BT Module Will Use AUDIO Module
+
+	config SOFTWARE_DECODE_SRAM_MAPPING
+		bool "Enable Software Decode Sram Mapping"
+		default n
+
+	config MEDIA_PSRAM_SIZE_4M
+		bool "The PSRAM used by the media is within 4M."
+			default n
+
+	config JPEG_SW_DECODE_SUPPORT_BY_FRAME
+		bool "Enable JPEG software decode by frame"
+		default y
+
+	config JPEG_SW_DECODE_SUPPORT_BY_LINE
+		bool "Enable JPEG software decode by line"
+		default y
+
+	config SUPPORTED_IMAGE_MAX_720P
+		bool "support 1280X720 pipeline"
+		default n
+
+	config JPEG_FRAME_SIZE
+		int "config a jpeg frame size unit(byte), range 0-200k, default 100k"
+		range 0 204800
+		default 102400
+
+	config H264_FRAME_SIZE
+		int "config a h264 NALU size unit(byte), range 0-200k, default 100k"
+		range 0 204800
+		default 102400
+
+endmenu

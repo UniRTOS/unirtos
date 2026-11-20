@@ -1,0 +1,18 @@
+menu "WiFi Driver"
+	config WIFI_VNET_CONTROLLER
+		bool "Enable Wifi WIFI_VNET_CONTROLLER"
+		default n
+	config CONTROLLER_RX_DIRECT_PSH
+		bool "Controller RX Buf Directly push to AP"
+		default y
+	config CONTROLLER_DEBUG
+		bool "Controller Debug"
+		default n
+	config CONTROLLER_AP_BUFFER_COPY
+		bool "Controller AP buffer copy to CP buffer"
+		default n
+	config WIFI_DRIVER_DEBUG
+		bool "Enable Wifi Driver Debug"
+		depends on CLI && WIFI_VNET_CONTROLLER
+		default y
+endmenu

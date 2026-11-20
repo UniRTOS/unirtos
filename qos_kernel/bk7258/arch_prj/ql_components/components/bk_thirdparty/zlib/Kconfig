@@ -1,0 +1,8 @@
+menu "Bk_thirdparty::zlib"
+
+	config ZLIB_ENABLE
+		bool "Enable zlib"
+		default n
+		help
+			Enable zlib
+endmenu
