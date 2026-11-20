@@ -1,0 +1,8 @@
+menu "UNIRTOS_SUPPORT"
+	config UNIRTOS_SUPPORT
+        bool "Enable UniRTOS Support"
+		default y
+    # if UNIRTOS_SUPPORT
+    #     orsource "../../../../quecos/system/Kconfig"
+    # endif
+endmenu

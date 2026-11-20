@@ -64,7 +64,7 @@
 /**
  * mbedtls library types
  */
-/* #undef CONFIG_QOSA_MBEDTLS_LIBRARY_FUNC */
+#define CONFIG_QOSA_MBEDTLS_LIBRARY_FUNC
 
 /**
  * RTT device function module
@@ -79,7 +79,7 @@
 /**
  * SIO manager function module
  */
-/* #undef CONFIG_QOSA_WATERMARK_FUNC */
+#define CONFIG_QOSA_WATERMARK_FUNC
 
 /**
  * OSA_SYSTEM manager function module

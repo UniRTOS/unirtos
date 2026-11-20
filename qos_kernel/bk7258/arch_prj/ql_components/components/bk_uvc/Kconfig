@@ -1,0 +1,45 @@
+menu "USB Camera"
+
+	config USB_CAMERA
+		depends on USBH_UVC
+		bool "Enable USB Camera"
+		default y
+		help
+			Enable USB Camera
+
+	config UVC_CHECK_BULK_JPEG_HEADER
+		depends on USB_CAMERA
+		bool "Check JPEG (ff d8) header in bulk payload"
+		default y
+
+	config UVC_URB_NUM
+		depends on USB_CAMERA
+		int "UVC URB count"
+		range 0 64
+		default 8
+		help
+			URB number advice large than camera_num * 4
+
+	config UVC_NUM_PACKET_PER_URB
+		depends on USB_CAMERA
+		int "The packets per urb contain"
+		range 0 32
+		default 8
+		help
+			because high speed 125us generate a packet
+
+	config UVC_PROCESS_TASK_STACK_SIZE
+		depends on USB_CAMERA
+		int "UVC process task stack size"
+		default 1024
+		help
+			UVC process task stack size in bytes. If set to 0, will use default value 1024.
+
+	config UVC_STREAM_TASK_STACK_SIZE
+		depends on USB_CAMERA
+		int "UVC stream task stack size"
+		default 1536
+		help
+			UVC stream task stack size in bytes. If set to 0, will use default value 1536.
+
+endmenu

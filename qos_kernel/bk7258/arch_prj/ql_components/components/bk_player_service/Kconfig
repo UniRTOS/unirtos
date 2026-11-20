@@ -1,0 +1,54 @@
+menu "Bk_player_service"
+
+	depends on ADK
+
+	config PLAYER_SERVICE
+		bool "Enable bk_player_service"
+		depends on ADK_ARRAY_STREAM || ADK_VFS_STREAM
+		default n
+		help
+			Enable the bk_player_service Interface API for playing prompt tones or music
+
+	config PLAYER_SERVICE_TEST
+		depends on PLAYER_SERVICE
+		bool "Enable bk_player_service Test"
+		default n
+		help
+			Enable bk_player_service test to test bk_player_service by cli command
+
+	config PLAYER_SERVICE_SUPPORT_ARRAY_STREAM
+		depends on PLAYER_SERVICE && ADK_ARRAY_STREAM
+		bool "Enable bk_player_service support array stream"
+		default n
+		help
+			Enable bk_player_service to support playing audio file stored in arrays
+
+	config PLAYER_SERVICE_SUPPORT_VFS_STREAM
+		depends on PLAYER_SERVICE && ADK_VFS_STREAM
+		bool "Enable bk_player_service support vfs stream"
+		default n
+		help
+			Enable bk_player_service to support playing audio file stored in vfs file system
+
+	config PLAYER_SERVICE_SUPPORT_MP3_DECODER
+		depends on PLAYER_SERVICE && ADK_MP3_DECODER
+		bool "Enable bk_player_service support mp3 decoder"
+		default n
+		help
+			Enable bk_player_service to support playing MP3 format audio files
+
+	config PLAYER_SERVICE_SUPPORT_G711_DECODER
+		depends on PLAYER_SERVICE && ADK_G711_DECODER
+		bool "Enable bk_player_service support g711 decoder"
+		default n
+		help
+			Enable bk_player_service to support playing g711a/u format audio files
+
+	config PLAYER_SERVICE_SUPPORT_WAV_DECODER
+		depends on PLAYER_SERVICE && ADK_WAV_DECODER
+		bool "Enable bk_player_service support wav decoder"
+		default n
+		help
+			Enable bk_player_service to support playing wav format audio files
+
+endmenu

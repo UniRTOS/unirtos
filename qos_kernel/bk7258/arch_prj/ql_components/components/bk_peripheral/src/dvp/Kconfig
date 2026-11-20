@@ -1,0 +1,33 @@
+menu "DVP Camera"
+
+	config DVP_GC0308
+		depends on DVP_CAMERA
+		bool "Enable DVP_GC0308 API"
+		default y
+
+	config DVP_GC0328C
+		depends on DVP_CAMERA
+		bool "Enable DVP_GC0328C API"
+		default y
+
+	config DVP_GC2145
+		depends on DVP_CAMERA
+		bool "Enable DVP_GC2145 API"
+		default y
+
+	config DVP_HM1055
+		depends on DVP_CAMERA
+		bool "Enable DVP_HM1055 API"
+		default y
+
+	config DVP_OV2640
+		depends on DVP_CAMERA
+		bool "Enable DVP_OV2640 API"
+		default y
+
+	config DVP_SC101
+		depends on DVP_CAMERA
+		bool "Enable DVP_SC101 API"
+		default y
+
+endmenu

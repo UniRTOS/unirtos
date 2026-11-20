@@ -1,0 +1,10 @@
+armino_component_register()
+
+if(NOT CMAKE_BUILD_EARLY_EXPANSION)
+    set(unirtos_library "${ARMINO_PATH}/unirtos/libs/libUniRtos.a")
+    if(NOT EXISTS "${unirtos_library}")
+        message(FATAL_ERROR "UniRtos library not found: ${unirtos_library}")
+    endif()
+    add_prebuilt_library(unirtos_prebuilt "${unirtos_library}")
+    target_link_libraries(${COMPONENT_LIB} INTERFACE unirtos_prebuilt)
+endif()

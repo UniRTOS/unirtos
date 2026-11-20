@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import os
 from pathlib import Path
 import shutil
+import subprocess
 
 from unirtos_common import (
     ARM_ARCH_LIST,
@@ -413,6 +414,7 @@ def handle_make(args):
 
     source_root = sdk_root()
     arch = resolve_build_arch(source_root, config.project)
+    info(f"resolved build arch: {arch}")
     output_root = resolve_output_root()
     external_app_mode = bool(os.environ.get("UNIRTOS_EXTERNAL_APP_DIR", "").strip())
     toolchain_root = resolve_toolchain_root()
@@ -420,7 +422,7 @@ def handle_make(args):
     
     env = build_environment(toolchain_root, config, arch)
     env["UNIRTOS_OUTPUT_ROOT"] = str(output_root)
-
+    use_virtual_drive = os.name == "nt" and arch == "bk7258"
     print_summary(config, arch, toolchain_root, source_root, output_root)
 
     if external_app_mode and config.build_type != "app":
@@ -437,7 +439,7 @@ def handle_make(args):
     # new does a clean build; r keeps the build tree when the cache is still reusable.
     if config.operation == "new":
         clean_for_new(output_root)
-    else:
+    elif not use_virtual_drive:
         ensure_compatible_build_cache(source_root, output_root)
 
     # all first prepares platform-side artifacts; app reuses or restores gccout prereq.
@@ -445,8 +447,31 @@ def handle_make(args):
         run_platform_build(source_root, config, arch, python_exe)
     elif arch not in {"bk7258", "bk7238", "ecr6600"}:
         ensure_gccout_for_app(source_root, output_root, arch, config.project, toolchain_root)
+    if use_virtual_drive:
+        import ctypes
 
-    run_cmake_and_ninja(source_root, output_root, env, toolchain_root, python_exe)
+        used_drives = ctypes.windll.kernel32.GetLogicalDrives()
+        drive = next((f"{letter}:" for letter in "ZYXWVUTSRQPONMLKJIHGFED"
+                      if not used_drives & (1 << (ord(letter) - ord("A")))), None)
+        if drive is None:
+            raise BuildError("no free drive letter available for the build", EXIT_CMAKE_ERROR)
+
+        subst = str(Path(os.environ["SystemRoot"]) / "System32" / "subst.exe")
+        result = subprocess.run([subst, drive, str(source_root)], capture_output=True, text=True)
+        if result.returncode != 0:
+            raise BuildError(f"failed to map {drive}: {result.stderr.strip()}", EXIT_CMAKE_ERROR)
+        try:
+            virtual_root = Path(drive + "\\")
+            virtual_output_root = virtual_root if output_root == source_root else output_root
+            env["UNIRTOS_OUTPUT_ROOT"] = str(virtual_output_root)
+            info(f"building from virtual drive {drive} ({source_root})")
+            run_cmake_and_ninja(virtual_root, virtual_output_root, env, toolchain_root, python_exe)
+        finally:
+            result = subprocess.run([subst, drive, "/d"], capture_output=True, text=True)
+            if result.returncode != 0:
+                info(f"warning: failed to remove virtual drive {drive}: {result.stderr.strip()}")
+    else:
+        run_cmake_and_ninja(source_root, output_root, env, toolchain_root, python_exe)
 
     info("build succeeded")
     print(f"[unirtos make] project : {config.project}")

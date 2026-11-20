@@ -1,0 +1,27 @@
+menu "bk_gsensor"
+
+	config GSENSOR_ENABLE
+		bool "Enable gsensor"
+		default n
+
+	config GSENSOR_TEST_EN
+		depends on GSENSOR_ENABLE
+		bool "Enable gsensor test"
+		default n
+
+	config GSENSOR_DEMO_EN
+		depends on GSENSOR_ENABLE
+		bool "Enable gsensor demo"
+		default n
+		
+	config GSENSOR_ARITHEMTIC_DEMO_EN
+		depends on GSENSOR_ENABLE
+		bool "Enable gsensor arithemtic demo"
+		default n
+
+	config GSENSOR_SC7A20_ENABLE
+		depends on GSENSOR_ENABLE
+		bool "Enable gsensor IP"
+		default n
+		
+endmenu

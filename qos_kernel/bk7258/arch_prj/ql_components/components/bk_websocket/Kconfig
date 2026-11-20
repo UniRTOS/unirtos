@@ -1,0 +1,14 @@
+menu "Bk_websocket"
+
+	config WEBSOCKET
+		bool "Enable Websocket"
+		default n
+	config WEBSOCKET_TLS
+		depends on MBEDTLS || PSA_MBEDTLS
+		bool "Enable Websocket"
+		default n
+	config WEBSOCKET_FULL_SIZE
+		depends on WEBSOCKET
+		bool "Enable Websocket Rx Max Size report"
+		default n
+endmenu

@@ -37,6 +37,7 @@ config QCM_QURL_FTP_FUNC
 
 config QCM_QURL_SMTP_FUNC
     bool "Enable QURL SMTP function"
+    depends on !(QOSA_BK7258_PLATFORM_FUNC || QOSA_BK7238_PLATFORM_FUNC || QOSA_ECR6600_PLATFORM_FUNC)
     select QCM_QURL_FUNC
     default n
 
@@ -246,6 +247,10 @@ config QCM_MONGOOS_LIB
 
 config QCM_LLM_PROXY
     bool "llm proxy support"
+    default n
+
+config AGORA_RTC_AGENT
+    bool "agora rtc agent support"
     default n
 
 orsource "comp_config.Kconfig"

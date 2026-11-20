@@ -1,0 +1,10 @@
+menu "JPEG encoder service"
+
+	config JPEG_ENCODER
+		depends on JPEGENC_HW
+		bool "Enable JPEG encoder"
+		default n
+		help
+			Enable jpeg encoder service
+
+endmenu

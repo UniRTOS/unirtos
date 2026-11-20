@@ -1,0 +1,5 @@
+# sdkconfig replacement configurations for deprecated options formatted as
+# CONFIG_DEPRECATED_OPTION CONFIG_NEW_OPTION
+
+# example: change enbale to enable
+# CONFIG_ENBALE_FUNC_A                 CONFIG_ENABLE_FUNC_A

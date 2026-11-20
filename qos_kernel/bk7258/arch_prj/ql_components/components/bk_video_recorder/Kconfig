@@ -1,0 +1,20 @@
+menu "Bk_video_record"
+
+    config VIDEO_RECORDER
+        bool "Enable video recorder"
+        default n
+    
+    config VIDEO_RECORDER_TASK_STACK_SIZE
+        int "video recorder task stack size"
+        default 2048
+        depends on VIDEO_RECORDER
+        help
+            Stack size in bytes for video recorder task (default: 2048)
+
+    config VIDEO_RECORDER_TASK_PRIORITY
+        int "video recorder task priority"
+        default 6
+        depends on VIDEO_RECORDER
+        help
+            Task priority for video recorder thread (default: 6)
+endmenu

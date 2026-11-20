@@ -1,0 +1,23 @@
+menu "Bk_thirdparty::agora-iot-sdk"
+
+	config AGORA_IOT_SDK
+		bool "Enable Agora iot sdk"
+		default n
+		help
+			Enable Agora iot sdk lib
+
+	config AGORA_RTC_THREAD_BIND_CPU
+		bool "Enable agora RTC thread bind cpu"
+		depends on AGORA_IOT_SDK
+		default n
+		help
+			Enable Agora RTC thread bind cpu
+
+	config AGORA_RTC_THREAD_BIND_CPU_ID
+		int "Agora RTC thread bind cpu id"
+		depends on AGORA_RTC_THREAD_BIND_CPU
+		default 0
+		help
+			Agora RTC thread bind cpu id
+
+endmenu

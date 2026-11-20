@@ -1,0 +1,32 @@
+menu "bk_nfc"
+
+	config NFC_ENABLE
+		bool "Enable nfc"
+		default n
+
+	config NFC_TEST_EN
+		depends on NFC_ENABLE
+		bool "Enable nfc test"
+		default n
+
+	config NFC_DEMO_EN
+		depends on NFC_ENABLE
+		bool "Enable nfc demo"
+		default n
+
+	config NFC_MFRC522_ENABLE
+		depends on NFC_ENABLE
+		bool "Enable nfc IP"
+		default n
+
+	config NFC_MFRC522_COMM_SERIAL_PORT
+		int "Config MFRC522 Uart Communication  Port"
+		range 0 2
+		default 1
+		help
+		Default 1 mean use UART1
+
+	config NFC_POLLING_PERIOD_MS
+		int "nfc polling time Period(ms)"
+		default 1000
+endmenu

@@ -1,0 +1,5 @@
+menu "bk_bat_monitor"
+	config BAT_MONITOR
+		bool "Enable BAT_MONITOR"
+		default n
+endmenu

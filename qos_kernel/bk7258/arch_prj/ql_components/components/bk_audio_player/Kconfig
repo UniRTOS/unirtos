@@ -1,0 +1,45 @@
+menu "Bk_audio_player"
+	config AUDIO_PLAYER
+		bool "Enable bk_audio_player"
+		default n
+
+	choice AUDIO_PLAYER_USE_MEMORY
+		depends on AUDIO_PLAYER
+		prompt "Select audio player use memory"
+		default AUDIO_PLAYER_USE_SRAM
+
+		config AUDIO_PLAYER_USE_SRAM
+			bool "Enable audio player use sram"
+			help
+				audio player use sram memory
+
+		config AUDIO_PLAYER_USE_PSRAM
+			depends on PSRAM
+			bool "Enable audio player use psram"
+			help
+				audio player use psram memory
+	endchoice
+
+	config AUDIO_PLAYER_NET_PIPE_SIZE
+		depends on AUDIO_PLAYER
+		int "HTTP net source pipe size"
+		default 8192
+		help
+			HTTP net source ring buffer size in bytes.
+
+	config AUDIO_PLAYER_HLS_NET_PIPE_SIZE
+		depends on AUDIO_PLAYER
+		int "HLS net source pipe size"
+		default 8192
+		help
+			HLS net source ring buffer size in bytes.
+
+	config AUDIO_PLAYER_WEB_RETRY_COUNT
+		depends on AUDIO_PLAYER
+		int "HTTP net source retry count"
+		default 10
+		help
+			Retry count used when the HTTP net source socket closes before
+			the expected content length is received.
+
+endmenu

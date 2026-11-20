@@ -1,0 +1,44 @@
+menu "JPEG Decoder"
+
+	config JPEG_DECODER
+		bool "Enable JPEG Decoder"
+		default y
+		help
+			Enable jpeg decoder service
+	
+	config JPEG_DECODER_SW
+		depends on JPEG_DECODER
+		bool "Enable JPEG Decoder Software"
+		default y
+		help
+			Enable jpeg decoder software service
+
+	config SW_JPEG_DECODE_TASK_STACK_SIZE
+		int "Software JPEG decode task stack size"
+		default 1024
+		depends on JPEG_DECODER_SW
+		help
+			Stack size in bytes for software JPEG decode task (default: 1024)
+
+	config JPEG_DECODER_HW
+		depends on JPEG_DECODER
+		bool "Enable JPEG Decoder Hardware"
+		default y
+		help
+			Enable jpeg decoder hardware service
+
+	config HW_JPEG_DECODE_TASK_STACK_SIZE
+		int "Hardware JPEG decode task stack size"
+		default 1024
+		depends on JPEG_DECODER_HW
+		help
+			Stack size in bytes for hardware JPEG decode task (default: 1024)
+
+	config HW_JPEG_DECODE_TASK_PRIORITY
+		int "Hardware JPEG decode task pirority"
+		default 6
+		depends on JPEG_DECODER_HW
+		help task pirority
+			
+
+endmenu

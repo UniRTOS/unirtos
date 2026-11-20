@@ -1,0 +1,10 @@
+menu "Media::DMA2D_Draw"
+
+	config MEDIA_DAM2D
+		depends on DMA2D
+		bool "Enable DMA2D Service"
+		default n
+		help
+			Enable DMA2D service
+
+endmenu

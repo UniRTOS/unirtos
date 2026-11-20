@@ -7,15 +7,13 @@ function(add_wifi_module_libraries chip output_var)
     set(kernel_libraries "${${output_var}}")
 
     if("${chip}" STREQUAL "bk7238" OR "${chip}" STREQUAL "ecr6600")
-        set(libs_dir "${CMAKE_SOURCE_DIR}/qos_kernel/${chip}/arch_prj/ql_kernel/libs")
-    else()
-        set(libs_dir "${CMAKE_SOURCE_DIR}/qos_kernel/${chip}/arch_prj/ql_kernel/ap/libs")
-    endif()
+        set(libs_dir "${CMAKE_SOURCE_DIR}/qos_kernel/${chip}/arch_prj/ql_kernel/libs")         
 
-    file(GLOB_RECURSE libs CONFIGURE_DEPENDS "${libs_dir}/*.a")
+        file(GLOB_RECURSE libs CONFIGURE_DEPENDS "${libs_dir}/*.a")
 
-    if(NOT libs)
-        message(FATAL_ERROR "No ${chip} libs found in ${libs_dir}")
+        if(NOT libs)
+            message(FATAL_ERROR "No ${chip} libs found in ${libs_dir}")
+        endif()
     endif()
 
 
