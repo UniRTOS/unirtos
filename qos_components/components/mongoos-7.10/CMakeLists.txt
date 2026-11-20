@@ -10,7 +10,7 @@ target_include_directories(${target} PRIVATE ${SOURCE_SYS_OS_DIR})
 target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/public)
 target_include_directories(${target} PRIVATE ${SOURCE_TOP_DIR}/components/include)
 
-target_include_directories(${target} PRIVATE ${arch_prj_dir}/ql_components/unirtos/generated)
+target_include_directories(${target} PRIVATE ${arch_prj_dir}/ql_components/UniRtos/generated)
 
 target_add_sources(${target} PRIVATE
     mongoose.c
