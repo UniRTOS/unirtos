@@ -84,7 +84,7 @@ qurl_ecode_t qurl_core_reset(qurl_core_t core);
  *       - Returns QURL_OK if successful
  *       - Returns other values if failed
  */
-qurl_ecode_t qurl_core_setopt(qurl_core_t core, qurl_opt_e opt, ...);
+qurl_ecode_t qurl_core_setopt(qurl_core_t core, int opt, ...);
 
 /**
  * @brief Get information for the given qurl instance
@@ -99,7 +99,7 @@ qurl_ecode_t qurl_core_setopt(qurl_core_t core, qurl_opt_e opt, ...);
  *       - Returns QURL_OK if successful
  *       - Returns other values if failed
  */
-qurl_ecode_t qurl_core_getinfo(qurl_core_t core, qurl_info_e opt, ...);
+qurl_ecode_t qurl_core_getinfo(qurl_core_t core, int opt, ...);
 
 /**
  * @brief Start executing blocking network transmission

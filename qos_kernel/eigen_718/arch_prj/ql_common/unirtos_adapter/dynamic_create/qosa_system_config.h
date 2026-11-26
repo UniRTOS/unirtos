@@ -83,7 +83,7 @@
 /**
  *  * ims parameter update and indication report function
  */
-/* #undef CONFIG_QOSA_IMS_FUNC */
+#define CONFIG_QOSA_IMS_FUNC
 
 /**
  * usbnet update and indication report function
@@ -91,9 +91,24 @@
 #define CONFIG_QOSA_USBNET_FUNC
 
 /**
+ * LAN management function support
+ */
+/* #undef CONFIG_QOSA_LAN_FUNC */
+
+/**
  * QPPP for UniRTOS function
  */
 /* #undef CONFIG_QOSA_PPP_FUNC */
+
+/**
+ * UniRTOS modem EDRX function support
+ */
+/* #undef CONFIG_QOSA_NW_EDRX_FUNC */
+
+/**
+ * UniRTOS modem antenna signal info support (AT+QANTINFO)
+ */
+/* #undef CONFIG_QOSA_NW_ANTENNA_INFO_FUNC */
 
 /**
  * UniRTOS modem SIM/(U)SIM function support
@@ -101,9 +116,19 @@
 #define CONFIG_QOSA_SIM_FUNC
 
 /**
+ * UniRTOS modem SIM STK (SAT/TERMINAL PROFILE) function support
+ */
+/* #undef CONFIG_QOSA_SIM_STK_FUNC */
+
+/**
  * UniRTOS modem SMS function support
  */
 #define CONFIG_QOSA_SMS_FUNC
+
+/**
+ * UniRTOS modem SMS CBS function support
+ */
+/* #undef CONFIG_QOSA_SMS_CBS_FUNC */
 
 /**
  * UniRTOS modem Dual SIM Dual Standby function support
@@ -160,14 +185,39 @@
 #define CONFIG_QOSA_WIFISCAN_FUNC
 
 /**
+ * UniRTOS modem WIFI function support
+ */
+/* #undef CONFIG_QOSA_WIFI_FUNC */
+
+/**
+ * UniRTOS GNSS function support
+ */
+/* #undef CONFIG_QOSA_GNSS_FUNC */
+
+/**
  * UniRTOS FTM function
  */
 #define CONFIG_QOSA_FTM_FUNC
 
 /**
+ * UniRTOS WiFi RF factory test function
+ */
+/* #undef CONFIG_QOSA_WIFI_RF_TEST_FUNC */
+
+/**
  * UniRTOS AT parser function
  */
 #define CONFIG_QOSA_AT_PARSER_FUNC
+
+/**
+ * UniRTOS CLI function
+ */
+/* #undef CONFIG_QOSA_CLI_FUNC */
+
+/**
+ * UniRTOS secdata function
+ */
+/* #undef CONFIG_QOSA_SECDATA_FUNC */
 
 /**
  * UniRTOS QGMR with app
@@ -185,6 +235,27 @@
 /* #undef CONFIG_QOSA_LED_FUNC */
 
 /**
+ * UniRTOS MIFI base function support
+ */
+/* #undef CONFIG_QOSA_MIFI_FUNC */
+
+/**
+ * UniRTOS LAN function support
+ */
+/* #undef CONFIG_QOSA_LAN_FUNC */
+
+/**
+ * UniRTOS MIFI LED function support
+ */
+/* #undef CONFIG_QOSA_MIFI_LED_FUNC */
+
+/**
+ * UniRTOS MIFI KEY function support
+ */
+/* #undef CONFIG_QOSA_MIFI_KEY_FUNC */
+
+
+/**
  * UniRTOS LED_GPIO_BLINK function support
  */
 /* #undef CONFIG_QOSA_LED_GPIO_BLINK_FUNC */
@@ -193,6 +264,11 @@
  * use license function module
  */
 #define CONFIG_QOSA_LICENSE_FUNC
+
+/**
+ * use license function support
+ */
+/* #undef CONFIG_QOSA_LICENSE_SUPPORT */
 
 /**
  * UniRTOS CAMERA function
@@ -275,9 +351,14 @@
 /* #undef CONFIG_QOSA_LPM_SLEEP_LOG_FUNC */
 
 /**
+ * UniRTOS lpm rfr legacy function support
+ */
+/* #undef CONFIG_QOSA_LPM_RFR_LEGACY_FUNC */
+
+/**
  * UniRTOS TTS function
  */
-/* #undef CONFIG_QOSA_TTS_SUPPORT */
+#define CONFIG_QOSA_TTS_SUPPORT
 
 /**
  * UniRTOS TTS resource store to fs function
@@ -292,7 +373,12 @@
 /**
  * UniRTOS LCD function
  */
-#define CONFIG_QOSA_LCD_SUPPORT
+/* #undef CONFIG_QOSA_LCD_SUPPORT */
+
+/**
+ * Dual panel LCD support
+ */
+/* #undef CONFIG_QOSA_LCD_DUAL_PANEL */
 
 /**
  * UniRTOS CAMERA function
@@ -302,7 +388,7 @@
 /**
  * UniRTOS CAN function
  */
-#define CONFIG_QOSA_CAN_SUPPORT
+/* #undef CONFIG_QOSA_CAN_SUPPORT */
 
 /**
  * UniRTOS FOTA SIGN function
@@ -330,6 +416,21 @@
 /* #undef CONFIG_QOSA_OEM_LT_FUNC */
 
 /**
+ * UniRTOS OEM SE function
+ */
+/* #undef CONFIG_QOSA_OEM_SE_FUNC */
+
+/**
+ * UniRTOS OEM RWR function
+ */
+/* #undef CONFIG_QOSA_OEM_RWR_FUNC */
+
+/**
+ * UniRTOS OEM GW (State Grid / 国网) function
+ */
+/* #undef CONFIG_QOSA_OEM_DL_FUNC */
+
+/**
  * UniRTOS OEM BSQ function
  */
 /* #undef CONFIG_QOSA_OEM_BSQ_FUNC */
@@ -352,12 +453,17 @@
 /**
  * UniRTOS VOICE CALL Function
  */
-/* #undef CONFIG_QOSA_VOICE_CALL_FUNC */
+#define CONFIG_QOSA_VOICE_CALL_FUNC
 
 /**
  * UniRTOS CLAT Function
  */
 #define CONFIG_QOSA_CLAT_FUNC
+
+/**
+ * UniRTOS JD Function
+ */
+#define CONFIG_QOSA_JD_FUNC
 
 /**
  * UniRTOS Customer-customized AI recognition for cameras Function
@@ -379,9 +485,40 @@
 /* #undef CONFIG_QOSA_AUTOAPN_FUNC */
 
 /**
+ * UniRTOS MBEDTLS function
+ */
+/* #undef CONFIG_QOSA_MBEDTLS_SUPPORT */
+
+/**
+ * UniRTOS NON-ESIM VERSION EID QUERY FUNCTION
+ */
+/* #undef CONFIG_QOSA_ESIM_EID_QUERY_FUNC */
+
+/**
  * UniRTOS basestation function
  */
 #define CONFIG_QOSA_ABNORMAL_BASESTATION_FUNC
+
+/**
+ * UniRTOS netdev core function
+ */
+/* #undef CONFIG_QOSA_NETDEV_CORE_FUNC */
+/* #undef CONFIG_QOSA_NETDEV_CORE_NAT_FUNC */
+/* #undef CONFIG_QOSA_NETDEV_CORE_DHCPD_FUNC */
+
+/**
+ * UniRTOS netdev bus function
+ */
+/* #undef CONFIG_QOSA_NETDEV_BUS_FUNC */
+/* #undef CONFIG_QOSA_NETDEV_BUS_SPI_FUNC */
+/* #undef CONFIG_QOSA_NETDEV_BUS_GPIO_FUNC */
+/* #undef CONFIG_QOSA_NETDEV_BUS_UART_FUNC */
+
+
+/**
+ * UniRTOS CMUX function
+ */
+/* #undef CONFIG_UNIRTOS_CMUX_SUPPORT */
 /**********************************************************************/
 /*       Platform related configuration macro definitions                                        */
 /**********************************************************************/
@@ -417,6 +554,11 @@
 /* #undef CONFIG_QOSA_ASR1903_PLATFORM_FUNC */
 
 /**
+ * ASR1803 platform function support
+ */
+/* #undef CONFIG_QOSA_ASR1803_PLATFORM_FUNC */
+
+/**
  * ASR1805 platform function support
  */
 /* #undef CONFIG_QOSA_ASR1805_PLATFORM_FUNC */
@@ -435,5 +577,25 @@
  * UNISOC 8852 platform function support
  */
 /* #undef CONFIG_QOSA_UIS8852_PLATFORM_FUNC */
+
+/**
+ * UNISOC 8360S platform function support
+ */
+/* #undef CONFIG_QOSA_UIS8360S_PLATFORM_FUNC */
+
+/**
+ * XY4100 platform function support
+ */
+/* #undef CONFIG_QOSA_XY4100_PLATFORM_FUNC */
+
+/**
+ * UNISOC 8910 platform function support
+ */
+/* #undef CONFIG_QOSA_UIS8910_PLATFORM_FUNC */
+
+/**
+ * UniRTOS CPU Usage AT function
+ */
+#define CONFIG_QAPP_UNIRTOS_CPU_USAGE_FUNC
 
 #endif /* _QOSA_SYSTEM_CONFIG_H_ */

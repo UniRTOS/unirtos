@@ -27,6 +27,10 @@
 #define MPC_SMS_NEW_MESSAGE_IND     (0x0002)
 /** New SMS arrival event, bottom layer has completed storage and other operations, notify upper layer to complete cache update, user notification and other operations, event parameters `mpc_sms_new_msg_idx_t.index`, `mpc_sms_new_msg_idx_t.stor` are valid */
 #define MPC_SMS_NEW_MESSAGE_IDX_IND (0x0003)
+#ifdef CONFIG_QOSA_SMS_CBS_FUNC
+/** New CBM arrival event, carrying complete CBM content, event parameters 'qosa_sms_cbm_event_t' are valid */
+#define MPC_SMS_NEW_CBM_IND         (0x0004)
+#endif /* CONFIG_QOSA_SMS_CBS_FUNC */
 
 /** MPC layer SMS related event callback function prototype */
 typedef void (*mpc_sms_cb)(qosa_uint8_t simid, qosa_uint32_t event, void* data);
@@ -82,6 +86,9 @@ typedef struct
     qosa_uint8_t nmi_bm;   /*!< NMI bm */
     qosa_uint8_t nmi_ds;   /*!< NMI ds */
     qosa_uint8_t nmi_bfr;  /*!< NMI bfr */
+
+    // CPNER parameters
+    qosa_uint8_t cpner_rpt; /*!< ETWS primary notification reporting mode */
 } mpc_sms_config_t;
 
 /** Error code conversion, add corresponding function when adapting to platform, 0 means success */

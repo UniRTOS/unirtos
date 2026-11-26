@@ -24,4 +24,6 @@ config UNIRTOS_APP_WERROR
         SDK internal code always treats warnings as errors
         regardless of this setting.
 
+orsource "unirtos_std_gw/Kconfig"
+
 endmenu

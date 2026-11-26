@@ -23,6 +23,8 @@
 
 /** SECBOOT API FUNCTION ERROR OFFSET CODE*/
 #define QOSA_ERRCODE_SECBOOT_BASE (QOSA_COMPONENT_SECBOOT << 16)
+#define QOSA_SECCFG_INFO_FILE_NAME  "qosa_seccfg_info.nvm"
+#define QOSA_SECCFG_PWD_MAX_LEN     (16)
 
 /**
  * @enum qosa_secboot_error_e
@@ -37,11 +39,48 @@ typedef enum
     QOSA_SECBOOT_ERROR_MAX
 } qosa_secboot_error_e;
 
+/**
+ * @enum  qosa_secboot_ioctl_cmd_e
+ * @brief secboot ioctl cmd definition.
+ */
+typedef enum
+{
+    QOSA_SECBOOT_IOCTL_NONE,
+    QOSA_SECBOOT_IOCTL_SET_REBOOT,
+    QOSA_SECBOOT_IOCTL_GET_REBOOT,
+} qosa_secboot_ioctl_cmd_e;
+
+typedef struct
+{
+    char dbg_pwd[QOSA_SECCFG_PWD_MAX_LEN + 1];
+    qosa_uint8_t pwd_state;
+    qosa_uint8_t dbg_status;
+    qosa_uint8_t dbg_log_status;
+    qosa_uint8_t dbg_dump_status;
+} qosa_seccfg_info_t;
+
+/**
+ * @brief SECBOOT control interface
+ *
+ * This function is used to control SECBOOT related features. Different operations can be performed by specifying different ioctl commands.
+ *
+ * @param[in] qosa_secboot_ioctl_cmd_e cmd
+ *          - ioctl command, specifies the control operation to be performed. See qosa_secboot_ioctl_cmd_e for details.
+ *
+ * @param[in/out] void *arg
+ *          - ioctl command parameter. The type and direction depend on the command. Pass NULL if not required.
+ *
+ * @return qosa_secboot_error_e
+ *          - QOSA_SECBOOT_OK: Operation successful
+ *          - Others: Error code, see qosa_secboot_error_e for details
+ */
+qosa_secboot_error_e qosa_secboot_ioctl(qosa_secboot_ioctl_cmd_e cmd, void *arg);
 
 /**
  * @brief The function is used to enable secboot,
  * after enabling, the configuration will be written to the EFuse and cannot be turned off.
- * After the configuration of this interface is written to the efuse, it will automatically restart
+ * After writing the configuration information of this interface to eFuse,
+ * it will automatically restart by default, unless relevant settings are made using QOSA_SECBOOT_IOCTL_SET_REBOOT.
  * 
  * @return qosa_secboot_error_e
  *          - Return QOSA_SECBOOT_OK if successful

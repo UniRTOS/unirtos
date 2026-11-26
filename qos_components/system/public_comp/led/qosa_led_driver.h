@@ -98,7 +98,7 @@ int qosa_led_driver_control(qosa_uint8_t driver_id, qosa_uint16_t high, qosa_uin
 qosa_uint8_t qosa_led_driver_get_count(void);
 
 /**
- * @brief Turn off all PWM-type LED drivers
+ * @brief Turn off all PWM-type LED drivers and stop GPIO software blinking
  *
  * @return int
  *          - 0: Success, Non-zero: Failure

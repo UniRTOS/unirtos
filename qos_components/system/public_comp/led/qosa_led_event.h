@@ -55,7 +55,9 @@ typedef enum
     QOSA_LED_EVENT_DATA_TRANSMIT_BUSY_WITH_AT = 16,/*!< uart data transmit busy status with first at*/
     QOSA_LED_EVENT_UART_NOT_SYN_WITH_AT = 17,/*!< Uart failed to complete synchronization within the specified time.*/
     QOSA_LED_EVENT_FILE_DOWNLOADING = 18,/*!< During FTP normal file download or fota file downlaod.*/
-
+    #ifdef CONFIG_QOSA_OEM_RWR_FUNC
+    QOSA_LED_EVENT_MQTT_CONNECTED = 19,/*!< MQTT protocol connection (CONNACK) established*/
+    #endif
     QOSA_LED_EVENT_MAX
 } qosa_led_event_e;
 
@@ -80,6 +82,9 @@ typedef enum
 #define QOSA_LED_UPDATE_USBNET_STATUS(_simid, _usbnet_status)               qosa_led_update_usbnet_status(_simid, _usbnet_status)
 #define QOSA_LED_UPDATE_DATA_TRANSMIT_STATUS(_simid, _data_transmit_status) qosa_led_update_data_transmit_status(_simid, _data_transmit_status)
 #define QOSA_LED_UPDATE_SOCKET_STATUS(_simid, _idx, _socket_status)         qosa_led_update_socket_status(_simid, _idx, _socket_status)
+#ifdef CONFIG_QOSA_OEM_RWR_FUNC
+#define QOSA_LED_UPDATE_MQTT_STATUS(_simid, _client_id, _mqtt_status)       qosa_led_update_mqtt_status(_simid, _client_id, _mqtt_status)
+#endif
 #define QOSA_LED_UPDATE_RECEIVE_FIRST_AT_STATUS(_simid)                     qosa_led_update_receive_first_at_status(_simid)
 #define QOSA_LED_UPDATE_UART_TRANSMIT_STATUS(_simid, _uart_transmit_status) qosa_led_update_uart_transmit_status(_simid, _uart_transmit_status)
 #define QOSA_LED_UPDATE_FILE_DOWNLOAD_STATUS(_simid, _file_download_status) qosa_led_update_file_download_status(_simid, _file_download_status)
@@ -94,6 +99,9 @@ typedef enum
 #define QOSA_LED_UPDATE_USBNET_STATUS(_simid, _usbnet_status)
 #define QOSA_LED_UPDATE_DATA_TRANSMIT_STATUS(_simid, _data_transmit_status)
 #define QOSA_LED_UPDATE_SOCKET_STATUS(_simid, _idx, _socket_status)
+#ifdef CONFIG_QOSA_OEM_RWR_FUNC
+#define QOSA_LED_UPDATE_MQTT_STATUS(_simid, _client_id, _mqtt_status)
+#endif
 #define QOSA_LED_UPDATE_RECEIVE_FIRST_AT_STATUS(_simid)
 #define QOSA_LED_UPDATE_UART_TRANSMIT_STATUS(_simid, _uart_transmit_status)
 #define QOSA_LED_UPDATE_FILE_DOWNLOAD_STATUS(_simid, _file_download_status)
@@ -110,6 +118,9 @@ void qosa_led_update_ppp_status(qosa_uint8_t simid, qosa_uint8_t ppp_status);
 void qosa_led_update_usbnet_status(qosa_uint8_t simid, qosa_uint8_t usbnet_status);
 void qosa_led_update_data_transmit_status(qosa_uint8_t simid, qosa_uint8_t data_transmit_status);
 void qosa_led_update_socket_status(qosa_uint8_t simid, qosa_int8_t idx, qosa_uint8_t socket_status);
+#ifdef CONFIG_QOSA_OEM_RWR_FUNC
+void qosa_led_update_mqtt_status(qosa_uint8_t simid, qosa_uint8_t client_id, qosa_uint8_t mqtt_status);
+#endif
 void qosa_led_update_receive_first_at_status(qosa_uint8_t simid);
 void qosa_led_update_uart_transmit_status(qosa_uint8_t simid, qosa_uint8_t uart_transmit_status);
 void qosa_led_update_file_download_status(qosa_uint8_t simid, qosa_uint8_t file_download_status);

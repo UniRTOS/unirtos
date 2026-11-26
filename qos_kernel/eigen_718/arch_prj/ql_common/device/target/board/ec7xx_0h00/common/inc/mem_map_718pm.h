@@ -130,7 +130,7 @@ flash xip address(from both ap/cp view): 0x00800000---0x00c00000
 #define BOOTLOADER_FLASH_LOAD_ADDR              (0x00803000)
 #define BOOTLOADER_FLASH_LOAD_UNZIP_SIZE        (0x1E000)//120KB ,for ld
 
-#if defined (CONFIG_QOSA_SECURITY_BOOT_BL) || defined (CONFIG_QOSA_SECURITY_BOOT_KERNEL)	
+#if defined (CONFIG_QOSA_SECURITY_BOOT_BL) || defined (CONFIG_QOSA_SECURITY_BOOT_KERNEL)
 #ifdef UNIRTOS_OPEN_MODE_SUPPORT
 //updater/application secboot header addr and size
 #define UPDATER_SECUREBOOT_LOAD_ADDR            ((BOOTLOADER_FLASH_LOAD_ADDR + BOOTLOADER_FLASH_PARTITION_SIZE - 2*SECUREBOOT_HEAD_LOAD_SIZE) - AP_FLASH_XIP_ADDR) // used the end of the bootloader to save Updater header
@@ -261,7 +261,7 @@ Therefore, quectel uses this area to store important parameters, and this region
 #define QUEC_FLASH_MEM_PLAT_INFO_NONXIP_ADDR (0x3ff000)
 #define QUEC_FLASH_MEM_PLAT_INFO_SIZE        (0x1000)//4KB
 
-#if ((FLASH_MEM_PLAT_INFO_NONXIP_ADDR+FLASH_MEM_PLAT_INFO_SIZE)!=(QUEC_FLASH_MEM_PLAT_INFO_NONXIP_ADDR)) 
+#if ((FLASH_MEM_PLAT_INFO_NONXIP_ADDR+FLASH_MEM_PLAT_INFO_SIZE)!=(QUEC_FLASH_MEM_PLAT_INFO_NONXIP_ADDR))
 #error "QUEC_FLASH_MEM_PLAT_INFO Partion Error!!!."
 #endif
 
@@ -275,7 +275,7 @@ Therefore, quectel uses this area to store important parameters, and this region
 /***********************************************************************************************************
  * 检查HIB分区(psm模式)是否符合要求,不存在HIB分区的项目,要增加宏处理
 */
-#if !defined (QL_OEM_VERSION_POC) && !defined (QL_OEM_VERSION_TMS) && !defined (QL_OEM_VERSION_BDA) && !defined (QL_OEM_VERSION_ALI) && !defined (QL_OEM_VERSION_SMS)
+#if !defined (QL_OEM_VERSION_POC) && !defined (QL_OEM_VERSION_TMS) && !defined (QL_OEM_VERSION_BDA) && !defined (QL_OEM_VERSION_ALI) && !defined (QL_OEM_VERSION_SMS) && !defined (QL_OEM_VERSION_YLB)
 #if (UNIR_HIB_BACKUP_SIZE < 0x18000)
 #error "Hib backup size error"
 #endif
@@ -633,7 +633,7 @@ Therefore, quectel uses this area to store important parameters, and this region
 #error "UP_BUF_MAX_SIZE can't less than LZMA decompress threshold size."
 #endif
 
-//配置UniRtos app的ram 
+//配置UniRtos app的ram
 #ifdef UNIRTOS_OPEN_MODE_SUPPORT
 #define APP_RAM_RESERVED_LENGTH        (UNIRTOS_OCPU_APP_RAM_SIZE) // Reserve for the application
 

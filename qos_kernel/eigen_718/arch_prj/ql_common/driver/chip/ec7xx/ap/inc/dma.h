@@ -256,6 +256,14 @@ uint32_t DMA_getChannelCount(DmaInstance_e instance, uint32_t channel);
  */
 void DMA_setChannelRequestSource(DmaInstance_e instance, uint32_t channel, DmaRequestSource_e request);
 
+/**
+  \fn        void DMA_resetChannelRequestSource(uint32_t channel, DmaRequestSource_e request)
+  \brief     Invalidate DMA request source
+  \param[in] channel        DMA channel number
+  \param[in] request        DMA request binded to this channel
+ */
+void DMA_resetChannelRequestSource(DmaInstance_e instance, uint32_t channel, DmaRequestSource_e request);
+
 /** \} */
 
 /** \name DMA register mode API */

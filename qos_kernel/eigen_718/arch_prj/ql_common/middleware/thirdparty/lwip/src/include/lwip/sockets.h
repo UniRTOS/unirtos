@@ -620,7 +620,7 @@ int32_t lwip_getRecvAvailSize(int nSocket);
 #define QL_TCPIP_MINRTO                 1
 #define QL_TCPIP_MAXRTO                 60
 #define QL_TCPIP_DEFRTO                 6
-#define QL_TCPIP_WINDOWSCALE            0
+#define QL_TCPIP_WINDOWSCALE            1
 
 #define QL_TCPIP_SND_WINDOW             16*1024
 #define QL_TCPIP_RCV_WINDOW             16*1024

@@ -121,6 +121,37 @@ typedef void* qosa_flag_t;
 int qosa_msgq_create(qosa_msgq_t* msgQRef, qosa_uint32_t size, qosa_uint32_t maxNumber);
 
 /**
+* @brief Create a message queue in custom memory
+*
+* @param[in] qosa_msgq_t * msgQRef
+*           - Pointer handle to the message queue
+*
+* @param[in] qosa_uint32_t size
+*           - Size of each message, in bytes
+*
+* @param[in] qosa_uint32_t maxNumber
+*           - Maximum number of messages the message queue can store
+*
+* @param[in] qosa_uint32_t * cb_mem
+*           - Memory address of the control block
+*
+* @param[in] void * q_name
+*           - Queue name
+*
+* @param[in] qosa_uint32_t * mq_mem
+*           - Memory address of the message queue
+*
+* @param[in] qosa_uint32_t * mq_size
+*           - Size of the message queue, in bytes
+*
+* @return int
+*           - Function returns QOSA_OK on success, otherwise returns a negative number
+*
+* @note This function is used to create a message queue for inter-thread communication
+*/
+int qosa_msgq_create_static(qosa_msgq_t *msgQRef, qosa_uint32_t size, qosa_uint32_t maxNumber, void *cb_mem, void *q_name, qosa_uint8_t *mq_mem, qosa_uint32_t mq_size);
+
+/**
  * @brief Used to delete the created message queue
  *
  * @param[in] qosa_msgq_t msgQRef
@@ -189,6 +220,21 @@ int qosa_msgq_wait(qosa_msgq_t msgQRef, qosa_uint8_t* value, qosa_uint32_t size,
  *       - Function executes successfully returns QOSA_ERROR_OK, otherwise returns a negative number
  */
 int qosa_msgq_get_cnt(qosa_msgq_t msgQRef, qosa_uint32_t* cnt_ptr);
+
+/**
+  * @brief Get the size of the message queue
+  *
+  * @param[in] qosa_msgq_t msgQRef
+  *       - Message queue handle
+  *
+  * @param[out] qosa_uint32_t * space
+  *       - A pointer used to store the size of the queue
+  *
+  * @return int
+  *       - The function returns QOSA_OK if executed successfully, otherwise it returns a negative number
+  *
+  */
+int qosa_msgq_get_space(qosa_msgq_t msgQRef, qosa_uint32_t *space);
 
 /**
  * @brief Reset message queue, clear all messages in the queue
@@ -449,17 +495,17 @@ int qosa_task_delete(qosa_task_t taskRef);
 int qosa_task_get_status(qosa_task_t task_ref, qosa_int32_t* status);
 
 /**
- * @brief Get the remaining stack space of the specified thread
- *
- * @param[in] qosa_task_t task_ref
- *          - Thread pointer handle
- *
- * @param[out] qosa_int32_t * space
- *           - Returns the remaining stack space
- *
- * @return int
- *       - Function executes successfully returns QOSA_ERROR_OK, otherwise returns a negative number
- */
+* @brief Get the remaining stack space of the specified thread
+*
+* @param[in] qosa_task_t task_ref
+*           - Thread pointer handle
+*
+* @param[out] qosa_int32_t * space
+*           - Returns the remaining stack space
+*
+* @return int
+*           - Function executes successfully returns OSA_OK, otherwise returns a negative number
+*/
 int qosa_task_get_stack_space(qosa_task_t task_ref, qosa_int32_t* space);
 
 /**

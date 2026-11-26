@@ -492,6 +492,7 @@ typedef enum
     QOSA_NW_LOCK_FREQ_OPCODE_UNLOCK,    /*!< Unlock frequency band */
     QOSA_NW_LOCK_FREQ_OPCODE_LOCK_FREQ, /*!< Lock frequency band */
     QOSA_NW_LOCK_FREQ_OPCODE_LOCK_CELL, /*!< Lock physical cell cell */
+    QOSA_NW_LOCK_FREQ_OPCODE_CLEAR_PREFER_FREQ, /*!< Clear CIoT prefer frequency list */
 } qosa_nw_freq_lock_opcode_e;
 
 /**
@@ -670,17 +671,15 @@ typedef enum
     QOSA_NW_JDCFG_TYPE_ENUM_NONE = -1,
     QOSA_NW_JDCFG_TYPE_MODE = 0,
     QOSA_NW_JDCFG_TYPE_URC,
-    QOSA_NW_JDCFG_TYPE_PERIOD,
     QOSA_NW_JDCFG_TYPE_MINCH,
     QOSA_NW_JDCFG_TYPE_SINR,
     QOSA_NW_JDCFG_TYPE_RXLEV,
     QOSA_NW_JDCFG_TYPE_RSRP,
     QOSA_NW_JDCFG_TYPE_RSRQ,
     QOSA_NW_JDCFG_TYPE_RSSI,
-    QOSA_NW_JDCFG_TYPE_SHAKEPERIOD,
     QOSA_NW_JDCFG_TYPE_RSSI_GSM,
-    QOSA_NW_JDCFG_TYPE_TDETECT,
-    QOSA_NW_JDCFG_TYPE_REPORTINTERVAL,
+    QOSA_NW_JDCFG_TYPE_PERIOD,
+    QOSA_NW_JDCFG_TYPE_SHAKEPERIOD,
     QOSA_NW_JDCFG_TYPE_JAMM_DETECT_RESULT,
     QOSA_NW_JDCFG_TYPE_ENUM_MAX
 } qosa_nw_jdcfg_type_e;
@@ -710,6 +709,33 @@ typedef enum
     QOSA_NW_PS_MODE_1,      /*!< only EPS services with voice centric mode */
     QOSA_NW_UE_OPERATION_MODE_MAX,           /*!< Maximum value */
 } qosa_nw_ue_operation_mode_e;
+
+/**
+ * @enum qosa_nw_cedrxs_mode_e
+ * @brief CEDRXS mode definition (corresponding to <mode> of AT+CEDRXS)
+ */
+typedef enum
+{
+    QOSA_NW_CEDRXS_DISABLE = 0,         /*!< Disable eDRX */
+    QOSA_NW_CEDRXS_ENABLE_DISABLE_URC,  /*!< Enable eDRX and disable related URC reporting */
+    QOSA_NW_CEDRXS_ENABLE_ENABLE_URC,   /*!< Enable eDRX and enable related URC reporting */
+    QOSA_NW_CEDRXS_DISCARD,             /*!< Disable eDRX and discard configured parameters */
+} qosa_nw_cedrxs_mode_e;
+
+/**
+ * @enum qosa_nw_cedrxs_act_type_e
+ * @brief CEDRXS access technology type (corresponding to <AcT-type> of AT+CEDRXS)
+ */
+typedef enum
+{
+    QOSA_NW_CEDRXS_ACT_NOT_USE = 0, /*!< AcT not used */
+    QOSA_NW_CEDRXS_ACT_EC_GSM_IOT,  /*!< EC-GSM-IoT */
+    QOSA_NW_CEDRXS_ACT_GSM,         /*!< GSM */
+    QOSA_NW_CEDRXS_ACT_UTRAN,       /*!< UTRAN */
+    QOSA_NW_CEDRXS_ACT_EUTRAN,      /*!< E-UTRAN-LTE-M */
+    QOSA_NW_CEDRXS_ACT_NB_IOT,      /*!< NB-IoT */
+} qosa_nw_cedrxs_act_type_e;
+
 
 /**
  * @enum qosa_nw_blacklist_policy_type_e
@@ -831,6 +857,24 @@ typedef struct
     qosa_nw_rrc_access_type_e access; /*!< RRC access type */
 } qosa_nw_rrc_conn_info_t;
 
+#ifdef CONFIG_QOSA_NW_ANTENNA_INFO_FUNC
+/**
+ * @struct qosa_nw_antenna_info_t
+ * @brief Primary/diversity antenna signal information
+ *
+ */
+typedef struct
+{
+    qosa_nw_rat_e rat;       /*!< Current RAT */
+    qosa_int16_t  ant0_rssi; /*!< Primary antenna RSSI, unit: dBm */
+    qosa_int16_t  ant1_rssi; /*!< Diversity antenna RSSI, unit: dBm */
+    qosa_int16_t  ant0_rsrp; /*!< Primary antenna RSRP, unit: dBm */
+    qosa_int16_t  ant1_rsrp; /*!< Diversity antenna RSRP, unit: dBm */
+    qosa_int16_t  ant0_rsrq; /*!< Primary antenna RSRQ, unit: dB */
+    qosa_int16_t  ant1_rsrq; /*!< Diversity antenna RSRQ, unit: dB */
+} qosa_nw_antenna_info_t;
+#endif /* CONFIG_QOSA_NW_ANTENNA_INFO_FUNC */
+
 /**
  * @struct qosa_nw_reject_info_t
  * @brief Reject information
@@ -891,8 +935,8 @@ typedef struct
         struct
         {
             /* Not recommended to use this parameter, this parameter is directly uploaded by the platform layer, calculation rules are uncertain */
-            qosa_uint16_t rssi_meas;   /*!< rssi measurement value under 3G, unit dBm */
-            qosa_uint16_t rssi_report; /*!< rssi measurement value under 3G, unit dBm */
+            qosa_int16_t rssi_meas;   /*!< rssi measurement value under 3G, unit dBm */
+            qosa_int16_t rssi_report; /*!< rssi measurement value under 3G, unit dBm */
             qosa_rscp_t   rscp;        /*!< rscp under WCDMA: refers to received signal code power; unit: dBm; measurement value*100, range: -12000 ~ -2500 */
             qosa_ecno_t   ecno;        /*!< ecno under WCDMA: refers to Ec/Io; unit: dB; measurement value*100, range: -2400 ~ 0 */
         } wcdma;
@@ -909,6 +953,7 @@ typedef struct
             qosa_sinr_t
                 sinr; /*!< ss_sinr under 5gnr: refers to signal to interference plus noise ratio; unit: dB; measurement value*100, range: -2300 ~ 4000 */
             qosa_rsrq_t rsrq; /*!< ss_rsrq under 5gnr: refers to reference signal received quality; unit: dB; measurement value*100, range: -3400 ~ -250 */
+            qosa_rssi_t rssi; /*!< RSSI under LTE: refers to received signal strength indicator; unit: dBm; measurement value*100, range: -10000 ~ -2500 */
         } nr5g;
     };
 
@@ -1068,7 +1113,8 @@ typedef struct
         rsrq; /*!< ss_rsrq under 5G: refers to reference signal received quality; unit: dB; measurement value*100, range: -3400 ~ -250; invalid value: QOSA_NW_PI_INT16 */
     qosa_sinr_t
         sinr; /*!< ss_sinr under 5G: refers to signal to interference plus noise ratio; unit: dB; measurement value*100, range: -2300 ~ 4000; invalid value: QOSA_NW_PI_INT16 */
-
+    qosa_rssi_t
+        rssi;//*!< Received signal strength indicator; unit: dBm; measurement value*100, range: -10000 ~ -2500; invalid value: QOSA_NW_PI_INT16 */
     qosa_uint8_t scs;     /*!< subcarrier spacing; 0..6; ref maxSCSs; invalid value: QOSA_NW_PI_UINT8 */
 
     qosa_srxlev_t srxlev; /*!< Cell selection level: refers to cell selection S value; unit: dB; actual value; range: -; invalid value: QOSA_NW_PI_INT16 */
@@ -1157,7 +1203,7 @@ typedef struct
         rscp; /*!< Received signal code power: Allow invalid; unit: dBm; measurement value*100, range: -12000 ~ -2500; invalid value: QOSA_NW_PI_INT16 */
 
     /* Not recommended to use these parameters, these parameters are directly uploaded by the platform layer, calculation rules are uncertain */
-    qosa_uint16_t rssi_meas;           /*!< rssi measurement value under 3G, unit dBm */
+    qosa_int16_t rssi_meas;           /*!< rssi measurement value under 3G, unit dBm */
     qosa_uint16_t rssi_report;         /*!< rssi report value under 3G, range 0~31 or 99 means unknown or not detected */
     qosa_uint16_t rssi_rxlev;          /*!< rssi report value under 3G, range 0~63 or 99 means unknown or not detected */
 
@@ -1546,6 +1592,29 @@ typedef struct
 } qosa_nw_blacklist_cell_t;
 
 /**
+ * @struct qosa_nw_blacklist_cell_list_t
+ * @brief blacklist cell list info
+ *
+ */
+typedef struct
+{
+    qosa_uint8_t                    num;/*!< Blacklist cell count */
+    qosa_nw_blacklist_cell_t        cell[QOSA_NW_BLACKLIST_CELL_MAX];
+} qosa_nw_blacklist_cell_info_t;
+
+/**
+ * @struct qosa_nw_blacklist_cell_list_t
+ * @brief blacklist cell list info
+ *
+ */
+typedef struct
+{
+    qosa_nw_blacklist_cell_info_t gsm_cell;
+    qosa_nw_blacklist_cell_info_t wcdma_cell;
+    qosa_nw_blacklist_cell_info_t lte_cell;
+} qosa_nw_blacklist_cell_list_t;
+
+/**
  * @struct qosa_nw_blacklist_lists_param_t
  * @brief blacklist cell parameter list
  *
@@ -1638,6 +1707,39 @@ typedef struct
     qosa_nw_freq_scan_cell_list_t cell_list; /*!< Frequency scan results */
 } qosa_nw_trigger_freq_scan_cnf_t;
 
+
+/**
+ * @struct qosa_nw_edrx_cfg_t
+ * @brief Unified eDRX configuration parameters for CEDRXS and QPTWEDRXS
+ */
+typedef struct
+{
+    qosa_uint8_t mode;           /*!< Mode, see qosa_nw_cedrxs_mode_e */
+
+    qosa_uint8_t act_type;       /*!< AcT type, see qosa_nw_cedrxs_act_type_e */
+    qosa_bool_t  req_ptw_valid;  /*!< Whether Requested_paging_time_window is valid */
+    qosa_uint8_t req_ptw;        /*!< Requested PTW value, 4-bit encoded, range: 0~15 */
+    qosa_bool_t  req_edrx_valid; /*!< Whether Requested_eDRX_value is valid */
+    qosa_uint8_t req_edrx;       /*!< Requested eDRX value, 4-bit encoded, range: 0~15 */
+} qosa_nw_edrx_cfg_t;
+
+/**
+ * @struct qosa_nw_edrx_info_t
+ * @brief eDRX dynamic-parameter IND event payload (for QOSA_EVENT_MODEM_NW_EDRX_DYN_PARM)
+ */
+typedef struct
+{
+    qosa_uint8_t simid;          /*!< SIM card ID */
+    qosa_uint8_t act_type;       /*!< Current AcT type, see qosa_nw_cedrxs_act_type_e */
+    qosa_bool_t  req_ptw_valid;  /*!< Whether Requested_paging_time_window is valid */
+    qosa_uint8_t req_ptw;        /*!< Requested PTW value, 4-bit encoded, range: 0~15 */
+    qosa_bool_t  req_edrx_valid; /*!< Whether Requested_eDRX_value is valid */
+    qosa_uint8_t req_edrx;       /*!< Requested eDRX value, 4-bit encoded, range: 0~15 */
+    qosa_bool_t  nw_edrx_valid;  /*!< Whether network-provided eDRX value is valid */
+    qosa_uint8_t nw_edrx;        /*!< Network-provided eDRX value, 4-bit encoded, range: 0~15 */
+    qosa_uint8_t nw_ptw;         /*!< Network-provided PTW value, 4-bit encoded, range: 0~15 */
+} qosa_nw_edrx_info_t;
+
 /*-------------------------------------- api --------------------------------------*/
 
 /**
@@ -1700,6 +1802,8 @@ qosa_nw_err_e qosa_nw_get_supported_rat_mode(qosa_uint8_t simid, qosa_uint8_t *r
  *          - SIM ID
  * @param[in] rat_mode
  *          - Combination value of qosa_nw_rat_e, e.g., for 2G+4G combination mode, it is QOSA_NW_RAT_2G|QOSA_NW_RAT_4G; additionally, QOSA_NW_RAT_ALL can be used to represent all rat capabilities of the current model
+ * @param[in] effect
+ *          - Indication of if the setting should take effect immediately
  * @param[in] cb
  *          - Callback function
  * @param[in] ctx
@@ -1982,6 +2086,19 @@ qosa_nw_err_e qosa_nw_set_cfg_band(qosa_uint8_t simid, const qosa_nw_band_t *cfg
  * @return qosa_nw_err_e Success returns OSA_NW_ERR_OK, failure returns corresponding error code
  */
 qosa_nw_err_e qosa_nw_get_rrc_conn_info(qosa_uint8_t simid, qosa_nw_rrc_conn_info_t *conn_info);
+
+#ifdef CONFIG_QOSA_NW_ANTENNA_INFO_FUNC
+/**
+ * @brief Get the signal information of the primary and diversity antennas
+ *
+ * @param[in] simid
+ *          - SIM ID
+ * @param[out] info
+ *          - Primary/diversity antenna signal information
+ * @return qosa_nw_err_e Success returns QOSA_NW_ERR_OK, failure returns the corresponding error code
+ */
+qosa_nw_err_e qosa_nw_get_antenna_info(qosa_uint8_t simid, qosa_nw_antenna_info_t *info);
+#endif /* CONFIG_QOSA_NW_ANTENNA_INFO_FUNC */
 
 /**
  * @brief Trigger frequency scan, result returned through `qosa_nw_trigger_freq_scan_cnf_t`
@@ -2366,6 +2483,32 @@ qosa_nw_err_e qosa_nw_set_ue_operation_mode(qosa_uint8_t simid,qosa_uint8_t mode
 qosa_nw_err_e qosa_nw_get_ue_operation_mode(qosa_uint8_t simid,qosa_uint8_t *mode);
 
 /**
+ * @brief Unified eDRX set interface for CEDRXS/QPTWEDRXS
+ *
+ * @param[in] simid
+ *          - SIM ID
+ * @param[in] cfg
+ *          - Unified eDRX configuration
+ * @param[in] cb
+ *          - Callback function
+ * @param[in] ctx
+ *          - User context
+ * @return qosa_nw_err_e
+ */
+qosa_nw_err_e qosa_nw_set_edrx_param(qosa_uint8_t simid, qosa_nw_edrx_cfg_t *cfg, nw_callback_t cb, void *ctx);
+
+/**
+ * @brief Read dynamic eDRX parameters used by current serving cell
+ *
+ * @param[in] simid
+ *          - SIM ID
+ * @param[out] info
+ *          - CEDRXRDP information
+ * @return qosa_nw_err_e
+ */
+qosa_nw_err_e qosa_nw_get_edrx_param(qosa_uint8_t simid, qosa_nw_edrx_info_t *info);
+
+/**
  * @brief Set UE blacklist parameters
  *
  * @param[in] simid
@@ -2454,6 +2597,75 @@ qosa_nw_err_e qosa_set_ims_mode(qosa_uint8_t simid, qosa_uint8_t ims_conf);
  *       - Status code indicating the result of the operation (e.g., success or specific error type)
  */
 qosa_nw_err_e qosa_get_ims_mode(qosa_uint8_t simid, qosa_uint8_t *ims_conf, qosa_bool_t *volte_cap);
+
+/**
+ * @brief Add the cell information to the blacklist, or delete the cell information from the blacklist
+ *
+ * @param[in] simid
+ *          - SIM ID
+ *
+ * @param[in] opt
+ *          - option,0-add black cell,1-delete black cell
+ *
+ * @param[in] cell_list
+ *          - Cell information to be added or deleted,reference qosa_nw_blacklist_cell_list_t
+ *
+ * @return qosa_nw_err_e
+ */
+qosa_nw_err_e qosa_nw_blacklist_set_cell_info(qosa_uint8_t simid, qosa_uint8_t opt, qosa_nw_blacklist_cell_list_t *cell_list);
+
+/**
+ * @brief Get the cell information in the blacklist
+ *
+ * @param[in] simid
+ *          - SIM ID
+ *
+ * @param[out] cell_list
+ *          - Cell information in the blacklist, reference qosa_nw_blacklist_cell_list_t
+ *
+ * @return qosa_nw_err_e
+ */
+qosa_nw_err_e qosa_nw_blacklist_get_cell_info(qosa_uint8_t simid, qosa_nw_blacklist_cell_list_t *cell_list);
+
+/**
+ * @brief Get PdpRemap configuration
+ *
+ * @param[in] simid
+ *          - SIM ID
+ * @param[out] pdpremap
+ *          - PdpRemap value (0,1) 0:Disable UE Remap function 1:Enable Remap function
+ * @return qosa_nw_err_e
+ */
+qosa_nw_err_e qosa_nw_get_pdpremap(qosa_uint8_t simid, qosa_uint8_t *pdpremap);
+/**
+ * @brief Set PdpRemap configuration
+ *
+ * @param[in] simid
+ *          - SIM ID
+ * @param[in] pdpremap
+ *          - PdpRemap value (0,1) 0:Disable UE Remap function 1:Enable Remap function
+ * @param[in] cb
+ *          - Callback function
+ * @param[in] ctx
+ *          - Callback function context
+ * @return qosa_nw_err_e
+ */
+qosa_nw_err_e qosa_nw_set_pdpremap(qosa_uint8_t simid, qosa_uint8_t pdpremap, nw_callback_t cb, void *ctx);
+
+#ifdef CONFIG_QOSA_NBIOT_CUST_FUNC
+/**
+ * @brief Obtain network dl_ber level
+ *
+ * @param[in] simid
+ *          - SIM ID
+ * @param[out] dlber_level
+ *          - Downlink Bit Error Rate level
+ * @return qosa_nw_err_e
+ */
+qosa_nw_err_e qosa_nw_get_dlber_level(qosa_uint8_t simid, qosa_uint8_t *dlber_level);
+#endif /* CONFIG_QOSA_NBIOT_CUST_FUNC */
+
+#ifdef CONFIG_QOSA_AUTOAPN_FUNC
 /**
  * @brief Get UE autoapn status
  *
@@ -2465,7 +2677,7 @@ qosa_nw_err_e qosa_get_ims_mode(qosa_uint8_t simid, qosa_uint8_t *ims_conf, qosa
  *
  * @return qosa_nw_err_e
  */
-qosa_nw_err_e qosa_qautoapn_enable_get(qosa_uint8_t simid, qosa_bool_t *enable);
+qosa_nw_err_e qosa_nw_get_autoapn_param(qosa_uint8_t simid, qosa_bool_t *enable);
 /**
  * @brief Set UE autoapn status
  *
@@ -2477,6 +2689,24 @@ qosa_nw_err_e qosa_qautoapn_enable_get(qosa_uint8_t simid, qosa_bool_t *enable);
  *
  * @return qosa_nw_err_e
  */
-qosa_nw_err_e qosa_qautoapn_enable_set(qosa_uint8_t simid, qosa_bool_t enable);
-#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+qosa_nw_err_e qosa_nw_set_autoapn_param(qosa_uint8_t simid, qosa_bool_t enable);
+
+/**
+ * @brief Set the user-defined APN flag so that autoapn is disabled
+ *
+ * @param[in] simid
+ *          - SIM ID
+ *
+ * @return qosa_nw_err_e
+ */
+qosa_nw_err_e qosa_nw_set_autoapn_user_defined(qosa_uint8_t simid);
+
+/**
+ * @brief Load AutoAPN values from NVM at power-on
+ *
+ * @return void
+ */
+void qosa_nw_autoapn_init(void);
+#endif /* CONFIG_QOSA_AUTOAPN_FUNC */
+#endif /* Wi-Fi platform exclusion */
 #endif /* __QOSA_NETWORK_H__ */

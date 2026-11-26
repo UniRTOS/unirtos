@@ -1052,7 +1052,7 @@ static qurl_ecode_t smtp_state_ehlo_resp(qurl_conn_t *conn_ptr, int smtpcode, sm
         qurl_logd("authmechs=%x", smtpc->sasl.authmechs);
         if (smtpcode != 1)
         {
-            if (conn_ptr->core_ptr->usr_cfg.use_tls)
+            if (conn_ptr->core_ptr->usr_cfg.use_tls && !smtpc->ssldone)
             {
                 /* We don't have a SSL/TLS connection yet, but SSL is requested */
                 if (smtpc->tls_supported)

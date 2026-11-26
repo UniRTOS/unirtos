@@ -78,5 +78,32 @@ int mpc_dev_set_airplanecontrol_config(qosa_uint8_t simid, qosa_uint8_t airplane
  */
 int mpc_dev_get_airplanecontrol_config(qosa_uint8_t simid, qosa_dev_airplanecontrol_param_t *config);
 
-#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+#ifdef CONFIG_QOSA_NBIOT_CUST_FUNC
+#include "cmidev.h"
+
+/**
+ * @brief Get extended device configuration (synchronous), thin wrapper
+ *
+ * @param[in] simid
+ *          - sim id
+ * @param[out] cnf
+ *          - CmiDevGetExtCfgCnf result
+ * @return 0 on success, negative on error
+ */
+int mpc_dev_get_ext_cfg_sync(qosa_uint8_t simid, CmiDevGetExtCfgCnf *cnf);
+
+/**
+ * @brief Set extended device configuration (synchronous), thin wrapper
+ *
+ * @param[in] simid
+ *          - sim id
+ * @param[in] req
+ *          - CmiDevSetExtCfgReq to set
+ * @return 0 on success, negative on error
+ */
+int mpc_dev_set_ext_cfg_sync(qosa_uint8_t simid, CmiDevSetExtCfgReq *req);
+
+#endif /* CONFIG_QOSA_NBIOT_CUST_FUNC */
+
+#endif /* Wi-Fi platform exclusion */
 #endif /* __MPC_DEV__H__ */

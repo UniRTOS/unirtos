@@ -1,0 +1,15 @@
+{
+    "schema_version":  1,
+    "sdk_version":  "QSR02A04_C_SDK_LTE_E_BETA261029",
+    "sub_version":  "V01",
+    "source_manifest_sha256":  "9B7C4BAF5C636FF190B720F37720DCFE8CD60ECC0351A24EBB673325AA8E00FF",
+    "git_base":  "0782df77b1c55feb0fe66f09a2eeb72161af3de1",
+    "build_status":  "PLATFORM-10-PACKAGES-AND-SELECTED-APPLICATIONS-VALIDATED",
+    "platform_packages_built": ["EG800ZEU_LA", "EC800ZCN_LF", "EG800ZCN_LA", "EG800ZCN_LG", "EG800ZCN_LH", "EG800ZEU_LG", "EG800ZEU_LH", "EG800ZGL_LA", "EG800ZLA_LA", "EG915ZEU_LA"],
+    "platform_packages_validated": true,
+    "application_build_validated": true,
+    "application_build_validated_projects": ["EG800ZCN_LA", "FCM665D"],
+    "all_platform_projects_application_build_validated": false,
+    "application_build_validation_basis": "User-reported unirtos-cli build success on 2026-11-05; no device validation",
+    "device_validated": false
+}

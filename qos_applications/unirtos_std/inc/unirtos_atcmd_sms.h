@@ -33,8 +33,12 @@ void qstd_exec_cmss_cmd(qosa_at_cmd_t *cmd);
 void qstd_exec_cnma_cmd(qosa_at_cmd_t *cmd);
 void qstd_exec_cnmi_cmd(qosa_at_cmd_t *cmd);
 void qstd_exec_cpms_cmd(qosa_at_cmd_t *cmd);
+#ifdef CONFIG_QAPP_UNIRTOS_AT_CPNER_CMD
+void qstd_exec_cpner_cmd(qosa_at_cmd_t *cmd);
+#endif /* CONFIG_QAPP_UNIRTOS_AT_CPNER_CMD */
 void qstd_exec_csca_cmd(qosa_at_cmd_t *cmd);
-void qstd_exec_cscb_cmd(qosa_at_cmd_t *cmd);
+/* TODO: +CSCB not yet implemented; remove this declaration when implemented */
+// void qstd_exec_cscb_cmd(qosa_at_cmd_t *cmd);
 void qstd_exec_csdh_cmd(qosa_at_cmd_t *cmd);
 void qstd_exec_csmp_cmd(qosa_at_cmd_t *cmd);
 void qstd_exec_csms_cmd(qosa_at_cmd_t *cmd);

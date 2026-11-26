@@ -1,22 +1,27 @@
 {
     "product_sets":
     [
-        	{
-        	        	"prod_name":"ec718pm_H1_SEC",
-        	        	"file_basedir_keys":"base_uart_config_file;base_usb_config_file;format_path",
-        	        	"base_uart_config_file":"./ec718pm_H1_sec256_prd_uart.baseini.bin",
-        	        	"base_usb_config_file":"./ec718pm_H1_sec256_prd_usb.baseini.bin",
-        	        	"specific_info":{
-        	        	"format_path":"./ec718pm_H1_format.json.bin",
-        	        	"ap_flash_spec_images":"cp_system"
-        	        	},
-        	        	"storage_info":[
-        	        	{
-        	        	"NAME":"AP",
-        	        	"BASE_LNA":"0x800000",
-        	        	"BASE_SIZE":"0x400000"
-        	        	}
-        	        	]
-        	}
+            {
+                        "prod_name":"ec718pm_H1_SEC",
+                        "file_basedir_keys":"base_uart_config_file;base_usb_config_file;format_path",
+                        "base_uart_config_file":"./ec718pm_H1_sec256_prd_uart.baseini.bin",
+                        "base_usb_config_file":"./ec718pm_H1_sec256_prd_usb.baseini.bin",
+                        "specific_info":{
+                        "format_path":"./ec718pm_H1_format.json.bin",
+                        "ap_flash_spec_images":"cp_system"
+                        },
+                        "storage_info":[
+                        {
+                        "NAME":"AP",
+                        "BASE_LNA":"0x800000",
+                        "BASE_SIZE":"0x400000"
+                        },
+						{
+                        "NAME":"EF",
+                        "BASE_LNA":"0x80000000",
+                        "BASE_SIZE":"0x800000"
+                        }
+                        ]
+            }
     ]
 }

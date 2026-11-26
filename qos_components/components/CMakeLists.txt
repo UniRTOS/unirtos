@@ -44,6 +44,10 @@ if(CONFIG_QCM_LWM2M_FOTA_FUNC)
     add_subdirectory_if_exist(lwm2m_fota)
 endif()
 
+if(CONFIG_QCM_FIREWALL_FUNC)
+    add_subdirectory_if_exist(qcm_firewall)
+endif()
+
 if(CONFIG_QCM_MINI_HTTP_FUNC)
     add_subdirectory_if_exist(mini_http)
 endif()
@@ -74,6 +78,10 @@ endif()
 
 if(CONFIG_QCM_PING_FUNC)
     add_subdirectory_if_exist(ping)
+endif()
+
+if(CONFIG_QCM_HY_ANDLINK_FUNC)
+    add_subdirectory_if_exist(hy_andlink)
 endif()
 
 if(CONFIG_QCM_URC_FUNC)
@@ -129,8 +137,36 @@ if(CONFIG_QCM_MONGOOS_LIB)
     add_subdirectory_if_exist(mongoos-7.10)
 endif()
 
+if(CONFIG_QCM_MIFI_FUNC)
+    add_subdirectory_if_exist(mifi)
+endif()
+
+if(CONFIG_QCM_QUECTHING_FUNC)
+    add_subdirectory_if_exist(quecthing)
+endif()
+
+if(CONFIG_QCM_WEBUI_FUNC)
+    add_subdirectory_if_exist(qcm_webui)
+endif()
+
+if(CONFIG_QCM_ALIYUN_LINK_SDK_FUNC)
+    add_subdirectory_if_exist(aliyun_link_sdk)
+endif()
+
+if(CONFIG_QCM_AGORA_RTSA_SDK_FUNC)
+    add_subdirectory_if_exist(agora_rtsa_sdk)
+endif()
+
+if(CONFIG_QCM_OPAUTH_FUNC)
+    add_subdirectory_if_exist(qcm_opauth)
+endif()
+
 if(CONFIG_QCM_LLM_PROXY)
     add_subdirectory_if_exist(qcm_llm_proxy)
+endif()
+
+if(CONFIG_QCM_VNET_FUNC)
+    add_subdirectory_if_exist(qcm_vnet)
 endif()
 
 # Virtual function Make sure to put it at the end.

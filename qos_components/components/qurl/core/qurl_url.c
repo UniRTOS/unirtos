@@ -112,6 +112,25 @@ static qurl_ecode_t url_junk_scan(const char *part)
     return QURL_OK;
 }
 
+static qurl_ecode_t url_percent_scan(const char *part)
+{
+    if (part)
+    {
+        const char *ptr = part;
+        while (*ptr)
+        {
+            if ((*ptr == '%') &&
+                !(qurl_ctype_isxdigit((unsigned char)ptr[1]) &&
+                  qurl_ctype_isxdigit((unsigned char)ptr[2])))
+            {
+                return QURL_ECODE_URL_MALFORMED_INPUT;
+            }
+            ptr++;
+        }
+    }
+    return QURL_OK;
+}
+
 /**
  * @brief Find the delimiter at the end of the hostname. For example, find the '?' symbol in cases like http://www.url.com?id=2380.
  */
@@ -1108,6 +1127,13 @@ static qurl_ecode_t url_parse(qurl_url_t *uurl_ptr, const char *url_ptr, unsigne
         goto exit;
     }
 
+    ret = url_percent_scan(path);
+	if (ret != QURL_OK)
+	{
+        ret = QURL_ECODE_URL_MALFORMED_INPUT;
+        goto exit;
+	}
+
     if ((flags & QURL_URL_URLENCODE) && path[0])
     {
         /* worst case output length is 3x the original! */
@@ -1202,6 +1228,13 @@ static qurl_ecode_t url_parse(qurl_url_t *uurl_ptr, const char *url_ptr, unsigne
             ret = QURL_ECODE_URL_MALFORMED_INPUT;
             goto exit;
         }
+
+        ret = url_percent_scan(hostname);
+		if (ret != QURL_OK)
+		{
+            ret = QURL_ECODE_URL_MALFORMED_INPUT;
+            goto exit;
+		}
 
         ret = url_parse_hostname_login(uurl_ptr, &hostname, flags);
         if (ret != QURL_OK)

@@ -212,6 +212,7 @@ typedef enum
    UNILOG_UNIRTOS_QTCP_NB,
    UNILOG_UNIRTOS_QPDP,
    UNILOG_UNIRTOS_QHTP,
+   UNILOG_UNIRTOS_QADL,
    UNILOG_UNIRTOS_QM2M,
    UNILOG_UNIRTOS_QMDM,
    UNILOG_UNIRTOS_QMTP,
@@ -263,7 +264,14 @@ typedef enum
    UNILOG_UNIRTOS_ESIM,
    UNILOG_UNIRTOS_QJAM,
    UNILOG_UNIRTOS_QSEC,
-
+   UNILOG_UNIRTOS_QDAT,
+   UNILOG_UNIRTOS_QSIM,
+   UNILOG_UNIRTOS_QNWK,
+   UNILOG_UNIRTOS_QUNE,
+   UNILOG_UNIRTOS_QDEV,
+   UNILOG_UNIRTOS_CMUX,
+   UNILOG_UNIRTOS_QFWL,
+   UNILOG_UNIRTOS_ARTC,
     UNILOG_CUST_MOD_MAX = 127
 }UniLogCustModIdType_e;
 
@@ -406,6 +414,7 @@ do  \
 /**
  * Less/optional log, may not print out if need save flash
 */
+#ifndef UNIRTOS_PLATFORM_MODIFY
 #ifndef FEATURE_LESSLOG_ENABLE
 #define ECOMM_HEX_DUMP_OPT(owenerID, moduleID, subID, debugLevel, format, dumpLen, dump)    \
     ECOMM_HEX_DUMP(owenerID, moduleID, subID, debugLevel, format, dumpLen, dump)
@@ -455,7 +464,21 @@ do  \
 #define ECPLAT_PRINTF_I_OPT(moduleId, subId, debugLevel, format, ...)
 #define ECPLAT_DUMP_OPT(moduleID, subID, debugLevel, format, dumpLen, dump)
 #define ECPLAT_DUMP_I_OPT(moduleID, subID, debugLevel, format, dumpLen, dump)
-#endif
+#endif /* FEATURE_LESSLOG_ENABLE */
+#else  /* UNIRTOS_PLATFORM_MODIFY */
+#define ECOMM_HEX_DUMP_OPT(owenerID, moduleID, subID, debugLevel, format, dumpLen, dump)
+#define ECOMM_HEX_DUMP_I_OPT(owenerID, moduleID, subID, debugLevel, format, dumpLen, dump)
+#define ECOMM_PRINTF_OPT(ownerId, moduleId, subId, debugLevel, format, ...)
+#define ECOMM_PRINTF_I_OPT(ownerId, moduleId, subId, debugLevel, format, ...)
+#define ECOMM_TRACE_OPT(moduleId, subId, debugLevel, argLen, format,  ...)
+#define ECOMM_TRACE_I_OPT(moduleId, subId, debugLevel, argLen, format,  ...)
+#define ECOMM_DUMP_OPT(moduleID, subID, debugLevel, format, dumpLen, dump)
+#define ECOMM_DUMP_I_OPT(moduleID, subID, debugLevel, format, dumpLen, dump)
+#define ECPLAT_PRINTF_OPT(moduleId, subId, debugLevel, format, ...)
+#define ECPLAT_PRINTF_I_OPT(moduleId, subId, debugLevel, format, ...)
+#define ECPLAT_DUMP_OPT(moduleID, subID, debugLevel, format, dumpLen, dump)
+#define ECPLAT_DUMP_I_OPT(moduleID, subID, debugLevel, format, dumpLen, dump)
+#endif /* UNIRTOS_PLATFORM_MODIFY */
 
 /*
  * !!! used for customer SDK print !!!

@@ -980,54 +980,6 @@ exit:
     return ret;
 }
 
-/*Gets the actual size of the encrypted file by Q_FS_Tell*/
-qosa_int64_t qcm_sfs_lseek(int fd, qosa_int64_t offset, int mode)
-{
-    qosa_int64_t ret = -1;
-    qosa_int64_t real_offset = -1;
-    qosa_int32_t num_data;
-    char         buf[4] = {0};
-    if (fd < 0)
-    {
-        QLOGE("fd=%d", fd);
-        return -1;
-    }
-
-    /*Has been positioned to the end of the file to get the total length of the file*/
-    ret = qosa_vfs_lseek((int)fd, (qosa_int64_t)offset, (int)mode);
-    if (ret < 0)
-    {
-        return -1;
-    }
-    /*The number of extra bytes to fill in when getting the encryption*/
-    if (qosa_vfs_lseek(fd, ret - 1, SEEK_SET) < 0)
-    {
-        return -1;
-    }
-    /*Read the last byte*/
-    if (qosa_vfs_read((int)fd, (void *)buf, 1) <= 0)
-    {
-        QLOGE("fd=%d", fd);
-        return -1;
-    }
-
-    num_data = qcm_utils_hex_to_num(buf[0]);
-    if (num_data < 0)
-    {
-        QLOGE("num=%d", num_data);
-        return -1;
-    }
-    real_offset = ret - 1 - num_data; /*Actual file length*/
-    if (qosa_vfs_lseek(fd, real_offset, SEEK_SET) < 0)
-    {
-        QLOGE("lseek");
-        return -1;
-    }
-    ret = real_offset;
-
-    return ret;
-}
-
 /* write file */
 qosa_ssize_t qcm_sfs_write(int fd, const void *data, qosa_size_t size)
 {

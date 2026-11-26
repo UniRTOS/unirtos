@@ -46,7 +46,7 @@ typedef int16_t qosa_int16_t; /**< 16bit integer type */
 
 /** The size in bytes depends on the compiler and platform */
 #if defined(CONFIG_QOSA_RDA8910_R06_PLATFORM_FUNC) || defined(CONFIG_QOSA_QCX216_PLATFORM_FUNC) || defined(CONFIG_QOSA_QCX217_PLATFORM_FUNC)                   \
-    || defined(CONFIG_QOSA_UIS8852_PLATFORM_FUNC) || defined(CONFIG_QOSA_EIGEN718_PLATFORM_FUNC)
+    || defined(CONFIG_QOSA_UIS8852_PLATFORM_FUNC) || defined(CONFIG_QOSA_EIGEN718_PLATFORM_FUNC) || defined(CONFIG_QOSA_UIS8910_PLATFORM_FUNC)
 /**< 32bit integer type */
 typedef signed int qosa_int32_t;
 #else                           /* CONFIG_QOSA_RDA8910_R06_PLATFORM_FUNC */
@@ -81,11 +81,12 @@ typedef unsigned long long qosa_uint64_t; /**< 64bit unsigned integer type */
 #endif /* CONFIG_QOSA_HAVE_SYS_TPYE64 */
 
 /** The size in bytes depends on the compiler and platform */
-#if defined(CONFIG_QOSA_ASR1903_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR160X_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR1805_PLATFORM_FUNC) /* [huanyi][20260319]temporary changes for lwm2m */
+#if defined(CONFIG_QOSA_ASR1903_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR160X_PLATFORM_FUNC) \
+|| defined(CONFIG_QOSA_ASR1803_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR1805_PLATFORM_FUNC) /* [huanyi][20260319]temporary changes for lwm2m */
 typedef size_t   qosa_size_t;   /**< Type for size number */
-#else /* CONFIG_QOSA_ASR1903_PLATFORM_FUNC || CONFIG_QOSA_ASR160X_PLATFORM_FUNC || CONFIG_QOSA_ASR1805_PLATFORM_FUNC */
+#else /* CONFIG_QOSA_ASR1903_PLATFORM_FUNC || CONFIG_QOSA_ASR160X_PLATFORM_FUNC || CONFIG_QOSA_ASR1803_PLATFORM_FUNC || CONFIG_QOSA_ASR1805_PLATFORM_FUNC */
 typedef qosa_ubase_t qosa_size_t;     /**< Type for size number */
-#endif /* CONFIG_QOSA_ASR1903_PLATFORM_FUNC || CONFIG_QOSA_ASR160X_PLATFORM_FUNC || CONFIG_QOSA_ASR1805_PLATFORM_FUNC */
+#endif /* CONFIG_QOSA_ASR1903_PLATFORM_FUNC || CONFIG_QOSA_ASR160X_PLATFORM_FUNC || CONFIG_QOSA_ASR1803_PLATFORM_FUNC || CONFIG_QOSA_ASR1805_PLATFORM_FUNC */
 
 typedef qosa_base_t  qosa_ssize_t;    /**< Used for a count of bytes or an error indication */
 #endif /* CONFIG_QOSA_PLATFORM_SUPPORT_C99 */
@@ -93,9 +94,11 @@ typedef qosa_base_t  qosa_ssize_t;    /**< Used for a count of bytes or an error
 #ifdef CONFIG_QOSA_HAVE_SYS_TPYE64
 /** Save function pointer address */
 typedef qosa_int64_t qosa_ptr;
+typedef qosa_uint64_t qosa_uptr;
 #else  /* CONFIG_QOSA_HAVE_SYS_TPYE64 */
 /** Save function pointer address */
 typedef qosa_int32_t qosa_ptr;
+typedef qosa_uint32_t qosa_uptr;
 #endif /* CONFIG_QOSA_HAVE_SYS_TPYE64 */
 
 typedef qosa_int64_t qosa_time_t;
@@ -236,6 +239,9 @@ typedef enum
     QOSA_COMPONENT_AUDIO = 0x801E,         /*!< Audio error base */
     QOSA_COMPONENT_API_LCD = 0x801F,       /*!< CAMERA API error base */
     QOSA_COMPONENT_API_USB = 0x8020,       /*!< CAMERA API error base */
+    QOSA_COMPONENT_WIFI = 0x8021,          /*!< WIFI result error base */
+    QOSA_COMPONENT_API_LAN = 0x8022,       /*!< LAN API error base */
+    QOSA_COMPONENT_NETWORK_REDIR = 0x8023, /*!< NW REDIRECT API error base */
 
     QOSA_COMPONENT_PING = 0x8104,          /*!< Ping result error base */
     QOSA_COMPONENT_NTP = 0x8105,           /*!< NTP result error base */
@@ -256,8 +262,12 @@ typedef enum
     QOSA_COMPONENT_CODE_DECODER = 0x811A,  /*!< Code decoder error base */
     QOSA_COMPONENT_SECBOOT = 0x811B,       /*!< Secure boot error base */
     QOSA_COMPONENT_IMS = 0x811C,           /*!< IMS error base */
+    QOSA_COMPONENT_MIFI = 0X811D,          /*!< MIFI error base */
+    QOSA_COMPONENT_QTH_CONN = 0x811E,     /*!< QuecThing connection error base */
 
     QOSA_COMPONENT_ESIM = 0x8500,          /*!< ESIM result error base */
+
+    QOSA_COMPONENT_CMUX = 0x8501,          /*!< CMUX result error base */
 
     QOSA_COMPONENT_MAX = 0x9FFF            /*!< component base end */
 } qosa_base_component_e;
@@ -373,7 +383,7 @@ QOSA_EXTERN void* qosa_malloc(qosa_size_t nbytes);
 /** Purpose: Known 'whole' and 'one part' of the whole, calculate the address of the whole based on the address of the part. */
 #define list_container_of(ptr, type, member) ((type*)((char*)(ptr) - (unsigned long)(&((type*)0)->member)))
 
-#if !defined(CONFIG_QOSA_ASR1903_PLATFORM_FUNC) && !defined(CONFIG_QOSA_ASR160X_PLATFORM_FUNC) && !defined(CONFIG_QOSA_ASR1805_PLATFORM_FUNC)
+#if !defined(CONFIG_QOSA_ASR1903_PLATFORM_FUNC) && !defined(CONFIG_QOSA_ASR160X_PLATFORM_FUNC) && !defined(CONFIG_QOSA_ASR1803_PLATFORM_FUNC) && !defined(CONFIG_QOSA_ASR1805_PLATFORM_FUNC) && !defined(CONFIG_QOSA_UIS8360S_PLATFORM_FUNC)
 /* the type we use for storing a single boolean bit */
 #undef BIT
 #ifdef _MSC_VER
@@ -383,7 +393,7 @@ typedef bool bit;
 typedef unsigned int bit;
 #define BIT(x) bit x : 1
 #endif
-#endif /* CONFIG_QOSA_ASR1903_PLATFORM_FUNC || CONFIG_QOSA_ASR160X_PLATFORM_FUNC || CONFIG_QOSA_ASR1805_PLATFORM_FUNC */
+#endif /* CONFIG_QOSA_ASR1903_PLATFORM_FUNC || CONFIG_QOSA_ASR160X_PLATFORM_FUNC || CONFIG_QOSA_ASR1803_PLATFORM_FUNC || CONFIG_QOSA_ASR1805_PLATFORM_FUNC */
 
 #ifndef QOSA_LITTLE_ENDIAN
 #define QOSA_LITTLE_ENDIAN 1234

@@ -71,4 +71,9 @@
  */
 /* #undef CONFIG_QOSA_SIM_DIFF_USE_MPC_SIM_INIT */
 
+/**
+ * whether SIM card hot-swap (insertion) detection is supported (AT+QSIMDET)
+ */
+/* #undef CONFIG_QOSA_SIM_DET_SUPPORT */
+
 #endif /* __SIM_CONFIG__H__ */

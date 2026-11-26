@@ -38,8 +38,9 @@ typedef enum
  */
 typedef enum
 {
-    MPC_SIM_STATUS_CHANGE_CAUSE_NORMAL, /*!< Normal scenario */
-    MPC_SIM_STATUS_CHANGE_CAUSE_CFUN0,  /*!< Card disconnection caused by CFUN 0, need to report this cause */
+    MPC_SIM_STATUS_CHANGE_CAUSE_NORMAL,     /*!< Normal scenario */
+    MPC_SIM_STATUS_CHANGE_CAUSE_CFUN0,      /*!< Card disconnection caused by CFUN 0, need to report this cause */
+    MPC_SIM_STATUS_CHANGE_CAUSE_PSM_WAKEUP, /*!< Wakeup from psm,need to be re-read card information,not need to report */
 } mpc_sim_status_change_cause_e;
 
 /**
@@ -65,7 +66,12 @@ typedef enum
  * +-------------------------------+-----------------------------+-------------+--------+
  *
  */
-
+/**
+ * @brief 向 MS 层抛出 SIM 卡插入/拔出状态事件
+ * @param[in] simid  物理 SIM slot 号（0/1）
+ * @param[in] status 插入状态，qosa_sim_insert_stat_e：0 拔出、1 插入
+ */
+void mpc_post_sim_insert_status(qosa_uint8_t simid, qosa_uint8_t status);
 /**
  * @brief Get SIM card function block initialization status.
  *
@@ -100,6 +106,9 @@ int mpc_sim_read_insert_stat(qosa_uint8_t simid);
  * @return int
  */
 int mpc_sim_set_sim_hot_swap(qosa_uint8_t simid, qosa_sim_hot_swap_cfg_t* hot_swap_config);
+#if defined(CONFIG_QOSA_OEM_SE_FUNC)
+qosa_bool_t mpc_sim_is_nic_mode(void);
+#endif
 
 /**
  * @brief Get SIM card hot swap detection function configuration.
@@ -588,5 +597,57 @@ int mpc_sim_get_simwprotect_mode(qosa_uint8_t simid, mpc_cb_t cb);
  */
 int mpc_sim_set_simwprotect_mode(qosa_uint8_t simid, qosa_uint8_t enable, qosa_uint8_t bit_map, mpc_cb_t cb);
 
-#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+#ifdef CONFIG_QOSA_SIM_STK_FUNC
+/**
+ * @brief Send raw BER-TLV terminal response to SIM card (ETSI TS 102.223).
+ *
+ * @param[in] tr_data   Raw terminal response BER-TLV bytes.
+ * @param[in] tr_len    Length of @p tr_data in bytes.
+ * @return 0 on success, negative error code otherwise.
+ */
+int mpc_sim_stk_terminal_response(const qosa_uint8_t *tr_data, qosa_uint8_t tr_len);
+/**
+ * @brief Send STK ENVELOPE / Menu Selection command to SIM (ETSI TS 102.223 搂11.8.5).
+ *
+ * @param[in] item_id   Selected item identifier from the SETUP MENU.
+ * @return 0 on success, negative error code otherwise.
+ */
+int mpc_sim_stk_envelope_cmd(qosa_uint8_t item_id);
+#endif /* CONFIG_QOSA_SIM_STK_FUNC */
+
+/**
+ * @brief Set BIP mode
+ *
+ *  BIP (Bearer Independent Protocol) enable/disable configuration.
+ *
+ * @param[in] simid
+ *          - SIM ID
+ *
+ * @param[in] enable
+ *          - bip configuration. Whether to enable bip: 1 enabled, 0 disabled.
+ *
+ * @return qosa_sim_err_e
+ *       - Returns QOSA_SIM_ERR_OK on success
+ *       - Returns other values on failure
+ */
+int mpc_sim_set_bip_mode(qosa_uint8_t simid, qosa_bool_t enable);
+
+/**
+ * @brief Get BIP mode
+ *
+ *  BIP (Bearer Independent Protocol) enable/disable configuration.
+ *
+ * @param[in] simid
+ *          - SIM ID
+ *
+ * @param[out] enable
+ *          - bip configuration. Whether bip is enabled: 1 enabled, 0 disabled.
+ *
+ * @return qosa_sim_err_e
+ *       - Returns QOSA_SIM_ERR_OK on success
+ *       - Returns other values on failure
+ */
+int mpc_sim_get_bip_mode(qosa_uint8_t simid, qosa_bool_t* enable);
+
+#endif /* Wi-Fi platform exclusion */
 #endif

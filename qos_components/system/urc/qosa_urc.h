@@ -1,4 +1,4 @@
-﻿/*****************************************************************/ /**
+/*****************************************************************/ /**
 * @file urc.h
 * @brief URC (User Ringing Control) interface definitions
 * @author larson.li@quectel.com
@@ -158,12 +158,17 @@ typedef struct
 } qosa_ri_pulse_t;
 
 // Define the default value of the AT port
-#if defined(CONFIG_QOSA_UIS8852_PLATFORM_FUNC) || defined(CONFIG_QOSA_QT2131_PLATFORM_FUNC) || defined(QL_NB_SUPPROT)
-// The QT2131 currently only supports serial ports; it will be changed to USB with URC output as the default in the future.
+#if defined(CONFIG_QOSA_UIS8852_PLATFORM_FUNC) && defined(CONFIG_QOSA_AT_PORT_SUPPORT_USBAT)
+#define QOSA_URC_CONFIG_ATPINDEX_DEFAULT_VALUE QOSA_DEV_SIOLIB_USB_AT_PORT
+#elif defined(CONFIG_QOSA_UIS8852_PLATFORM_FUNC) || defined(QL_NB_SUPPORT)
 #define QOSA_URC_CONFIG_ATPINDEX_DEFAULT_VALUE QOSA_DEV_SIOLIB_UART1_PORT
+#elif defined(CONFIG_QOSA_OEM_DL_FUNC)&&defined(CONFIG_QOSA_OPENCPU_FUNC)&&defined(CONFIG_QOSA_VIRT_AT_FUNC)
+#define QOSA_URC_CONFIG_ATPINDEX_DEFAULT_VALUE QOSA_DEV_SIOLIB_VIRT_AT_PORT_0
 #else
 #define QOSA_URC_CONFIG_ATPINDEX_DEFAULT_VALUE QOSA_DEV_SIOLIB_USB_AT_PORT
 #endif
+
+#define QOSA_URC_CONFIG_CMUX_CHANNEL_DEFAULT_VALUE QOSA_URC_CMUX_CHANNEL2
 
 // Define default, maximum and minimum values for delay time, ms
 #define QOSA_URC_CONFIG_DELAY_TIME_DEFAULT_VALUE               0
@@ -352,6 +357,30 @@ qosa_urc_errcode_e qcm_urc_send_report(
     qosa_urc_option_t     option
 );
 
+
+/**
+ * @brief Get current URC cache status
+ *
+ * @param[in] qosa_uint32_t len
+ *            The length of the incoming URC data
+ *
+ * @return int
+ *         Returning QOSA_OK indicates that the internal URC buffer data is less than the maximum buffer capacity.
+ *         If a value other than QOSA_OK is returned, it indicates that the cache limit has been exceeded or another error has occurred.
+ *
+ */
+qosa_urc_errcode_e qcm_urc_get_cnt_full(qosa_uint32_t len);
+
+/**
+ * @brief Get current URC cache high watermark status.
+ *
+ * @return qosa_urc_errcode_e
+ *         Return QOSA_URC_SEND_RES_OK indicates that the internal URC buffer data is lower than the high watermark.
+ *         Return QOSA_URC_SEND_RES_CACHE_HIGH indicates that the cache high watermark has been reached.
+ *         Return others indicates another error has occurred.
+ */
+qosa_urc_errcode_e qcm_urc_get_cnt_high(void);
+
 /**
  * @brief ri out flush data if pending.
  *
@@ -360,7 +389,7 @@ qosa_urc_errcode_e qcm_urc_send_report(
  */
 qosa_bool_t qcm_urc_ri_out_flush_data_is_pending(qosa_at_dev_type_e dev_port);
 
-#ifdef CONFIG_UNIR_CMUX_SUPPORT
+#ifdef CONFIG_UNIRTOS_CMUX_SUPPORT
 /**
  * @brief Get CMUX URC reporting port
  *
@@ -368,7 +397,7 @@ qosa_bool_t qcm_urc_ri_out_flush_data_is_pending(qosa_at_dev_type_e dev_port);
  *
  * @return qurc_cmux_config_e
  */
-qcm_urc_cmux_config_e unir_cmux_get_urc_port(void);
+qosa_urc_cmux_config_e unir_cmux_get_urc_port(void);
 
 /**
  * @brief Set CMUX URC reporting port

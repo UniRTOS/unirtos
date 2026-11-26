@@ -129,7 +129,7 @@ extern void *__ctor_end;
 
 /* Modify this output filename if desired */
 /* Not used if you do not define GCOV_OPT_OUTPUT_BINARY_FILE */
-#define GCOV_OUTPUT_BINARY_FILENAME "UFS:gcov_output.bin"
+#define GCOV_OUTPUT_BINARY_FILENAME "/user/gcov_output.bin"
 
 /* Modify file headers, data type and functions, if needed */
 /* Not used if you do not define GCOV_OPT_OUTPUT_BINARY_FILE */
@@ -140,7 +140,7 @@ extern void *__ctor_end;
 #include <fcntl.h>
 #include <unistd.h>
 
-#define GCOV_BUF_SIZE 512   /* Can be increased based on system constraints: 512 / 1024 / 2048 */
+#define GCOV_BUF_SIZE 256   /* Can be increased based on system constraints: 512 / 1024 / 2048 */
 
 typedef struct {
     int     fd;

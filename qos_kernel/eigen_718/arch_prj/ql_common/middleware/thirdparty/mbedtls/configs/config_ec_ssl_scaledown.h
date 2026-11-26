@@ -29,20 +29,6 @@
 
 #if defined(FEATURE_APP_TLS_ENABLE) || defined(FEATURE_MQTT_TLS_ENABLE)
 
-#if defined(FEATURE_APP_TLS_ENABLE)
-#define MBEDTLS_SSL_MAX_CONTENT_LEN         (16*1024)   /**< Size of the input / output buffer */
-#elif defined(FEATURE_MQTT_TLS_ENABLE)
-#define MBEDTLS_SSL_MAX_CONTENT_LEN         (4*1024)   /**< Size of the input / output buffer */
-#else
-#define MBEDTLS_SSL_MAX_CONTENT_LEN         512     //(4*1024)   /**< Size of the input / output buffer */
-#endif
-
-#if defined(FEATURE_APP_TLS_ENABLE) || defined(FEATURE_MQTT_TLS_ENABLE)
-#define MBEDTLS_SSL_MAX_OUT_CONTENT_LEN         (4*1024)   /**< Size of the input / output buffer */
-#else
-#define MBEDTLS_SSL_MAX_OUT_CONTENT_LEN         512     //(4*1024)   /**< Size of the input / output buffer */
-#endif
-
 #if defined(FEATURE_PLAT_CTLWM2M_AT_ENABLE)
 #define MBEDTLS_SSL_PROTO_DTLS
 #define MBEDTLS_SSL_DTLS_ANTI_REPLAY
@@ -2650,9 +2636,9 @@
  * \{
  */
 
-/* MPI / BIGNUM options */
-#define MBEDTLS_MPI_WINDOW_SIZE            3 /**< Maximum windows size used. */
-#define MBEDTLS_MPI_MAX_SIZE            512 /**< Maximum number of bytes for usable MPIs. */
+/* MPI / BIGNUM options */ //defined in bignum.h
+//#define MBEDTLS_MPI_WINDOW_SIZE            3 /**< Maximum windows size used. */
+//#define MBEDTLS_MPI_MAX_SIZE            512 /**< Maximum number of bytes for usable MPIs. */
 
 /* CTR_DRBG options */
 //#define MBEDTLS_CTR_DRBG_ENTROPY_LEN               48 /**< Amount of entropy used per seed by default (48 with SHA-512, 32 with SHA-256) */
@@ -2667,9 +2653,9 @@
 //#define MBEDTLS_HMAC_DRBG_MAX_REQUEST        1024 /**< Maximum number of requested bytes per call */
 //#define MBEDTLS_HMAC_DRBG_MAX_SEED_INPUT      384 /**< Maximum size of (re)seed buffer */
 
-/* ECP options */
-#define MBEDTLS_ECP_MAX_BITS             521 /**< Maximum bit size of groups */
-#define MBEDTLS_ECP_WINDOW_SIZE            2 /**< Maximum window size used */
+/* ECP options */ //defined in ecp.h
+//#define MBEDTLS_ECP_MAX_BITS             521 /**< Maximum bit size of groups */
+//#define MBEDTLS_ECP_WINDOW_SIZE            2 /**< Maximum window size used */
 //#define MBEDTLS_ECP_FIXED_POINT_OPTIM      1 /**< Enable fixed-point speed-up */
 
 /* Entropy options */

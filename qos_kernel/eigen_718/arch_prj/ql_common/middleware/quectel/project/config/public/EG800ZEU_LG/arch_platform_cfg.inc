@@ -12,7 +12,6 @@ DRIVER_VPU_ENABLE            = y
 DRIVER_EEPROM_ENABLE         = n
 DRIVER_SPI_ENABLE            = y
 DRIVER_CAMERA_ENABLE         = y
-DRIVER_LCD_ENABLE            = y
 DRIVER_I2C_ENABLE            = y
 DRIVER_PSRAM_ENABLE          = n
 DRIVER_PCACHE_ENABLE         = y

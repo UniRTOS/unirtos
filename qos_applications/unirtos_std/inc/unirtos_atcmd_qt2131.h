@@ -34,5 +34,7 @@ void qstd_exec_nlogmodft_cmd(qosa_at_cmd_t *cmd);
 void qstd_exec_nvetosuperds_cmd(qosa_at_cmd_t *cmd);
 void qstd_exec_nuicc_cmd(qosa_at_cmd_t *cmd);
 void qstd_exec_nsimac_cmd(qosa_at_cmd_t *cmd);
-
+void qstd_exec_nforceburn_cmd(qosa_at_cmd_t *cmd);
+void qstd_exec_nbackup_cmd(qosa_at_cmd_t *cmd);
+void qstd_exec_nrecovery_cmd(qosa_at_cmd_t *cmd);
 #endif

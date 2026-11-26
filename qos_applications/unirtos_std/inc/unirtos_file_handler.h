@@ -97,7 +97,7 @@ typedef enum
     #ifdef CONFIG_QAPP_UNIRTOS_AT_QFMD5_CMD
     QFILE_QFMD5_CMD,
     #endif /* CONFIG_QAPP_UNIRTOS_AT_QFMD5_CMD */
-    
+
     QFILE_MAX_CMD
 } qfile_cmd_e_type;
 
@@ -338,5 +338,17 @@ typedef struct
  *       - Returns a negative number on execution failure
  */
 int unir_notify_file_task(qfile_cmd_e_type cmd, void *argv);
+
+/**
+ * @brief Deinitializes file upload parameters for the specified AT device port
+ *
+ * @param[in] qosa_at_dev_type_e dev_port
+ *          - AT device port corresponding to the upload context to be released
+ *
+ * @return int
+ *       - Returns 0 on successful execution
+ *       - Other return values indicate failure
+ */
+int file_hd_upload_param_deinit(qosa_at_dev_type_e dev_port);
 
 #endif /* __UNIRTOS_FILE_HANDLER_H__ */

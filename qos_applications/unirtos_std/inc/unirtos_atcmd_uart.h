@@ -41,4 +41,25 @@ void qstd_exec_ifc_cmd(qosa_at_cmd_t *cmd);
 void unir_exec_natspeed_cmd(qosa_at_cmd_t *cmd);
 #endif /* CONFIG_QAPP_UNIRTOS_AT_NATSPEED_CMD */
 
+#ifdef CONFIG_QAPP_UNIRTOS_AT_QDIAGPORT_CMD
+/**
+ * @brief AT+QDIAGPORT command handler (SET/READ/TEST). Switches the platform debug UART
+ *        between debug-log console and AT-command port, persisting the choice to NV.
+ *
+ * - AT+QDIAGPORT=<mode> : persist and apply the debug-UART role (0/1).
+ * - AT+QDIAGPORT?       : report the current mode as "+QDIAGPORT: <mode>".
+ * - AT+QDIAGPORT=?      : report the supported range "+QDIAGPORT: (0,1)".
+ *
+ * @note <mode> values are qosa_at_debug_uart_mode_e (qosa_at_sio.h). The switch itself is
+ *       deferred to the platform and applied after this command's response is emitted.
+ */
+void qstd_exec_qdiagport_cmd(qosa_at_cmd_t *cmd);
+
+/**
+ * @brief Power-on init: read the persisted QDIAGPORT mode (default console) and apply it
+ *        synchronously. Runs from unir_atcmd_init().
+ */
+void unir_qdiagport_at_init(void);
+#endif /* CONFIG_QAPP_UNIRTOS_AT_QDIAGPORT_CMD */
+
 #endif /* __UNIRTOS_ATCMD_UART_H__ */

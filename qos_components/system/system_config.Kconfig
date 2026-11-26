@@ -430,6 +430,34 @@ config QOSA_SERIAL_EVENT_TASK_SIZE
       Set the stack size for the SERIAL EVENT task.
 
 #/************************************************************************/
+#/* AT port platform capability configuration                            */
+#/************************************************************************/
+
+config QOSA_AT_PORT_SUPPORT_USBAT
+    bool "Support usbat AT port"
+    default y
+    help
+      Enable this option when the platform supports the usbat URC output port.
+
+config QOSA_AT_PORT_SUPPORT_USBMODEM
+    bool "Support usbmodem AT port"
+    default y
+    help
+      Enable this option when the platform supports the usbmodem URC output port.
+
+config QOSA_AT_PORT_SUPPORT_UART1
+    bool "Support uart1 AT port"
+    default y
+    help
+      Enable this option when the platform supports the uart1 URC output port.
+
+config QOSA_AT_PORT_SUPPORT_UART2
+    bool "Support uart2 AT port"
+    default n
+    help
+      Enable this option when the platform supports the uart2 URC output port.
+
+#/************************************************************************/
 #/* vfs file platform level configuration macro definitions              */
 #/************************************************************************/
 
@@ -609,6 +637,10 @@ config QOSA_LPM_PSM_SUPPORT_FUNC
 
 config QOSA_LPM_SLEEP_LOG_FUNC
     bool "Support for sleep log select"
+    default n
+
+config QOSA_LPM_RFR_LEGACY_FUNC
+    bool "Support for RRC fast release legacy mode"
     default n
 
 endmenu

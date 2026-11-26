@@ -26,6 +26,7 @@
 #define CEMM_PLMN_LIST_MAX_NUM          16
 #define CEMM_EHPLMN_LIST_GROUP_MAX_NUM  4
 #define CEMM_EHPLMN_LIST_ITEM_MAX_NUM   8
+#define CEMM_USER_FPLMN_LIST_MAX_NUM    3
 #define MAX_BAND_MASK_NUM               4       //the max number of UINT32 bandmask, i.e. the max supported band num is 32*MAX_BAND_MASK_NUM
 #define MAX_NAS_MSG_BITMAP_NUM          8       // equal to 256/32
 

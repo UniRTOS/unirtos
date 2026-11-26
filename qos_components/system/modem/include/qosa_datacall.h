@@ -426,6 +426,21 @@ typedef struct
     qosa_uint8_t                pdpid; /*!< PDPID */
     qosa_datacall_pdp_act_opt_e opt;   /*!< Activation or deactivation */
 } qosa_datacall_act_event_t;
+
+/**
+ * @struct qosa_datacall_secondary_pdp_act_event_t
+ * @brief Secondary PDP activation or deactivation event reporting parameters (caused by calling activation or deactivation API interface) -- corresponding event: QOSA_EVENT_NET_SECONDARY_PDP_ACT
+ *
+ */
+typedef struct
+{
+    qosa_uint8_t                simid; /*!< SIM card ID */
+    qosa_uint8_t                pdpid; /*!< PDPID */
+    qosa_datacall_pdp_act_opt_e opt;   /*!< Activation or deactivation */
+    qosa_uint8_t                pcid;  /*!< secondary_pdp ID */
+    qosa_uint8_t                cause; /*!< 1 ME cause, 0 NW cause */
+} qosa_datacall_secondary_pdp_act_event_t;
+
 /*-------------------------------------- pa --------------------------------------*/
 
 /*-------------------------------------- cnf --------------------------------------*/

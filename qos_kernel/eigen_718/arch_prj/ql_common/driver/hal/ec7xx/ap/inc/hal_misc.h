@@ -26,6 +26,31 @@ typedef enum _chip_id_sel
    CHIP_ID_FULLID         /**< read both  chip ID & revison ID */
 } chip_id_sel;
 
+/**
+  \brief  HAL_Get_ChipVER enum
+ */
+typedef enum _chip_version
+{
+   CHIP_VER_UNKNOWN = 0,
+   CHIP_VER_R1,      /**< 718M2 ORG */
+   CHIP_VER_R2,      /**< 718M2 ECO1 */
+   CHIP_VER_R3,      /**< 718M2 ECO2 */
+} chip_version;
+
+/**
+  \brief  HAL_Get_ChipVER enum
+ */
+typedef enum _efuse_bit_type
+{
+   DOWNLOAD_PIN_DIS = 0,/**< disable USB download triggered by boot pin press */
+  DOWNLOAD_DIS,        /**< disable both UART and USB download functions */
+   DEBUG_DIS,           /**< disable UART0 log */
+   SECURE_BOOT_EN,      /**< enable secure boot */
+   SECURE_DOWNLOAD_EN,  /**< enable agentboot verification */
+   USB_VPID_FLAG,       /**< use the VID/PIP burned in eFUSE */
+   ANTI_ROLLBACK_EN,    /**< enable BL anti rollback */
+   TAG_DIS,             /**< disable jtag/swd */
+} efuse_bit_type;
 
 /**
   \brief Get chip id
@@ -33,6 +58,34 @@ typedef enum _chip_id_sel
   \return              chip id value
  */
 uint32_t HAL_Get_ChipID(chip_id_sel sel);
+
+/**
+  \brief Get chip version
+  \return  chip_version enum
+ */
+uint32_t HAL_Get_ChipVER(void);
+
+/**
+  \fn        HAL_burn_aes_key(void)
+  \brief     hardware AES key programming.
+ */
+void HAL_burn_aes_key(void);
+
+/**
+  \fn           HAL_set_fuse_bit(en_fuse_bit_type typ)
+  \brief        burn efuse bit.
+  \param[in]    en_fuse_bit_type type
+  \returns      true if bit has burn, false the type cannot be burn or burn failed
+ */
+bool HAL_set_fuse_bit(efuse_bit_type type);
+
+/**
+  \fn           HAL_get_fuse_bit(en_fuse_bit_type typ)
+  \brief        read related efuse bit.
+  \param[in]    en_fuse_bit_type type
+  \returns      0:the bit not set or no such type; 1:the bit has set
+ */
+uint32_t HAL_get_fuse_bit(efuse_bit_type type);
 
 /**
   \fn        delay_us(uint32_t us)

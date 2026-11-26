@@ -21,6 +21,8 @@
 #if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_modem.h"
 
+typedef void (*ims_callback_t)(void *ctx, void *argv);
+
 #define QOSA_ERRCODE_IMS_BASE            (QOSA_COMPONENT_IMS << 16)
 
 
@@ -46,6 +48,14 @@ typedef enum ims_err
 /*-------------------------------------- basic struct --------------------------------------*/
 
 
+/*-------------------------------------- cnf --------------------------------------*/
+
+/**
+ * @struct qosa_ims_general_cnf_t
+ * @brief Ims general result return, used to return simple success or failure, no additional result return type
+ *
+ */
+typedef qosa_modem_general_cnf_t qosa_ims_general_cnf_t;
 
 
 /*-------------------------------------- event --------------------------------------*/

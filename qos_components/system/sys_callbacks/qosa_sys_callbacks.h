@@ -68,5 +68,14 @@ void qosa_run_qcm_urc_config_get_opt_func(qosa_urc_cfg_opt_e urc_cfg_opt, void *
  *
  */
 void qosa_virt_at_result_func(const char *data, qosa_uint32_t size);
-#endif//!(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC))
+
+struct pbuf;
+struct netif;
+/**
+ * @brief Used for system side to call opauth redirect function pointer
+ *
+ */
+int qosa_run_qcm_opauth_redirect_func(struct pbuf *p, struct netif *inp);
+
+#endif /* Wi-Fi platform exclusion */
 #endif /* __QOSA_SYS_CALLBACKS_H__ */

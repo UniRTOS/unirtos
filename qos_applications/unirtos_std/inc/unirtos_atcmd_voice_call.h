@@ -20,6 +20,7 @@
 #include "qosa_sys.h"
 #include "qosa_at_param.h"
 #include "qosa_at_config.h"
+#include "unirtos_atcmd_cfg.h"
 
 void unir_exec_atd_cmd(qosa_at_cmd_t *cmd);
 

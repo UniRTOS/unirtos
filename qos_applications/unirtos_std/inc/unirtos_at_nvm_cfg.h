@@ -50,8 +50,22 @@
 // AT command qdbgcfg config
 #define UNIRTOS_AT_QDBGCFG_CFG           UNIRTOS_CFG_JSON_ROOT_NODE_NAME"/qdbgcfg_cfg"
 
+#if defined(CONFIG_QOSA_OEM_SE_FUNC)
+// AT command qltact config (SE version: SIM2 / NIC removal switch)
+#define UNIRTOS_AT_QLTACT_CFG            UNIRTOS_CFG_JSON_ROOT_NODE_NAME"/qltact_cfg"
+#endif /* CONFIG_QOSA_OEM_SE_FUNC */
+
 // AT command qsvn config
 #define UNIRTOS_AT_QSVN_CFG              UNIRTOS_CFG_JSON_ROOT_NODE_NAME"/qsvn_cfg"
+
+// AT command qdiagport config
+#define UNIRTOS_AT_QDIAGPORT_CFG           UNIRTOS_CFG_JSON_ROOT_NODE_NAME"/qdiagport_cfg"
+
+// AT command qcfem config
+#define UNIRTOS_AT_QCFEM_CFG              UNIRTOS_CFG_JSON_ROOT_NODE_NAME"/qcfem_cfg"
+
+// AT command QARTC config
+#define UNIRTOS_AT_AGORA_RTC_CFG          UNIRTOS_CFG_JSON_ROOT_NODE_NAME"/agora_rtc_cfg"
 
 // clang-format on
 

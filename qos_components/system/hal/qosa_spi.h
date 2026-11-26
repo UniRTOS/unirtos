@@ -23,7 +23,38 @@
  * Macro Definition
  ===========================================================================*/
 #define QOSA_SPI_ERRCODE_BASE (QOSA_COMPONENT_API_SPI << 16)
+/** SPI slave stream event bitmap definitions. */
+/** Stream event: one frame slot has been received completely. */
+#define QOSA_SPI_STREAM_EVENT_FRAME_COMPLETE (1UL << 0)
+/** Stream event: RX timeout was reported by the driver. */
+#define QOSA_SPI_STREAM_EVENT_RX_TIMEOUT     (1UL << 1)
+/** Stream event: incoming data overwrote an unread slot. */
+#define QOSA_SPI_STREAM_EVENT_DATA_LOST      (1UL << 2)
 
+/**
+ * @brief SPI slave stream callback
+ *
+ * @param[in] event
+ *            - Stream event bitmap, see QOSA_SPI_STREAM_EVENT_xxx
+ * @param[in] slot
+ *            - Frame slot index related to the event
+ */
+typedef void (*qosa_spi_stream_callback_t)(qosa_uint32_t event, qosa_uint32_t slot);
+
+/**
+ * @brief SPI slave stream configuration
+ *
+ * RX/TX buffers point to contiguous ring buffers composed of frame_count
+ * slots, and each slot size is frame_size bytes.
+ */
+typedef struct
+{
+  void *rx_buffer;                       /*!< Base address of RX ring buffer */
+  const void *tx_buffer;                 /*!< Base address of TX ring buffer */
+  qosa_uint32_t frame_size;              /*!< Size of each frame slot in bytes */
+  qosa_uint32_t frame_count;             /*!< Total number of frame slots in the ring */
+  qosa_spi_stream_callback_t callback;   /*!< Callback invoked on stream events */
+} qosa_spi_stream_cfg_t;
 /*===========================================================================
  * Enum
 ===========================================================================*/
@@ -138,6 +169,7 @@ typedef enum
 {
     QOSA_SPI_WIDTH_1_BYTES = 0, /*!< SPI transmit data bit width is 1bytes(8bits) (default) */
     QOSA_SPI_WIDTH_2_BYTES,     /*!< SPI transmit data bit width is 2bytes(16bits) */
+    QOSA_SPI_WIDTH_9_BITS,      /*!< SPI transmit data bit width is 9bits (stored in 2bytes) */
 } qosa_spi_data_width_e;
 
 /**
@@ -162,6 +194,13 @@ typedef enum
                                                 - This configuration can be the value of @ref qosa_spi_bit_order_e */
     QOSA_SPI_IOCTL_SET_DATA_WIDTH,         /*!< Set data transmission bit width
                                                 - This configuration can be the value of @ref qosa_spi_data_width_e */
+    QOSA_SPI_IOCTL_SET_CALLBACK,           /*!< Set SPI user callback(void *)
+                                                - arg is directly the callback pointer, stored as-is into g_qosa_spi_config_info.cb */
+    QOSA_SPI_IOCTL_SLAVE_STREAM_START,           /*!< Start SPI slave stream mode(qosa_spi_stream_cfg_t *)
+                                                - arg is the pointer to @ref qosa_spi_stream_cfg_t, used to configure stream rx/tx buffer, frame size/count and callback */
+
+    QOSA_SPI_IOCTL_SLAVE_STREAM_STOP,            /*!< Stop SPI slave stream mode
+                                                - arg is not used, can be set to QOSA_NULL */
 } qosa_spi_ioctl_cmd_e;
 
 /**

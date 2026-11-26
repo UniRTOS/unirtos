@@ -861,13 +861,15 @@ typedef struct
 0: First packet of firmware download
 1: Firmware downloading
 2: Last packet of firmware download
+4: Internal deferred-update signal (not a real packet type)
 */
 typedef enum
 {
     QCM_LWM2M_FIRWARE_FIRST_PACKET_DATA = 0,
     QCM_LWM2M_FIRWARE_INTERMEDIATE_PACKET_DATA = 1,
     QCM_LWM2M_FIRWARE_LAST_PACKET_DATA = 2,
-    QCM_LWM2M_FIRWARE_ABNORMAL_PACKET_DATA = 3
+    QCM_LWM2M_FIRWARE_ABNORMAL_PACKET_DATA = 3,
+    QCM_LWM2M_FIRWARE_UPDATE_PENDING_PACKET_DATA = 4 /*!< Internal signal: server UPDATE received during verify, trigger deferred update flow */
 } qcm_lwm2m_firmware_package_e;
 
 /**

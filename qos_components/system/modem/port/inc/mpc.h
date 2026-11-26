@@ -76,6 +76,13 @@ typedef enum
     MPC_EVENT_IMS_RING_IND,
     MPC_EVENT_IMS_DISCONNECT_IND,
     MPC_EVENT_IMS_CONN_ID_IND,
+    MPC_EVENT_NW_EDRX_DYN_PARM_IND,
+    MPC_EVENT_DATACALL_SECONDARY_PDP_STATUS_IND, /*!< Secondary PDP status change IND, used for UniRTOS layer status synchronization when secondary PDP is supported */
+    MPC_EVENT_NW_DETACH_IND,
+#ifdef CONFIG_QOSA_SIM_STK_FUNC
+    MPC_EVENT_SIM_PROACTIVE_CMD_IND,
+    MPC_EVENT_SIM_STK_PROACTIVE_END_IND, /*!< SIM proactive command session end (CMI_SIM_PROACTIVE_CMD_END_IND) */
+#endif
 
     MPC_EVENT_MAX,
 } mpc_ind_e;

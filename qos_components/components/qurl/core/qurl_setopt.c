@@ -283,7 +283,7 @@ qurl_ecode_t qurl_setopt_for_core(qurl_core_ctrl_t *core_ptr, qurl_opt_e opt, va
                 }
                 qurl_memcpy(core_ptr->usr_cfg.password_ptr, password_ptr, qurl_strlen(password_ptr));
                 core_ptr->usr_cfg.password_ptr[qurl_strlen(password_ptr)] = 0x00;
-                qurl_logd("new password:[%s]\r\n", core_ptr->usr_cfg.password_ptr);
+                // qurl_logd("new password:[%s]\r\n", core_ptr->usr_cfg.password_ptr);
             }
             break;
         }

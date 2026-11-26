@@ -22,7 +22,7 @@
 
 #define QCM_GNSS_GSV_NUM            8
 #define QCM_GNSS_GSA_NUM            8
-#define QCM_GNSS_NMEA_LEN           128
+#define QCM_GNSS_NMEA_LEN           256 //128
 
 //GNSS AGPS Default Parameter Configuration
 #define QCM_GNSS_AGPS_URL_LEN       256
@@ -31,12 +31,19 @@
 #define QCM_GNSS_AGPS_PASSWORD_LEN  32
 
 //GNSS AGPS default AGPS server address URL
+#ifdef CONFIG_QOSA_QCX216_PLATFORM_FUNC
+#define QCM_GNSS_AGPS_URL_DEF       "http://elpo.airoha.com/EPO_GR_3_1.DAT?vendor=QUECTEL-TEST&project=4kn_0DxhWopmK6uRyZHcmsvxGg9sfuPXa3w2StXMDLO&device_id=1"
+//GNSS AGPS default AGPS server manufacturer ID, model ID, and password
+#define QCM_GNSS_AGPS_VENDOR_ID_DEF ""
+#define QCM_GNSS_AGPS_MODEL_ID_DEF  ""
+#define QCM_GNSS_AGPS_PASSWORD_DEF  ""
+#else
 #define QCM_GNSS_AGPS_URL_DEF       "http://quectel-api1.rx-networks.cn/rxn-api/locationApi/rtcm"
 //GNSS AGPS default AGPS server manufacturer ID, model ID, and password
 #define QCM_GNSS_AGPS_VENDOR_ID_DEF "wLgWwv6JQt"
 #define QCM_GNSS_AGPS_MODEL_ID_DEF  "Quectel"
 #define QCM_GNSS_AGPS_PASSWORD_DEF  "aFltUERDZzZxeTY5cEp2eA=="
-
+#endif
 // GNSS NTP
 #define QCM_GNSS_NTP_URL_LEN        256
 //GNSS NTP Default Server URL
@@ -110,7 +117,7 @@ typedef enum
 typedef enum
 {
     QCM_GNSS_RESET_COLD = 0, /*!< Cold start (full deletion)*/
-    QCM_GNSS_RESET_HOT  = 1, /*!< Warm start (no deletion)*/
+    QCM_GNSS_RESET_HOT  = 1, /*!< Hot  start (no deletion)*/
     QCM_GNSS_RESET_WARM = 2, /*!< Warm Start (Partial Deletion)*/
 } qcm_gnss_reset_type_e;
 
@@ -256,6 +263,8 @@ typedef struct
     qosa_uint8_t pdpcid; /*!< PDP Index ID*/
 
     /*!< Set GNSS chip cold/warm/hot start*/
+    /*!< The reset mode is now set through qcm_gnss_set_reset_mode.
+    The members here have no practical significance and are merely retained to ensure consistency between different versions of gnss nv cfg.*/
     qcm_gnss_reset_type_e reset_mode;
 
     //APFLASH and backup power cannot be enabled simultaneously.
@@ -304,9 +313,19 @@ qcm_gnss_err_e qcm_gnss_deinit(void);
 qcm_gnss_err_e qcm_gnss_start(void);
 
 /**
- * @brief Stop GNSS
+ * @brief Stop the current GNSS session, retaining initialization resources and configuration.
  *
- * @note Asynchronous interface, the success or failure of execution requires waiting for the QCM_GNSS_NOTIFY_STOP_EVT event notification from qcm_gnss_notify_cb
+ * @return QCM_GNSS_ERR_OK means the request was queued; wait for
+ *         QCM_GNSS_NOTIFY_STOP_EVT to determine whether shutdown succeeded.
+ * @note On successful completion, the chip is powered off, the sleep vote is
+ *       released, and location/NMEA/session state is cleared. Call start again
+ *       without init or set_cfg; each run restarts the configured fix count.
+ *       Background time synchronization/downloads may finish independently;
+ *       hardware injection is only allowed in an active session.
+ * @note Completion runs in the GNSS core task. Do not block or call deinit or
+ *       set_cfg from that callback. Queue control requests from an owner task.
+ *       Repeated stop is allowed. A failed stop remains retryable; use deinit
+ *       from the owner task when full resource destruction is required.
  */
 qcm_gnss_err_e qcm_gnss_stop(void);
 
@@ -359,6 +378,20 @@ qcm_gnss_err_e qcm_gnss_set_cfg(qcm_gnss_cfg_t *cfg);
  * @note This function is a synchronous interface that directly retrieves the corresponding CONFIG configuration information.
  */
 qcm_gnss_err_e qcm_gnss_get_cfg(qcm_gnss_cfg_t *cfg);
+
+/**
+ * @brief Set the GNSS reset mode
+ *
+ * @param[in] qcm_gnss_reset_type_e reset_mode
+ *            The reset type of GNSS
+ *
+ * @return qcm_gnss_err_e
+ *       - GNSS configuration successful returns QCM_GNSS_ERR_OK
+ *       - GNSS configuration failure returns other errors
+ *
+ * @note This function is an asynchronous interface; Used to set the reset mode of GNSS
+ */
+qcm_gnss_err_e qcm_gnss_set_reset_mode(qcm_gnss_reset_type_e reset_mode);
 
 /**
  * @brief Get GNSS status

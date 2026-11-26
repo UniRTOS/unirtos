@@ -42,6 +42,7 @@ typedef enum
  */
 typedef struct
 {
+    int           option_enable;    /*!< Configure whether the option is enabled */
     int           keepalive_enable; /*!< Configure whether the PDP keepalive function is enabled */
     int           pdp_cid;          /*!< Configure the PDP CID function to keep alive */
     int           sim_id;           /*!< Configure the SIM SID to be kept alive */

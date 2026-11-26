@@ -541,6 +541,14 @@ extern struct netif *netif_list;
 /** The default network interface. */
 extern struct netif *netif_default;
 
+#if defined(QL_FIREWALL_SUPPORT)
+#if LWIP_SINGLE_NETIF
+#define NETIF_FOREACH(netif) if (((netif) = netif_default) != NULL)
+#else /* LWIP_SINGLE_NETIF */
+#define NETIF_FOREACH(netif) for ((netif) = netif_list; (netif) != NULL; (netif) = (netif)->next)
+#endif /* LWIP_SINGLE_NETIF */
+#endif /* QL_FIREWALL_SUPPORT */
+
 void netif_init(void);
 
 struct netif *netif_add(struct netif *netif,
@@ -775,19 +783,19 @@ UINT64 NetifGetLoad(u8_t cid, NetifLoadType type);
 #ifdef UNIRTOS_LWIP_MODIFY
 /**
  * @brief 设置指定网卡 IPV4 mtu
- * 
+ *
  */
 s32_t quec_set_netif_pdp_mtu(u16_t mtu, char cid);
 
 /**
  * @brief 查询指定网卡 mtu
- * 
+ *
  */
 void quec_get_netif_pdp_mtu(char cid, s32_t *mtu, s32_t *mtu6);
 
 /**
  * @brief 设置指定网卡 IPV6 mtu
- * 
+ *
  */
 s32_t quec_set_netif_pdp_mtu6(u16_t mtu6, char cid);
 #endif /* UNIRTOS_LWIP_MODIFY */

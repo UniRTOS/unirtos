@@ -84,6 +84,24 @@ int mpc_usbnet_set_nat_mode(qosa_uint8_t simid, qosa_bool_t nat_mode, qosa_uint3
 int mpc_usbnet_get_nat_mode(qosa_uint8_t simid, qosa_bool_t *nat_mode, qosa_uint32_t *cid);
 
 /**
+ * @brief Set USBNET RI mode
+ *
+ * @param[in] ri_mode
+ *          - RI mode enable, 0 disable, 1 enable
+ * @return int
+ */
+int mpc_usbnet_set_usbnet_ri_mode(qosa_bool_t ri_mode);
+
+/**
+ * @brief Get USBNET RI mode configuration
+ *
+ * @param[out] ri_mode
+ *          - RI mode enable, 0 disable, 1 enable
+ * @return int
+ */
+int mpc_usbnet_get_usbnet_ri_mode(qosa_bool_t *ri_mode);
+
+/**
  * @brief Set USBNET application protocol, such as ECM, MBIM, RNDIS, NCM
  *
  * @param[in] simid

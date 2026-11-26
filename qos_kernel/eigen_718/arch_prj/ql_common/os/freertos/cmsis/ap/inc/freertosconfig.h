@@ -88,7 +88,7 @@
 //  <o>Timer queue length <0-1024>
 //  <i> Timer command queue length.
 //  <i> Default: 5
-#define configTIMER_QUEUE_LENGTH                32
+#define configTIMER_QUEUE_LENGTH                128
 
 //  <q>Use time slicing
 //  <i> Enable setting to use timeslicing.

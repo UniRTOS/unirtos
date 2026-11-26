@@ -321,18 +321,18 @@ qosa_dev_error_e qosa_dev_get_oem(char *oem, qosa_int32_t *len);
 
 /**
  * @brief Get customer firmware version information
- * 
- * This function is used to obtain the customer-customized firmware version string of the device. 
- * When the QUECTEL_OPEN_MODE_SUPPORT macro is defined, it calls the get_osa_dev_mob_cust_rev() 
+ *
+ * This function is used to obtain the customer-customized firmware version string of the device.
+ * When the QUECTEL_OPEN_MODE_SUPPORT macro is defined, it calls the get_osa_dev_mob_cust_rev()
  * function to get version information; otherwise it returns an empty string.
- * 
+ *
  * @param[out] version Pointer to buffer for storing customer firmware version information
  * @param[in/out] len Input as the length of the version buffer, output as the actual length of the retrieved version string
- * 
+ *
  * @return qosa_dev_error_e Error code
  * @retval QOSA_DEV_ERRID_SUCCESS Successfully obtained version information
  * @retval QOSA_DEV_ERRID_INVALID_PARAM Invalid parameters (version or len is NULL)
- * 
+ *
  * @note Caller must ensure the passed version buffer is large enough to accommodate the version string
  * @see get_osa_dev_mob_cust_rev()
  */
@@ -412,6 +412,7 @@ qosa_dev_error_e qosa_dev_get_temp_value(qosa_int32_t *temp_num);
 
 /**
  * @brief Get the chip ID of the module
+ * @note: The CPUID returned by the EIGEN platform does not guarantee uniqueness.
  *
  * @param[out] qosa_uint64_t *chip_id
  *          - Corresponding CPU ID information to set
@@ -553,6 +554,81 @@ qosa_dev_error_e qosa_dev_set_iptrace(qosa_uint32_t percent);
 
 void qosa_set_app_runing_start_addr(qosa_uint32_t qos_app_flash_start_addr, qosa_uint32_t qos_app_ram_start_addr);
 
+/**
+ * @brief Get device name
+ *
+ * @param[out] char **name
+ *          - Returns dynamically allocated device name string, caller must free
+ *
+ * @return int
+ *        - 0 if successful, non-zero if failed
+ */
+int qosa_dev_get_device_name(char **name);
+
+/**
+ * @brief Get firmware version date string
+ *
+ * @param[out] char **date
+ *          - Returns dynamically allocated date string, caller must free
+ *
+ * @return int
+ *        - 0 if successful, non-zero if failed
+ */
+int qosa_dev_get_version_date(char **date);
+
+/**
+ * @brief Get system uptime as formatted string
+ *
+ * @param[out] char *buf
+ *          - Buffer to store uptime string
+ * @param[in] unsigned int buf_len
+ *          - Buffer length
+ *
+ * @return int
+ *        - 0 if successful, non-zero if failed
+ */
+int qosa_dev_get_uptime_str(char *buf, unsigned int buf_len);
+
+/**
+ * @brief Get SIM card ICCID
+ *
+ * @param[out] char *iccid
+ *          - Buffer to store ICCID string
+ * @param[in] int buf_size
+ *          - Buffer size
+ *
+ * @return int
+ *        - 0 if successful, non-zero if failed
+ */
+int qosa_dev_get_iccid(char *iccid, int buf_size);
+
+/**
+ * @brief Register the optional callback executed before restoring device defaults.
+ * Applies only to qosa_webui_dev_restore_default(), not qosa_dev_filesystem_reset().
+ * Register once during application initialization, before any restore request can
+ * occur. There is no synchronization: do not replace or clear the callback during
+ * runtime. The callback code must remain valid for the application lifetime.
+ *
+ * @param[in] void (*callback)(void)
+ *          - Before-restore callback, or NULL for no callback. Runs synchronously in
+ *            the restoring task and may block for a bounded indication (~2 s).
+ *            Must not recursively call qosa_webui_dev_restore_default().
+ */
+void qosa_webui_dev_set_before_restore_callback(void (*callback)(void));
+
+/**
+ * @brief Invoke the optional before-restore callback, then restore device defaults.
+ * Call only from task context that permits blocking, without holding locks needed
+ * by the callback. Do not call from an ISR or a nonblocking timer/event callback.
+ * Callback registration must be complete before this function can be called.
+ * The registered indication may add about two seconds to the restore duration.
+ * No reboot is added by the callback mechanism; platform restore behavior remains.
+ *
+ * @return qosa_bool_t
+ *          - QOSA_TRUE on success, QOSA_FALSE on failure.
+ */
+qosa_bool_t qosa_webui_dev_restore_default(void);
+
 /*===========================================================================
  * CPU usage monitoring unified API
  *
@@ -616,5 +692,5 @@ qosa_int32_t qosa_cpu_usage_start(qosa_uint32_t period_ms, qosa_cpu_usage_cb_t c
  */
 qosa_int32_t qosa_cpu_usage_stop(void);
 
-#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+#endif /* Wi-Fi platform exclusion */
 #endif /* __QOSA_DEV_H__ */

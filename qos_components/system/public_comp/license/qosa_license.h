@@ -61,11 +61,12 @@ typedef enum
  */
 typedef enum
 {
-    QOSA_LIC_APP_MIN_TYPE = -1,  /*!< Minimum APP type value */
-    QOSA_LIC_APP_TEST1_TYPE = 0, /*!< Verified APP type 1 */
-    QOSA_LIC_APP_TEST2_TYPE,     /*!< Verified APP type 2 */
-    QOSA_LIC_APP_TEST3_TYPE,     /*!< Verified APP type 3 */
-    QOSA_LIC_APP_MAX_TYPE        /*!< Maximum APP type value */
+    QOSA_LIC_APP_MIN_TYPE = -1,              /*!< Minimum APP type value */
+    QOSA_LIC_APP_TEST1_TYPE = 0,             /*!< Verified APP type 1 */
+    QOSA_LIC_APP_TEST2_TYPE,                 /*!< Verified APP type 2 */
+    QOSA_LIC_APP_TEST3_TYPE,                 /*!< Verified APP type 3 */
+    QOSA_LIC_APP_CAMERA_WATER_METER_AI_TYPE, /*!< Camera water meter AI APP type */
+    QOSA_LIC_APP_MAX_TYPE                    /*!< Maximum APP type value */
 } qosa_license_app_type_t;
 
 /** Get APP ID callback function prototype */

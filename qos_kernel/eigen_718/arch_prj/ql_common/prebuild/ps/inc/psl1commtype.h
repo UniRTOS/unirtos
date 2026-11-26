@@ -96,7 +96,16 @@ typedef struct CerrRrcBarTimeCfgTag
 {
     //Used for cell barTime when RRC T300 expire
     UINT16              barTimeT300Expire;
-    //Used for cell barTime when occur RLF in Connection state
+    /*1> If barTimeRLF is 0:
+     *   UE will not bar cell if RLF happens in Connection state,
+     *   it will still trigger non-standard RLF when PHY unreliable is reported.
+     *2> If barTimeRLF is 1 ~ 0xFFFD:
+     *   UE will bar cell if RLF happens with configured barTime and trigger non-standard RLF when PHY unreliable is reported.
+     *3> If barTimeRLF is 0xFFFE:
+     *   UE will ingore PHY unreliable report in Connection state,
+     *   it will still bar cell if normal RLF happens with default barTime.
+     *4> If barTimeRLF is 0xFFFF:
+     *   UE will not bar cell if normal RLF happens and ingore PHY unreliable report in Connection state. */
     UINT16              barTimeRLF;
     //Used for cell barTime where reception of MIB/SIB1 fail(CRC, decode) during cell reselection
     UINT16              barTimeReselCrcErr;
@@ -139,6 +148,15 @@ typedef struct PsCfgCerrcUePowerClassSetting_Tag
     PsCfgConfigedUePowerClass    bandAndPowerClass[RRC_PHY_SUPPORT_BAND_NUM];
 }PsCfgCerrcUePowerClassSetting;     // 68 bytes
 
+typedef struct CerrcDuplexPreferCfg_Tag
+{
+    UINT8           preferMode;     //CmiDuplexPreferMode, 0 - disable, 1 - FDD prefer, 2 - TDD prefer
+    UINT8           csScoreAdd;     //range [0-100], PHY will add the score to FDD/TDD frequency point score during cell search procedure
+    UINT8           rsrpOffset;     //rsrp offset to all cells for the corresponding duplex mode
+                                    //(e.g. if current duplex prefer is FDD, all FDD cells apply with the rsrp offset value).
+    UINT8           snrOffset;      //snr offset to all cells for the corresponding duplex mode
+                                    //(e.g. if current duplex prefer is FDD, all FDD cells apply with the snr offset value).
+}CerrcDuplexPreferCfg;
 
 #endif
 

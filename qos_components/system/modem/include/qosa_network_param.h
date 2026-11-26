@@ -31,6 +31,9 @@
 #define QOSA_SS_SINR_REPORT(x)    qosa_nr_sinr_report((x))
 #define QOSA_SS_SINR_MEAS(x)      qosa_nr_sinr_meas((x))
 
+#define QOSA_SS_RSSI_REPORT(x)    qosa_nr_rssi_report((x))
+#define QOSA_SS_RSSI_MEAS(x)      qosa_nr_rssi_meas((x))
+
 #define QOSA_RSRP_REPORT(x)       qosa_lte_rsrp_report((x))
 #define QOSA_RSRP_MEAS(x)         qosa_lte_rsrp_meas((x))
 
@@ -121,12 +124,50 @@ typedef struct
     const char   *text;  /*!< Reject cause text */
 } qosa_reject_cause_mapping_t;
 
+/**
+ * @struct qosa_autoapn_entry_t
+ * @brief AutoAPN table entry: one MCC/MNC maps to one APN profile
+ */
+typedef struct
+{
+    qosa_uint16_t mcc;       /*!< Mobile country code */
+    qosa_uint16_t mnc;       /*!< Mobile network code */
+    const char   *apn;       /*!< APN string, NULL means use network default */
+    const char   *username;  /*!< Auth username, NULL means no auth */
+    const char   *password;  /*!< Auth password, NULL means no auth */
+    qosa_uint8_t  auth_type; /*!< qosa_pdp_auth_type_e: 0=NONE 1=PAP 2=CHAP */
+    qosa_uint8_t  pdp_type;  /*!< qosa_pdp_type_e: 1=IPv4 2=IPv6 3=IPv4v6 */
+} qosa_autoapn_entry_t;
+
+/**
+ * @struct qosa_autoapn_mcc_map_t
+ * @brief AutoAPN MCC to list span mapping table
+ */
+typedef struct
+{
+    qosa_uint16_t               mcc;           /*!< Mobile country code */
+    const qosa_autoapn_entry_t *apn_list;    /*!< AutoAPN list for this MCC */
+    qosa_uint32_t               apn_list_size; /*!< Entry count for this MCC */
+} qosa_autoapn_mcc_map_t;
+
+/**
+ * @struct qosa_mccmnc_t
+ * @brief MCC/MNC pair, used by the 3-digit MNC fallback tables
+ */
+typedef struct
+{
+    qosa_uint16_t mcc; /*!< Mobile country code */
+    qosa_uint16_t mnc; /*!< Mobile network code */
+} qosa_mccmnc_t;
+
 int qosa_nr_rsrp_meas(qosa_rsrp_t x);
 int qosa_nr_rsrp_report(qosa_rsrp_t x);
 int qosa_nr_rsrq_meas(qosa_rsrq_t x);
 int qosa_nr_rsrq_report(qosa_rsrq_t x);
 int qosa_nr_sinr_meas(qosa_sinr_t x);
 int qosa_nr_sinr_report(qosa_sinr_t x);
+int qosa_nr_rssi_meas(qosa_rssi_t x);
+int qosa_nr_rssi_report(qosa_rssi_t x);
 int qosa_lte_rsrp_meas(qosa_rsrp_t x);
 int qosa_lte_rsrp_report(qosa_rsrp_t x);
 int qosa_lte_rsrq_meas(qosa_rsrq_t x);

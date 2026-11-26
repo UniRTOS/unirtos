@@ -63,6 +63,7 @@ typedef struct qosa_ip_addr qosa_ip_addr_t;
 #define QOSA_IP_ADDR_AF_INET6 10
 #endif
 
+#define qosa_ip_addr_inet_pton(af, src, dst) inet_pton(af, src, dst)
 #define qosa_ip_addr_inet_ntop(ip_vsn, src, dest, size) inet_ntop(ip_vsn, src, dest, size)
 // #define qosa_ip_addr_ntoa(addr) ((addr)->ip_vsn == QOSA_PDP_IPV4) ? inet_ntoa((addr)->apptcpip_ipv4_addr) : inet6_ntoa((addr)->apptcpip_ipv6_addr)
 

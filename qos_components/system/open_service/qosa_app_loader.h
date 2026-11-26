@@ -37,8 +37,13 @@ extern "C" {
 
 #define QOSA_APP_IMG_MAGIC "QOS-APP"
 
-// open app entry head structure 
-// structure size is 96 bytes
+// open app entry head structure
+// NOTE: the address fields are pointer-width (qosa_uptr) so that a link-time
+//       constant address can be emitted on both 32-bit and 64-bit targets.
+//       => the layout is pointer-size dependent (32-bit target: 96 bytes,
+//          64-bit target: 144 bytes). Never hardcode the size or field offsets;
+//          writer (qcm_app_entry.c) and readers (qosa_app_init.c / qosa_app_loader.c)
+//          must all include this header.
 typedef struct
 {
 	char	magic[16];
@@ -48,11 +53,11 @@ typedef struct
 	int     (*qosa_app)(void *arvg);
 	int     *app_config;
 	int     *system_infomation;
-	qosa_int32_t qos_app_rom_code_start_addr;       /* app rom code section start address*/
-	qosa_int32_t qos_app_rom_rw_start_addr;         /* app rom rw section start address*/
-	qosa_int32_t qos_app_ram_start_addr;            /* app ram  section start address*/
-	qosa_int32_t qos_app_ram_rw_end_addr;           /* app ram rw section start addres*/
-	qosa_int32_t qos_app_ram_end_addr;              /* app rom code section start address*/
+	qosa_uptr qos_app_rom_code_start_addr;          /* app rom code section start address*/
+	qosa_uptr qos_app_rom_rw_start_addr;            /* app rom rw section start address*/
+	qosa_uptr qos_app_ram_start_addr;               /* app ram  section start address*/
+	qosa_uptr qos_app_ram_rw_end_addr;              /* app ram rw section end address*/
+	qosa_uptr qos_app_ram_end_addr;                 /* app ram  section end address*/
 	int  reserver[9];                               /* reserve for future*/ 
 }qosa_app_entry_t;
 

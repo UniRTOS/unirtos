@@ -5,6 +5,8 @@ import os
 from pathlib import Path
 import shutil
 
+from unirtos_platform_artifact import ensure_a04_gccout
+
 from unirtos_common import (
     ARM_ARCH_LIST,
     DEFAULT_BUILD_MODEMAPP,
@@ -70,9 +72,9 @@ def print_make_usage():
     print("  unirtos.exe make --project <project> --version <version> [--type all|app] [--operation new|r] [--jobs N]")
     print("")
     print("Notes:")
-    print("  default type is all; default operation is new")
-    print("  app path is verified in the current environment")
-    print("  all path is implemented but not validated in the current environment")
+    print("  default type is app; default operation is r")
+    print("  A04 EC718 platform and application compilation await user validation")
+    print("  EC718 all builds must run in the separate complete producer, not this lightweight SDK")
     print("")
     print("Examples:")
     print("  unirtos.exe make EC800ZCN_LA EC800ZCNLA0E423_BETA000034")
@@ -245,6 +247,9 @@ def clean_for_new(output_root: Path):
 
 
 def ensure_gccout_for_app(sdk_root_path: Path, output_root: Path, arch: str, project: str, toolchain_root: Path):
+    if arch == "eigen_718":
+        ensure_a04_gccout(sdk_root_path, output_root, project, toolchain_root)
+        return
     firmware_pack = firmware_pack_path(output_root)
     gccout_dir = gccout_dir_path(output_root)
     gccout_libraries = gccout_dir / "libraries"
@@ -413,6 +418,12 @@ def handle_make(args):
 
     source_root = sdk_root()
     arch = resolve_build_arch(source_root, config.project)
+    if arch == "eigen_718" and config.build_type != "app":
+        raise BuildError(
+            "This is the A04 EC718 lightweight SDK. Run the complete private producer first; "
+            "see A04_BUILD_GUIDE.md. Platform production sources are intentionally absent here.",
+            EXIT_PREREQUISITE_ERROR,
+        )
     output_root = resolve_output_root()
     external_app_mode = bool(os.environ.get("UNIRTOS_EXTERNAL_APP_DIR", "").strip())
     toolchain_root = resolve_toolchain_root()
@@ -432,7 +443,7 @@ def handle_make(args):
     if config.build_type == "all":
         info("warning: all path is implemented but not validated in the current environment")
     else:
-        info("using verified app build path")
+        info("using app-only build path (A04 compilation awaits user validation)")
 
     # new does a clean build; r keeps the build tree when the cache is still reusable.
     if config.operation == "new":

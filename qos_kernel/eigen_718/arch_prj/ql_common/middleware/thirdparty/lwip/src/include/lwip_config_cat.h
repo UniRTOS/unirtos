@@ -615,9 +615,17 @@
  * If the application sends a lot of data out of ROM (or other static memory),
  * this should be set high.
  */
+#ifdef QL_OEM_VERSION_SSY
+#if !defined MEMP_NUM_PBUF || defined __DOXYGEN__
+
+#define MEMP_NUM_PBUF                   128
+
+#endif
+#else
 #if !defined MEMP_NUM_PBUF || defined __DOXYGEN__
 #define MEMP_NUM_PBUF                   12
 #endif
+#endif /* QL_OEM_VERSION_SSY */
 
 /**
  * MEMP_NUM_RAW_PCB: Number of raw connection PCBs
@@ -658,7 +666,13 @@
  */
 #if !defined MEMP_NUM_TCP_SEG || defined __DOXYGEN__
 #ifdef UNIRTOS_LWIP_MODIFY
+#ifdef QL_OEM_VERSION_SSY
+
+#define MEMP_NUM_TCP_SEG                768
+
+#else
 #define MEMP_NUM_TCP_SEG                28
+#endif /* QL_OEM_VERSION_SSY */
 #else /** UNIRTOS_LWIP_MODIFY **/
 #define MEMP_NUM_TCP_SEG                13
 #endif /** UNIRTOS_LWIP_MODIFY **/
@@ -1040,7 +1054,11 @@
  * numbers after booting a device.
  */
 #if !defined LWIP_RANDOMIZE_INITIAL_LOCAL_PORTS || defined __DOXYGEN__
+#ifdef UNIRTOS_LWIP_MODIFY
+#define LWIP_RANDOMIZE_INITIAL_LOCAL_PORTS 1
+#else /* UNIRTOS_LWIP_MODIFY */
 #define LWIP_RANDOMIZE_INITIAL_LOCAL_PORTS 0
+#endif /* UNIRTOS_LWIP_MODIFY */
 #endif
 /**
  * @}
@@ -1610,17 +1628,40 @@
  * TCP_SND_BUF: TCP sender buffer space (bytes).
  * To achieve good performance, this should be at least 2 * TCP_MSS.
  */
+#ifdef QL_OEM_VERSION_SSY
+
 #if !defined TCP_SND_BUF || defined __DOXYGEN__
 #define TCP_SND_BUF                     (6 * TCP_MSS)
 #endif
 
 /**
+ * TCP_SND_BUF_MAX: Maximum TCP sender buffer space (bytes).
+ */
+#if !defined TCP_SND_BUF_MAX || defined __DOXYGEN__
+#define TCP_SND_BUF_MAX                 (183 * TCP_MSS)
+#endif
+
+#else
+#if !defined TCP_SND_BUF || defined __DOXYGEN__
+#define TCP_SND_BUF                     (6 * TCP_MSS)
+#endif
+#endif /* QL_OEM_VERSION_SSY */
+
+/**
  * TCP_SND_QUEUELEN: TCP sender buffer space (pbufs). This must be at least
  * as much as (2 * TCP_SND_BUF/TCP_MSS) for things to work.
  */
+#ifdef QL_OEM_VERSION_SSY
+#if !defined TCP_SND_QUEUELEN || defined __DOXYGEN__
+
+#define TCP_SND_QUEUELEN                ((2 * (TCP_SND_BUF_MAX) + (TCP_MSS - 1)) / (TCP_MSS))
+
+#endif
+#else
 #if !defined TCP_SND_QUEUELEN || defined __DOXYGEN__
 #define TCP_SND_QUEUELEN                ((2 * (TCP_SND_BUF) + (TCP_MSS - 1))/(TCP_MSS))
 #endif
+#endif /* QL_OEM_VERSION_SSY */
 
 /**
  * TCP_SNDLOWAT: TCP writable space (bytes). This must be less than

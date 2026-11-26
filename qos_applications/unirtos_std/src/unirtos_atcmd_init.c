@@ -36,6 +36,9 @@ extern void unirtos_camera_at_init(void);
 
 #ifdef CONFIG_QAPP_UNIRTOS_SIM_AT_FUNC
 extern void unir_sim_at_init(void);
+#ifndef CONFIG_QOSA_SMS_FUNC
+extern void unirtos_sms_urc_init(void);
+#endif /* !CONFIG_QOSA_SMS_FUNC */
 #endif /* CONFIG_QAPP_UNIRTOS_SIM_AT_FUNC */
 
 #ifdef CONFIG_QAPP_UNIRTOS_AT_QVSIM_FUNC
@@ -53,6 +56,10 @@ extern void unir_nw_at_init(void);
 #ifdef CONFIG_QAPP_UNIRTOS_USBNET_AT_FUNC
 extern void unirtos_usbnet_at_init(void);
 #endif /* CONFIG_QAPP_UNIRTOS_USBNET_AT_FUNC */
+
+#ifdef CONFIG_QAPP_UNIRTOS_CMUX_AT_FUNC
+extern void unirtos_cmux_at_init(void);
+#endif /* CONFIG_QAPP_UNIRTOS_CMUX_AT_FUNC */
 
 #ifdef CONFIG_QAPP_UNIRTOS_TCPIP_AT_FUNC
 extern void unir_tcpip_at_init(void);
@@ -110,6 +117,10 @@ extern void qosa_qindcfg_init(void);
 extern void unir_lbs_init(void);
 #endif /* CONFIG_QAPP_UNIRTOS_LBS_AT_FUNC */
 
+#ifdef CONFIG_QAPP_UNIRTOS_FIREWALL_AT_FUNC
+extern void unir_firewall_at_init(void);
+#endif /* CONFIG_QAPP_UNIRTOS_FIREWALL_AT_FUNC */
+
 #ifdef CONFIG_QAPP_UNIRTOS_MODEM_AT_BYPASS_FUNC
 extern void qstd_modem_at_bypass_init(void);
 #endif /* CONFIG_QAPP_UNIRTOS_MODEM_AT_BYPASS_FUNC */
@@ -126,6 +137,14 @@ extern void unir_lpm_init(void);
 extern void unir_qdbgcfg_atcmd_init(void);
 #endif /* CONFIG_QAPP_UNIRTOS_AT_QDBGCFG_CMD */
 
+#ifdef CONFIG_QAPP_UNIRTOS_AT_QDIAGPORT_CMD
+extern void unir_qdiagport_at_init(void);
+#endif /* CONFIG_QAPP_UNIRTOS_AT_QDIAGPORT_CMD */
+
+#ifdef CONFIG_QAPP_UNIRTOS_AT_QCLI_CMD
+extern void qstd_qcli_at_init(void);
+#endif /* CONFIG_QAPP_UNIRTOS_AT_QCLI_CMD */
+
 #ifdef CONFIG_QAPP_UNIRTOS_FTM_AT_FUNC
 extern void qstd_exec_ftm_at_init(void);
 #endif /* CONFIG_QAPP_UNIRTOS_FTM_AT_FUNC */
@@ -137,6 +156,10 @@ extern void unir_dmhttp_at_auto_reg(void);
 #ifdef CONFIG_QAPP_UNIRTOS_AT_FLASH_TEST_CMD
 extern void unir_flash_test_at_init(void);
 #endif /* CONFIG_QAPP_UNIRTOS_AT_FLASH_TEST_CMD */
+
+#ifdef CONFIG_QAPP_UNIRTOS_AT_QCPULOAD_CMD
+extern void unir_cpuload_at_init(void);
+#endif /* CONFIG_QAPP_UNIRTOS_AT_QCPULOAD_CMD */
 
 #ifdef CONFIG_QAPP_UNIRTOS_AT_QESIM_CMD
 extern void ql_esim_service_start(void);
@@ -180,11 +203,28 @@ extern void unir_datacall_at_init(void);
 #ifdef CONFIG_QAPP_UNIRTOS_IMS_AT_FUNC
 extern void unir_ims_at_init(void);
 #endif /* CONFIG_QAPP_UNIRTOS_IMS_AT_FUNC */
+
+#ifdef CONFIG_QAPP_UNIRTOS_MIFI_APP_FUNC
+extern void unir_mifi_app_init(void);
+#endif /* CONFIG_QAPP_UNIRTOS_MIFI_APP_FUNC */
+
+#ifdef CONFIG_QAPP_UNIRTOS_AGORA_RTC_AT_FUNC
+extern void qstd_exec_agora_rtc_init(void);
+#endif /* CONFIG_QAPP_UNIRTOS_AGORA_RTC_AT_FUNC */
+
+#if (defined(CONFIG_QOSA_EIGEN_PLATFORM_FUNC) || defined(CONFIG_QOSA_QCX_PLATFORM_FUNC)) && defined(CONFIG_QAPP_UNIRTOS_AT_QCFEM_CMD)
+extern void qstd_qcfem_boot_at_init(void);
+#endif /* (CONFIG_QOSA_EIGEN_PLATFORM_FUNC || CONFIG_QOSA_QCX_PLATFORM_FUNC) && CONFIG_QAPP_UNIRTOS_AT_QCFEM_CMD */
+
 /**
  * @brief UniRTOS AT Command Initialization Interface
  */
 void unir_atcmd_init(void)
 {
+#ifdef CONFIG_QAPP_UNIRTOS_MODEM_AT_BYPASS_FUNC
+    qstd_modem_at_bypass_init();
+#endif /* CONFIG_QAPP_UNIRTOS_MODEM_AT_BYPASS_FUNC */
+
     // Load and register ATCMD table
     qosa_at_parser_add_cust_at((const qosa_at_desc_t *)unir_img_at_desc, QOSA_ARRAY_SIZE(unir_img_at_desc));
 
@@ -214,6 +254,9 @@ void unir_atcmd_init(void)
 
 #ifdef CONFIG_QAPP_UNIRTOS_SIM_AT_FUNC
     unir_sim_at_init();
+#ifndef CONFIG_QOSA_SMS_FUNC
+    unirtos_sms_urc_init();
+#endif /* !CONFIG_QOSA_SMS_FUNC */
 #endif /* CONFIG_QAPP_UNIRTOS_SIM_AT_FUNC */
 
 #ifdef CONFIG_QAPP_UNIRTOS_AT_QVSIM_FUNC
@@ -232,9 +275,9 @@ void unir_atcmd_init(void)
     unirtos_usbnet_at_init();
 #endif /* CONFIG_QAPP_UNIRTOS_USBNET_AT_FUNC */
 
-#ifdef CONFIG_QAPP_UNIRTOS_MODEM_AT_BYPASS_FUNC
-    qstd_modem_at_bypass_init();
-#endif /* CONFIG_QAPP_UNIRTOS_MODEM_AT_BYPASS_FUNC */
+#ifdef CONFIG_QAPP_UNIRTOS_CMUX_AT_FUNC
+    unirtos_cmux_at_init();
+#endif /* CONFIG_QAPP_UNIRTOS_CMUX_AT_FUNC */
 
 #ifdef CONFIG_QAPP_UNIRTOS_TCPIP_AT_FUNC
     unir_tcpip_at_init();  //AT APP should be initialized after TCPIP_APP
@@ -304,6 +347,14 @@ void unir_atcmd_init(void)
     unir_qdbgcfg_atcmd_init();
 #endif /* CONFIG_QAPP_UNIRTOS_AT_QDBGCFG_CMD */
 
+#ifdef CONFIG_QAPP_UNIRTOS_AT_QDIAGPORT_CMD
+    unir_qdiagport_at_init();
+#endif /* CONFIG_QAPP_UNIRTOS_AT_QDIAGPORT_CMD */
+
+#ifdef CONFIG_QAPP_UNIRTOS_AT_QCLI_CMD
+    qstd_qcli_at_init();
+#endif /* CONFIG_QAPP_UNIRTOS_AT_QCLI_CMD */
+
 #ifdef CONFIG_QAPP_UNIRTOS_FTM_AT_FUNC
     qstd_exec_ftm_at_init();
 #endif /* CONFIG_QAPP_UNIRTOS_FTM_AT_FUNC */
@@ -315,6 +366,10 @@ void unir_atcmd_init(void)
 #ifdef CONFIG_QAPP_UNIRTOS_AT_FLASH_TEST_CMD
     unir_flash_test_at_init();
 #endif /* CONFIG_QAPP_UNIRTOS_AT_FLASH_TEST_CMD */
+
+#ifdef CONFIG_QAPP_UNIRTOS_AT_QCPULOAD_CMD
+    unir_cpuload_at_init();
+#endif /* CONFIG_QAPP_UNIRTOS_AT_QCPULOAD_CMD */
 
 #ifdef CONFIG_QAPP_UNIRTOS_AT_QESIM_CMD
     ql_esim_service_start();
@@ -351,6 +406,28 @@ void unir_atcmd_init(void)
 #ifdef CONFIG_QAPP_UNIRTOS_IMS_AT_FUNC
     unir_ims_at_init();
 #endif /* CONFIG_QAPP_UNIRTOS_IMS_AT_FUNC */
+
+#ifdef CONFIG_QOSA_OEM_SE_FUNC
+    extern void unir_lt_tcp_nv_restore(void);
+    unir_lt_tcp_nv_restore();
+#endif /* CONFIG_QOSA_OEM_SE_FUNC */
+
+#ifdef CONFIG_QAPP_UNIRTOS_MIFI_APP_FUNC
+    unir_mifi_app_init();
+#endif /* CONFIG_QAPP_UNIRTOS_MIFI_APP_FUNC */
+
+#ifdef CONFIG_QAPP_UNIRTOS_FIREWALL_AT_FUNC
+    unir_firewall_at_init();
+#endif /* CONFIG_QAPP_UNIRTOS_FIREWALL_AT_FUNC */
+
+#ifdef CONFIG_QAPP_UNIRTOS_AGORA_RTC_AT_FUNC
+    qstd_exec_agora_rtc_init();
+#endif /* CONFIG_QAPP_UNIRTOS_AGORA_RTC_AT_FUNC */
+
+#if (defined(CONFIG_QOSA_EIGEN_PLATFORM_FUNC) || defined(CONFIG_QOSA_QCX_PLATFORM_FUNC)) && defined(CONFIG_QAPP_UNIRTOS_AT_QCFEM_CMD)
+    qstd_qcfem_boot_at_init();
+#endif /* (CONFIG_QOSA_EIGEN_PLATFORM_FUNC || CONFIG_QOSA_QCX_PLATFORM_FUNC) && CONFIG_QAPP_UNIRTOS_AT_QCFEM_CMD */
+
 }
 
 /**

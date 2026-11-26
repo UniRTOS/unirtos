@@ -12,6 +12,13 @@ config UNIRTOS_PDP_TASK_STACK_SIZE
     help
       Set the stack size for the PDP notification event handling task.
 
+# // Modem AT command processing task
+config UNIRTOS_MODEM_AT_TASK_STACK_SIZE
+    int "Stack size for modem AT command processing task"
+    default 4096
+    help
+      Set the stack size for the modem AT command processing task.
+
 # // SMTP QSMTPPUT stack space size
 config UNIRTOS_SMTP_AT_PUT_STACK_SIZE
     int "Stack size for SMTP QSMTPPUT task"
@@ -320,6 +327,11 @@ config UNIRTOS_QFOTADL_USE_FILE_ROOT_SYSTEM
     bool "Use file root system to store the firmware image"
     default y
 
+# // QNTP uses NB parameters
+config CONFIG_UNIRTOS_QNTP_USE_NB_PARAM
+    bool "QNTP uses NB parameters"
+    default n
+
 config UNIRTOS_SSL_MFL_DEFAULT_SUPPORT
     int "ssl whether to enable mfl by default"
     default 0
@@ -328,9 +340,19 @@ config UNIRTOS_SSL_MFL_SIZE_DEFAULT
     int "ssl mfl max size"
     default 4
 
+# // AT+QFREAD CONNECT character is emitted along with the data.
+config UNIRTOS_QFREAD_CONNECT_REPORT_WITH_DATA
+    bool "AT+QFREAD CONNECT character is emitted along with the data."
+    default n
+
 # // AT+QHTTPCFG custom header display character style
 config UNIRTOS_QHTTPCFG_CUSTOM_HEADER_VIEW_TYPE
     bool "AT+QHTTPCFG custom header display character style"
+    default n
+
+# // AT+QHTTPREAD CONNECT character is emitted along with the data.
+config UNIRTOS_QHTTPREAD_CONNECT_REPORT_WITH_DATA
+    bool "AT+QHTTPREAD CONNECT character is emitted along with the data."
     default n
 
 # // Configure the maximum number of tcpip socket connections
@@ -414,7 +436,8 @@ config UNIRTOS_CGPADDR_ACTIVE_CID_ONLY
 # // QURCCFG test command whether to display all string, platform differences
 config UNIRTOS_QURCCFG_SHOW_UART2_STRING
     bool "Whether QURCCFG displays uart2 string"
-    default n
+    depends on QOSA_AT_PORT_SUPPORT_UART2
+    default y
 
 # // QURCCFG test command whether to display all string, platform differences
 config UNIRTOS_QURCCFG_SHOW_ALL_STRING

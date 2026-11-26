@@ -24,7 +24,42 @@
 #include "qosa_ip_addr.h"
 #include "qosa_nvitem.h"
 
-#define QOSA_CLAT_FQDN_LEN 64
+/*========================================================================
+ *  Marco Definition
+ *========================================================================*/
+
+/** Maximum length of FQDN string for CLAT configuration */
+#define QOSA_CLAT_FQDN_LEN                64
+/** Maximum ICMP error data length so total packet size doesn't exceed 576 (Min IPv4 MTU) */
+#define QOSA_ICMP_ERROR_LENGTH_MAX        548
+/** Maximum ICMPv6 error data length so total packet size doesn't exceed 1280 (Min IPv6 MTU) */
+#define QOSA_ICMP6_ERROR_LENGTH_MAX       1232
+/** ICMP PARAMPROB error code for pointer error */
+#define QOSA_ICMP_PARAMPROB_PTRERR        0
+/** ICMP PARAMPROB error code for bad length */
+#define QOSA_ICMP_PARAMPROB_BADLEN        2
+/** Minimum MTU size for IPv4 */
+#define QOSA_MTU_MIN                      68
+/** Minimum MTU size for IPv6, must be a multiple of 8 */
+#define QOSA_IPV6_MIN_MTU                 1280
+/** MTU difference between IPv4 and IPv6 (20 bytes difference due to header size, not including IPv6 fragmentation header) */
+#define QOSA_MTU_DIFF                     20
+/** Default destination IPv6 prefix length for XLAT translation */
+#define QOSA_DEFAULT_DST_PREFIX_LEN       96
+/** Minimum network interface MTU size */
+#define QOSA_IF_MIN_MTU                   1280
+/** Maximum network interface MTU size */
+#define QOSA_IF_MAX_MTU                   65535
+/** Maximum length of FQDN string for XLAT configuration */
+#define QOSA_XLAT_FQDN_LEN                64
+/** Total CLAT packet buffer length */
+#define QOSA_CLAT_TOT_LEN                 1600
+/** Default profile ID for CLAT configuration */
+#define QOSA_DEFAULT_PROFILE_ID           1
+
+/*========================================================================
+ *  Enumeration Definition
+ *========================================================================*/
 
 /**
  * @enum qosa_clat_errcode_e
@@ -60,6 +95,10 @@ typedef enum
     QOSA_CLAT_OPT_ICMPV4_ERR_MODE,  /*!< ICMPv4 error mode */
     QOSA_CLAT_OPT_ICMPV6_ERR_MODE,  /*!< ICMPv6 error mode */
 } qosa_clat_option_e;
+
+/*========================================================================
+*  Type Definition
+*========================================================================*/
 
 /**
  * @struct qosa_clat_config

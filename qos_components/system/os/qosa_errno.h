@@ -23,10 +23,11 @@ extern "C"
 #include "qosa_def.h"
 
 /** If relevant macro definitions exist on the platform, the platform macros shall be used preferentially */
-#if !defined(CONFIG_QOSA_LINUX_PLATFORM_FUNC) && !defined(CONFIG_QOSA_QCX216_PLATFORM_FUNC) && !defined(CONFIG_QOSA_QCX217_PLATFORM_FUNC)                      \
+#if (!defined(CONFIG_QOSA_LINUX_PLATFORM_FUNC) && !defined(CONFIG_QOSA_QCX216_PLATFORM_FUNC) && !defined(CONFIG_QOSA_QCX217_PLATFORM_FUNC)                      \
     && !defined(CONFIG_QOSA_UIS8852_PLATFORM_FUNC) && !defined(CONFIG_QOSA_EIGEN718_PLATFORM_FUNC) && !defined(CONFIG_QOSA_ASR1903_PLATFORM_FUNC)  \
     && !defined(CONFIG_QOSA_QT2131_PLATFORM_FUNC)  && !defined(CONFIG_QOSA_ASR160X_PLATFORM_FUNC) && !defined(CONFIG_QOSA_ASR1805_PLATFORM_FUNC) \
-    && !defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) && !defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) && !defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)
+    && !defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) && !defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) && !defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC) \
+    && !defined(CONFIG_QOSA_ASR1803_PLATFORM_FUNC)) || defined(CONFIG_QOSA_UIS8910_PLATFORM_FUNC)
 #define EPERM   1           /* Not owner */
 #define ENOENT  2           /* No such file or directory */
 #define ESRCH   3           /* No such process */
@@ -322,9 +323,15 @@ extern "C"
 #endif
 #else /* CONFIG_QOSA_PROVIDE_ERRNO */
 
-#if defined(CONFIG_QOSA_ASR1903_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR160X_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR1805_PLATFORM_FUNC)
+#if defined(CONFIG_QOSA_ASR1903_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR160X_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR1805_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR1803_PLATFORM_FUNC)
 #include "errno.h"
 #include "err.h"
+
+#if defined(CONFIG_QOSA_ASR160X_PLATFORM_FUNC)
+#undef  EINPROGRESS
+#define EINPROGRESS  115
+#endif
+
 #else   //CONFIG_OSA_ASR1903_PLATFORM_FUNC
 #include <errno.h>
 #endif  //CONFIG_OSA_ASR1903_PLATFORM_FUNC

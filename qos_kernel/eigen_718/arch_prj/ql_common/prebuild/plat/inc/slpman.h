@@ -1154,6 +1154,16 @@ void slpManSetWakeupIOPowerState(bool pwrOn);
 */
 void slpManForceIOPowerState(bool pwrOn);
 
+/**
+  \fn          slpManSetDcxoSleepCfg
+
+  \brief       a configure to enable dcxo sleep when snr is low
+  \param[in]
+  \return      null
+*/
+void slpManSetDcxoSleepCfg(bool en);
+
+
 #if defined TYPE_EC718M
 /**
   \fn          slpManRet_t slpManPSRamVoteHybdDisable(slpManPsramHybdVote_e item);

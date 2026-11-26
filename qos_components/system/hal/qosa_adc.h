@@ -50,6 +50,8 @@ typedef enum
 {
     QOSA_ADC0_CHANNEL = 0, /*!< ADC0 */
     QOSA_ADC1_CHANNEL = 1, /*!< ADC1 */
+    QOSA_ADC2_CHANNEL = 2, /*!< ADC2 */
+    QOSA_ADC3_CHANNEL = 3, /*!< ADC3 */
     QOSA_ADC_CHANNEL_MAX,
 } qosa_adc_channel_e;
 
@@ -140,5 +142,13 @@ qosa_adc_errcode_e qosa_adc_get_volt(qosa_adc_channel_e adc_id, int *adc_value);
  * @note This interface is time-consuming and cannot be used in interrupts or callbacks
  */
 qosa_adc_errcode_e qosa_get_vbat_volt(int *adc_value);
+
+/**
+ * @brief Get the number of ADC channels (for AT+QADC=? dynamic report)
+ *
+ * @return qosa_uint8_t
+ *          - Number of ADC channels (exclude THERMAL/VBAT)
+ */
+qosa_uint8_t qosa_adc_get_channel_num(void);
 
 #endif /* __QOSA_ADC_H__ */

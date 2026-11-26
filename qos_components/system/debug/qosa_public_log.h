@@ -95,6 +95,7 @@ void qosa_log_printf(int level, int tag, const char* funcname, int line, const c
 #define LOG_TAG_DNS_API         QOSA_MAKE_LOG_TAG('Q', 'D', 'N', 'S')
 #define LOG_TAG_MBED_API        QOSA_MAKE_LOG_TAG('Q', 'M', 'B', 'D')
 #define LOG_TAG_TCPIP_API       QOSA_MAKE_LOG_TAG('Q', 'T', 'C', 'P')
+#define LOG_TAG_FIREWALL_API    QOSA_MAKE_LOG_TAG('Q', 'F', 'W', 'L')
 #define LOG_TAG_TCPIP_NB_API    QOSA_MAKE_LOG_TAG('Q', 'N', 'B', 'I')
 #define LOG_TAG_PDP_API         QOSA_MAKE_LOG_TAG('Q', 'P', 'D', 'P')
 #define LOG_TAG_HTTP_API        QOSA_MAKE_LOG_TAG('Q', 'H', 'T', 'P')
@@ -113,6 +114,7 @@ void qosa_log_printf(int level, int tag, const char* funcname, int line, const c
 #define LOG_TAG_PING_API        QOSA_MAKE_LOG_TAG('Q', 'P', 'I', 'G')
 #define LOG_TAG_LBS_API         QOSA_MAKE_LOG_TAG('Q', 'L', 'B', 'S')
 #define LOG_TAG_WIFISCAN_API    QOSA_MAKE_LOG_TAG('Q', 'W', 'I', 'S')
+#define LOG_TAG_WIFI_API        QOSA_MAKE_LOG_TAG('Q', 'W', 'I', 'F')
 #define LOG_TAG_QURL_API        QOSA_MAKE_LOG_TAG('Q', 'U', 'R', 'L')
 #define LOG_TAG_COMPONENT       QOSA_MAKE_LOG_TAG('Q', 'C', 'M', 'P')
 #define LOG_TAG_MINI_HTTP       QOSA_MAKE_LOG_TAG('Q', 'M', 'H', 'T')
@@ -139,6 +141,11 @@ void qosa_log_printf(int level, int tag, const char* funcname, int line, const c
 #define LOG_TAG_MRD_API         QOSA_MAKE_LOG_TAG('Q', 'M', 'R', 'D')
 #define LOG_TAG_CI              QOSA_MAKE_LOG_TAG('Q', 'U', 'C', 'I')
 #define LOG_TAG_NET_API         QOSA_MAKE_LOG_TAG('Q', 'N', 'E', 'T')
+#define LOG_TAG_DATACALL        QOSA_MAKE_LOG_TAG('Q', 'D', 'A', 'T')
+#define LOG_TAG_SIM             QOSA_MAKE_LOG_TAG('Q', 'S', 'I', 'M')
+#define LOG_TAG_NETWORK         QOSA_MAKE_LOG_TAG('Q', 'N', 'W', 'K')
+#define LOG_TAG_USBNET          QOSA_MAKE_LOG_TAG('Q', 'U', 'N', 'E')
+#define LOG_TAG_DEV             QOSA_MAKE_LOG_TAG('Q', 'D', 'E', 'V')
 #define LOG_TAG_CALL            QOSA_MAKE_LOG_TAG('Q', 'C', 'A', 'L')
 #define LOG_TAG_IMS             QOSA_MAKE_LOG_TAG('Q', 'I', 'M', 'S')
 #define LOG_TAG_XML             QOSA_MAKE_LOG_TAG('Q', 'X', 'M', 'L')
@@ -150,6 +157,12 @@ void qosa_log_printf(int level, int tag, const char* funcname, int line, const c
 #define LOG_TAG_SECBOOT         QOSA_MAKE_LOG_TAG('Q', 'S', 'E', 'C')
 #define LOG_TAG_OCPU_API        QOSA_MAKE_LOG_TAG('O', 'C', 'P', 'U')
 #define LOG_TAG_ESIM            QOSA_MAKE_LOG_TAG('Q', 'E', 'I', 'M')
+#define LOG_TAG_WEBUI           QOSA_MAKE_LOG_TAG('Q', 'W', 'U', 'I')
+#define LOG_TAG_MIFI            QOSA_MAKE_LOG_TAG('Q', 'M', 'I', 'F')
+#define LOG_TAG_CMUX            QOSA_MAKE_LOG_TAG('C', 'M', 'U', 'X')
+#define LOG_TAG_OPAUTH          QOSA_MAKE_LOG_TAG('Q', 'O', 'P', 'A')
+#define LOG_TAG_VNET            QOSA_MAKE_LOG_TAG('Q', 'V', 'N', 'T')
+#define LOG_TAG_NETDEV          QOSA_MAKE_LOG_TAG('Q', 'N', 'E', 'V')
 
 #define QOSA_LOG_E(tag, ...)    QOSA_LOG_PRINTF_TAG(QOSA_LOG_LEVEL_ERROR, tag, __func__, __LINE__, ##__VA_ARGS__)
 #define QOSA_LOG_W(tag, ...)    QOSA_LOG_PRINTF_TAG(QOSA_LOG_LEVEL_WARN, tag, __func__, __LINE__, ##__VA_ARGS__)
@@ -184,5 +197,27 @@ qosa_log_error_e qosa_log_control_set(qosa_uint32_t mask);
  *           - Return bitmask,
  */
 qosa_uint32_t qosa_log_control_get(void);
+
+/**
+ * @brief Enable local debug-console (seagull UART) log output.
+ *
+ * Undoes qosa_log_console_disable(). Used by AT+QDIAGPORT when the debug UART
+ * is returned to debug-log console mode. Note the actual console output still
+ * additionally depends on the QOSA_LOG_BIT_DEBUG mask bit.
+ *
+ * Also forces a re-init of the debug UART's register state (via uart_reset() +
+ * the next seagull_uart_init()), since the AT/SIO driver may have reconfigured
+ * the same physical UART while it was acting as an AT port.
+ */
+void qosa_log_console_enable(void);
+
+/**
+ * @brief Mute local debug-console (seagull UART) log output.
+ *
+ * Used by AT+QDIAGPORT when the debug UART is repurposed as an AT-command port,
+ * so debug logs do not corrupt AT traffic on the shared physical UART. The
+ * USB/diag log path is unaffected.
+ */
+void qosa_log_console_disable(void);
 
 #endif /*__QOSA_LOG_H__ */

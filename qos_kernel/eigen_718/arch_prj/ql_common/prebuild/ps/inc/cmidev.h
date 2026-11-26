@@ -184,6 +184,10 @@ typedef enum _EPAT_CMI_DEV_PRIM_ID_TAG
     CMI_DEV_STOP_WIFISCAN_CNF,              //CmiDevStopWifiScanCnf
     CMI_DEV_WIFISCAN_IND,                   //CmiDevWifiScanInd
 
+    CMI_DEV_SET_DUPLEX_PREFER_REQ,          //CmiDevSetDuplexPreferReq
+    CMI_DEV_SET_DUPLEX_PREFER_CNF,          //CmiDevSetDuplexPreferCnf
+    CMI_DEV_GET_DUPLEX_PREFER_REQ,          //CmiDevGetDuplexPreferReq
+    CMI_DEV_GET_DUPLEX_PREFER_CNF,          //CmiDevGetDuplexPreferCnf
     CMI_DEV_PRIM_END = 0x0fff
 }CMI_DEV_PRIM_ID;
 
@@ -594,10 +598,14 @@ typedef struct CmiDevSetExtCfgReq_Tag
     BOOL    bEitPcoConexistPresent;
     BOOL    bEitPcoConexist;
 
-    BOOL    cellPreferPst;
-    UINT8   cellPreferMode;         //0 - disable cellCampPerfer; 1 - enable cellCampPerfer for FDD; 2 - enable cellCampPerfer for TDD
-    UINT8   cellPreferScoreAdd;     //range [0-100], PHY will add the score to FDD/TDD frequency point score during frequency and band fast cell search
-    UINT8   emmRsvd4;
+    BOOL    qualitySearchPresent;
+    BOOL    qualitySearch;
+    BOOL    oplmnOptPresent;
+    BOOL    oplmnOpt;
+
+    BOOL    ueSpecDrxPresent;
+    UINT8   ueSpecDrx;
+    UINT8   emmRsvd3[2];
 
     /* ERRC */
     BOOL    dataInactTimerPresent;
@@ -659,7 +667,10 @@ typedef struct CmiDevSetExtCfgReq_Tag
     UINT8   l2ExtSnCapaBitmap;
     BOOL    autoApnPresent;
     BOOL    autoApn;
-	
+    BOOL    cellRiskPercentPresent;
+    UINT8   cellRiskPercent;
+    UINT8   rsvd11[2];
+
     BOOL    bRrcBarTimePresent;
     CmiRrcBarEvent_t   rrcBarEvent;
     UINT16  rrcBarTime;
@@ -786,9 +797,12 @@ typedef struct CmiDevGetExtCfgCnf_Tag
     BOOL    attemptHplmn;
 
     UINT8   operatorId;
-    UINT8   cellPreferMode;
-    UINT8   cellPreferScoreAdd;
     BOOL    quickSearch;
+    BOOL    qualitySearch;
+    BOOL    oplmnOpt;
+
+    UINT8   ueSpecDrx;
+    UINT8   emmRrsvd[3];
 
     /* ERRC */
     UINT8   ueCfgDataInactTimer;        /* ERRC data inactivity timer, in seconds */
@@ -796,7 +810,8 @@ typedef struct CmiDevGetExtCfgCnf_Tag
     UINT16  relaxMonitorEvalTime;       // range (3~300), unit: second. relaxed monitoring evaluate time (TSearchDeltaP)
     UINT8   relVersion;                 /* release version: 9, 13 - 14 */
     UINT8   ueCategory;                 /* Configure the UE category. Both support NB-IoT and Cat.1 now */
-    UINT8   rrcRsvd1[2];
+    UINT8   cellRiskPercent;            /* range (0~100), control cell risk percent */
+    UINT8   rrcRsvd1;
 
     UINT8   enableABCheck;
     BOOL    weakCellOpt;
@@ -3101,6 +3116,43 @@ typedef struct CmiDevGetBarCellCnf_Tag
     CmiDevBarCellList   barCellList[CMI_MAX_BAR_CELL_NUM];
 }CmiDevGetBarCellCnf;
 
+/******************************************************************************
+ * AT+ECDUPLEXPREFER
+******************************************************************************/
+typedef enum CmiDuplexPreferModeTag
+{
+    CMI_DUPLEX_PREFER_NULL = 0,
+    CMI_DUPLEX_PREFER_FDD = 1,
+    CMI_DUPLEX_PREFER_TDD = 2,
+}CmiDuplexPreferMode;
+
+/******************************************************************************
+ * CMI_DEV_SET_DUPLEX_PREFER_REQ
+******************************************************************************/
+typedef struct CmiDevSetDuplexPreferReq_Tag
+{
+    UINT8               preferMode;     //CmiDuplexPreferMode, 0 - disable, 1 - FDD prefer, 2 - TDD prefer
+    UINT8               csScoreAdd;     //range [0-100], PHY will add the score to FDD/TDD frequency point score during cell search procedure
+    UINT8               rsrpOffset;     //rsrp offset to all cells for the corresponding duplex mode
+                                        //(e.g. if current duplex prefer is FDD, all FDD cells apply with the rsrp offset value).
+    UINT8               snrOffset;      //snr offset to all cells for the corresponding duplex mode
+                                        //(e.g. if current duplex prefer is FDD, all FDD cells apply with the snr offset value).
+}CmiDevSetDuplexPreferReq;
+
+/******************************************************************************
+ * CMI_DEV_SET_DUPLEX_PREFER_CNF
+******************************************************************************/
+typedef CamCmiEmptySig CmiDevSetDuplexPreferCnf;
+
+/******************************************************************************
+ * CMI_DEV_GET_DUPLEX_PREFER_REQ
+******************************************************************************/
+typedef CamCmiEmptySig CmiDevGetDuplexPreferReq;
+
+/******************************************************************************
+ * CMI_DEV_GET_DUPLEX_PREFER_CNF
+******************************************************************************/
+typedef CmiDevSetDuplexPreferReq CmiDevGetDuplexPreferCnf;
 
 /******************************************************************************
  * CMI_DEV_RRC_EVENT_IND
@@ -3252,7 +3304,14 @@ typedef enum CmiDevNasEventTypeEnum_Tag
     CMI_DEV_NAS_ATTACH_REJECT,              /* ATTACH REJECT */
     CMI_DEV_NAS_TAU_REJECT,                 /* TAU REJECT */
     CMI_DEV_NAS_SERVICE_REJECT,             /* SERVICE REJECT */
+#ifdef UNIRTOS_COMMON_MODIFY
+    CMI_DEV_NAS_MT_DETACH,                  /* MT DETACH */
+    CMI_DEV_NAS_FAKE_CELL_DETECT,           /* Detect fake cell */
+    CMI_DEV_NAS_OUT_OF_SERVICE,             /* UE is out of service, no cell is found to camp on */
+    CMI_DEV_NAS_IDENTITY_DURING_ATTACH     /* Identity procedure during ATTACH */
+#else /* UNIRTOS_COMMON_MODIFY */
     CMI_DEV_NAS_FAKE_CELL_DETECT            /* Detect fake cell */
+#endif /* UNIRTOS_COMMON_MODIFY */
 }CmiDevNasEventTypeEnum;
 
 typedef struct CmiDevNasEventInd_Tag

@@ -120,6 +120,9 @@ typedef enum
     CUST_RBUF_FOR_ETH,
     CUST_RBUF_FOR_CCID,
     CUST_RBUF_FOR_SPI,
+#ifdef UNIRTOS_COMMON_MODIFY
+    CUST_RBUF_FOR_AT_CMUX,  /* Quectel: dedicated small-buffer pool per CMUX virtual AT DLCI. */
+#endif
 
     CUST_RBUF_USAGE_MAXNUM
 }CcioRbufUsage_e;
@@ -173,6 +176,11 @@ typedef int32_t (*chdevStatusCallback)(uint32_t flags, void *args);
  * @param args : User parameter pointer
  */
 typedef void (*chdevDestroyCallback)(uint32_t uartIdx, void *args);
+
+/* Quectel CMUX virtual AT device marker for CcioDevice_t.custFlags (4-bit field).
+ * When set with hwtype=CCIO_HT_VIRT + subtype=CSIO_DT_AT, atCmdSetChanName emits
+ * "MUXATx" (x from custExtras) so parser aligns atCid with CMS_CHAN_CMUX_x. */
+#define CCIO_CUST_FLAG_CMUX_VIRT_AT   0xE
 #endif /* UNIRTOS_COMMON_MODIFY */
 
 typedef struct CcioDevice

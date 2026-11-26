@@ -20,6 +20,8 @@
 #if !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #include "qosa_ims.h"
 
+#define MPC_IMS_REQ_HANDLER              0x0050
+
 typedef struct
 {
     qosa_uint8_t call_type;
@@ -36,5 +38,7 @@ typedef struct
     char         dialnumstr[80];
 } mpc_ims_conn_id_event_ind_t;
 
-#endif// !(defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
+int err_ims_mpc2ms(qosa_ptr err);
+
+#endif /* Wi-Fi platform exclusion */
 #endif /* __MPC_IMS__H__ */

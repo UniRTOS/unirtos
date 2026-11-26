@@ -70,6 +70,27 @@ typedef enum
     QOSA_I2C_READ_ERR,                                /*!< Read failed */
 } qosa_i2c_error_e;
 
+/**
+ * @enum qosa_i2c_reg_addr_len_e
+ * @brief i2c register address length enum.
+ */
+typedef enum
+{
+    QOSA_I2C_REG_ADDR_LEN_1BYTE = 1, /*!< Register address length is 1 byte */
+    QOSA_I2C_REG_ADDR_LEN_2BYTE = 2, /*!< Register address length is 2 bytes */
+} qosa_i2c_reg_addr_len_e;
+
+/**
+ * @enum qosa_i2c_ioctl_cmd_e
+ * @brief i2c ioctl command enum.
+ */
+typedef enum
+{
+    QOSA_I2C_IOCTL_SET_REG_ADDR_LEN = 0, /*!< Set I2C register address length */
+} qosa_i2c_ioctl_cmd_e;
+
+
+
 /*===========================================================================
  * Function
 ===========================================================================*/
@@ -100,6 +121,24 @@ qosa_i2c_error_e qosa_i2c_init(qosa_i2c_channel_e i2c_no, qosa_i2c_mode_e Mode);
  *          - other: Error code
  */
 qosa_i2c_error_e qosa_i2c_deinit(qosa_i2c_channel_e i2c_no);
+
+/**
+ * @brief I2C ioctl control
+ *
+ * @param[in] qosa_i2c_channel_e i2c_no
+ *          - I2C channel number selection
+ *
+ * @param[in] qosa_i2c_ioctl_cmd_e cmd
+ *          - I2C ioctl command
+ *
+ * @param[in/out] void *arg
+ *          - I2C ioctl command parameter
+ *
+ * @return qosa_i2c_error_e
+ *          - QOSA_I2C_SUCCESS: Success
+ *          - other: Error code
+ */
+qosa_i2c_error_e qosa_i2c_ioctl(qosa_i2c_channel_e i2c_no, qosa_i2c_ioctl_cmd_e cmd, void *arg);
 
 /**
  * @brief I2C master mode write data

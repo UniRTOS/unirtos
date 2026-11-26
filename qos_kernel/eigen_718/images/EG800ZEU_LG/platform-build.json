@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "sdk_version": "QSR02A04_C_SDK_LTE_E_BETA261029",
+  "sub_version": "V01",
+  "project": "EG800ZEU_LG",
+  "customer_build_label": "EG800ZEULGR02A04M01_BETA261029_OCPU",
+  "archive_layout": "gccout/",
+  "source_manifest_sha256": "9B7C4BAF5C636FF190B720F37720DCFE8CD60ECC0351A24EBB673325AA8E00FF",
+  "git_base": "0782df77b1c55feb0fe66f09a2eeb72161af3de1",
+  "build_type": "platform-only-clean-new",
+  "built_at": "2026-11-05T15:27:47+0800",
+  "closed_source_compiled_objects": [
+    {
+      "path": "ql_build/gccout/ec7xx_0h00_ec718pm/ap/at_command/ql_common/driver/chip/ec7xx/ap/src_cmsis/bsp_usart.o",
+      "sha256": "B934B2BC318E93B5F667FD52C945843F244A33A5C8FABB9E4F166D80067C2515"
+    },
+    {
+      "path": "ql_build/gccout/ec7xx_0h00_ec718pm/ap/at_command/ql_common/middleware/quectel/ql_api/fota/ql_update_check.o",
+      "sha256": "8E1D2A93F72A376712608EB28201DEAB40BC1ED35AB499A3D08BC394205CF827"
+    }
+  ],
+  "generated_configuration": [
+    {
+      "path": "qos_kernel/eigen_718/arch_prj/ql_common/unirtos_adapter/dynamic_create/qosa_datacall_config.h",
+      "sha256": "809270E964B0931314A8AB5C823DB130279A9413154C709B0212281453E314E9"
+    },
+    {
+      "path": "qos_kernel/eigen_718/arch_prj/ql_common/unirtos_adapter/dynamic_create/qosa_modem_at_config.h",
+      "sha256": "104CFD3B290AF9CDF3149DBD666C43B1A6148525EE80196E22DF9643C14AE799"
+    },
+    {
+      "path": "qos_kernel/eigen_718/arch_prj/ql_common/unirtos_adapter/dynamic_create/qosa_network_config.h",
+      "sha256": "515AB9E353D8A01B37604F456010F810B6D16D2B9A3DE79976777D8E023B70C2"
+    },
+    {
+      "path": "qos_kernel/eigen_718/arch_prj/ql_common/unirtos_adapter/dynamic_create/qosa_nw_band_def.h",
+      "sha256": "4C39BAD53DF73FB4F01AECFCEC41DB043C45DA8E428005544210435C064CC4BB"
+    },
+    {
+      "path": "qos_kernel/eigen_718/arch_prj/ql_common/unirtos_adapter/dynamic_create/qosa_platform_cfg.h",
+      "sha256": "371F583938E132F762F7C600B9DFF4E58D6BDBEF50AB585D341ADF263E9EA5B3"
+    },
+    {
+      "path": "qos_kernel/eigen_718/arch_prj/ql_common/unirtos_adapter/dynamic_create/qosa_sim_config.h",
+      "sha256": "E5E593A6BDB86B188A20AEA62CEEF77436B632C19B242DFE4AE2567BD42D1587"
+    },
+    {
+      "path": "qos_kernel/eigen_718/arch_prj/ql_common/unirtos_adapter/dynamic_create/qosa_system_config.h",
+      "sha256": "3542C13845A1802153A43AD5741837B7452411ADDC4D6087957D31849E6C9F74"
+    },
+    {
+      "path": "qos_kernel/eigen_718/arch_prj/ql_common/unirtos_adapter/dynamic_create/qosa_system_vfs_cfg.h",
+      "sha256": "2B3C686039F7CD4AFF91C4F0DA123064A8111A6C6379A80F34A489AB6B7623F0"
+    },
+    {
+      "path": "qos_kernel/eigen_718/arch_prj/ql_common/unirtos_adapter/dynamic_create/qosa_usbnet_config.h",
+      "sha256": "512F807A1F0C2EBE197615251F07C78377DE64DBB71E9A327116D11DAB46EEC9"
+    },
+    {
+      "path": "qos_kernel/eigen_718/arch_prj/ql_common/ver_tag/qosa_version.h",
+      "sha256": "22D159FCC6E1AF4DF2A9336F6A9715F6D26B4D87938929D46BC53CE595A0F6BB"
+    },
+    {
+      "path": "qos_kernel/eigen_718/arch_prj/ql_common/middleware/quectel/cust/inc/QosaPrjName.h",
+      "sha256": "D706D46E22D2E060DF649BD54AB07B2EF9B5D702C102D97458554E1535C0E6F5"
+    },
+    {
+      "path": "qos_kernel/eigen_718/arch_prj/ql_common/middleware/quectel/cust/inc/QosaCurPrj.txt",
+      "sha256": "3E85F53426A5A63E3DC12D4875DEE3432DDDE875964BB39CBC9F6A793EF0D4B7"
+    },
+    {
+      "path": "qos_kernel/eigen_718/arch_prj/ql_common/middleware/quectel/project/config/public/EG800ZEU_LG/system.config",
+      "sha256": "28B94078CF00CAF37EC7B09DF0CD9654FAF2411FB38CFBF69B6DEAAEEBA765F3"
+    }
+  ],
+  "app_build_validated": false,
+  "device_validated": false,
+  "archive_sha256": "03014F5FD427DCA5243588FBD8A5DC660FBE7EB42601C26812AD660442BD91F7",
+  "archive_bytes": 6833156,
+  "archive_crc_and_sha_validated": true,
+  "consumer_extraction_layout_validated": true,
+  "generated_configuration_validated": true,
+  "closed_source_elf_symbols_validated": [
+    "ARM_USART_GetVersion",
+    "Driver_USART1",
+    "ql_check_updater_image_crc",
+    "ql_get_update_bin_info",
+    "ql_udate_bin_crc"
+  ],
+  "payload_manifest_sha256": "0AF2773CDD89A6BDC356B51720BE8DB1FE73D03F0F39ED7215A081B3D71C09BA"
+}

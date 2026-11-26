@@ -42,6 +42,8 @@
 #define SOCKET_OFFSET              1
 #define SOCKET_ARRAY_CONNECTED_CNT SOCKET_MAX_CONNECTED + SOCKET_OFFSET
 
+#define QCM_TCP_SLOW_INTERVAL_MS   (2 * TCP_TMR_INTERVAL) /* =lwip TCP_SLOW_INTERVAL=2×TCP_TMR_INTERVAL(lwipopts.h:250ms) */
+
 typedef enum
 {
     QCM_SOCK_MONITOR_RD = 0x01,
@@ -164,6 +166,7 @@ static void qcm_socket_monitor_init_check(void);
 void qcm_socket_set_retrains_cnt(qosa_uint32_t retrains_cnt);
 void qcm_socket_set_retrains_period(qosa_uint32_t retrains_period);
 void qcm_socket_set_twrecycle(qosa_uint32_t fast_recyle);
+void qcm_socket_get_twrecycle(qosa_uint32_t *fast_recyle);
 void qcm_socket_set_udp_filter_mode(qosa_uint32_t mode);
 void qcm_socket_get_retrains_cnt(qosa_uint32_t *retrains_cnt);
 void qcm_socket_get_retrains_period(qosa_uint32_t *retrains_period);
@@ -374,7 +377,10 @@ static void qcm_socket_add_monitor(qcm_socket_t *sock, qcm_sock_monitor_event_ty
     if (err != 0)
     {
         QLOGE("err = %d errno_value=%d", err, errno_value);
-        sock->event_cb(sock->socket_fd, QCM_SOCK_CLOSE_EVENT, 0, sock->user_argv);
+        if ((sock->event_mask & QCM_SOCK_CLOSE_EVENT) != 0 && sock->event_cb != QOSA_NULL)
+        {
+            sock->event_cb(sock->num, QCM_SOCK_CLOSE_EVENT, 0, sock->user_argv);
+        }
     }
 
     QLOGV("...sock_cnt=%d new_mask=%x monitor_evt=%x", sock_cnt, new_mask, monitor_evt);
@@ -490,6 +496,8 @@ int qcm_socket_create(qosa_uint8_t simid, qosa_uint8_t pdpcid, int family, int t
     qosa_datacall_conn_t    conn = 0;
     int                     flags = 0;
     qosa_datacall_errno_e   result = QOSA_DATACALL_OK;
+    int                     retrains_cnt = 0;
+    int                     retrains_period = 0;
 
     qcm_socket_monitor_init_check();
 
@@ -551,6 +559,17 @@ int qcm_socket_create(qosa_uint8_t simid, qosa_uint8_t pdpcid, int family, int t
     //Set port multiplexing
     uapi_lwip_setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &reuseFlag, sizeof(int));
     uapi_lwip_setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &reuseFlag, sizeof(int));
+
+    // Set the number of retransmissions and the retransmission period
+    qcm_socket_get_system_opt(QCM_TCP_RETRY_COUNT_OPT, &retrains_cnt);
+    qcm_socket_get_system_opt(QCM_TCP_RETRY_TIME_OPT, &retrains_period);
+    retrains_period = retrains_period / QCM_TCP_SLOW_INTERVAL_MS; // The unit of "pcb->rto" is "tick" (TCP_SLOW_INTERVAL = 2×TCP_TMR_INTERVAL)
+    QLOGV("*** cnt: %d, period: %d ***", retrains_cnt, retrains_period);
+    if (retrains_cnt > 0 && retrains_period > 0)
+    {
+        uapi_lwip_setsockopt(sockfd, IPPROTO_TCP, TCP_MAX_NRTX, (void *)&retrains_cnt, sizeof(int));
+        uapi_lwip_setsockopt(sockfd, IPPROTO_TCP, TCP_RTO_VALUE, (void *)&retrains_period, sizeof(int));
+    }
 
     //Bind local IP addresses via simid and pdpcid
     if (sock->family == QCM_AF_INET && (info.ip_type == QOSA_PDP_IPV4 || info.ip_type == QOSA_PDP_IPV4V6))
@@ -814,7 +833,10 @@ static int qcm_socket_ssl_read(qcm_socket_t *sock, char *data, int sz)
             //If there is still data inside SSL, continue sending read event notifications to the upper layer to keep calling read.
             if (qcm_ssl_data_pending(sock->ssl_ctx) == QOSA_TRUE)
             {
-                sock->event_cb(sock->num, QCM_SOCK_READ_EVENT, QCM_SOCK_SUCCESS, sock->user_argv);
+                if ((sock->event_mask & QCM_SOCK_READ_EVENT) != 0 && sock->event_cb != QOSA_NULL)
+                {
+                    sock->event_cb(sock->num, QCM_SOCK_READ_EVENT, QCM_SOCK_SUCCESS, sock->user_argv);
+                }
             }
             else
             {
@@ -868,18 +890,15 @@ int qcm_socket_read(int s, char *data, int sz)
 
     QLOGV("read %d bytes from socket %d error=%d EWOULDBLOCK=%d", ret, sock->socket_fd, sock->last_error, EWOULDBLOCK);
 
-    // EWOULDBLOCK means recv read no data because the socket is non-blocking
-    // and no data is currently available. This is normal in non-blocking I/O.
-    // Treat sock->last_error == ERR_OK (0) and EWOULDBLOCK as the same class
-    // of condition. On this platform they both effectively mean the operation
-    // cannot complete immediately, so the caller should retry later.
+    // XQD returns ERR_OK for both ret and last_error when no data is available.
+    // Normalize it to the standard non-blocking result before using the common logic below.
+    if (ret == ERR_OK && sock->last_error == ERR_OK && sz > 0)
+    {
+        ret = -1;
+        sock->last_error = EWOULDBLOCK;
+    }
 
-    // After the connection is established, uapi_lwip_recv may return 0 when no
-    // data is readable (lwip_recv returns -1), while xqd's lwip_get_error
-    // returns ERR_OK. On 718, lwip_get_error returns EWOULDBLOCK instead.
-
-    // Treat ERR_OK and EWOULDBLOCK as the same case and keep the read monitor enabled.
-    if ( ( ret <= 0 && (sock->last_error == EWOULDBLOCK || sock->last_error == ERR_OK) ) || ret > 0 || sz == 0 )
+    if ((ret < 0 && sock->last_error == EWOULDBLOCK) || ret > 0 || sz == 0)
     {
         qcm_socket_add_monitor(sock, QCM_SOCK_MONITOR_RD);
     }
@@ -887,7 +906,7 @@ int qcm_socket_read(int s, char *data, int sz)
     if (ret < 0)
     {
         // Treat ERR_OK and EWOULDBLOCK as the same case and keep monitoring.
-        if (sock->last_error == EWOULDBLOCK || sock->last_error == ERR_OK)
+        if (sock->last_error == EWOULDBLOCK)
         {
             ret = QCM_SOCK_WODBLOCK;
         }
@@ -905,7 +924,7 @@ int qcm_socket_read(int s, char *data, int sz)
     else if (ret == 0)
     {
         // Refine the ret == 0 case.
-        if ( sz == 0 || (sock->last_error == EWOULDBLOCK || sock->last_error == ERR_OK) )
+        if (sz == 0)
         {
             ret = QCM_SOCK_SUCCESS;
         }
@@ -1128,6 +1147,8 @@ int qcm_socket_accept(int s, qosa_ip_addr_t *remote_addr, int *remote_port, qosa
     qcm_socket_t       *accept_sock = QOSA_NULL;
     struct sockaddr_in  sa;
     struct sockaddr_in6 sa6;
+    int                 retrains_cnt = 0;
+    int                 retrains_period = 0;
 
     sock = qcm_socket_get_prt(s);
     if (sock == QOSA_NULL)
@@ -1154,6 +1175,17 @@ int qcm_socket_accept(int s, qosa_ip_addr_t *remote_addr, int *remote_port, qosa
         uapi_lwip_setsockopt(accept_sockfd, IPPROTO_TCP, TCP_KEEPINTVL, (void *)&g_socket_system_cfg.kalive_interval, sizeof(int));
         uapi_lwip_setsockopt(accept_sockfd, IPPROTO_TCP, TCP_KEEPCNT, (void *)&g_socket_system_cfg.kalive_cnt, sizeof(int));
         uapi_lwip_setsockopt(accept_sockfd, SOL_SOCKET, SO_KEEPALIVE, (void *)&g_socket_system_cfg.kalive_onoff, sizeof(int));
+    }
+
+    // Set the number of retransmissions and the retransmission period
+    qcm_socket_get_system_opt(QCM_TCP_RETRY_COUNT_OPT, &retrains_cnt);
+    qcm_socket_get_system_opt(QCM_TCP_RETRY_TIME_OPT, &retrains_period);
+    retrains_period = retrains_period / QCM_TCP_SLOW_INTERVAL_MS; // The unit of "pcb->rto" is "tick" (TCP_SLOW_INTERVAL = 2×TCP_TMR_INTERVAL)
+    QLOGV("*** cnt: %d, period: %d ***", retrains_cnt, retrains_period);
+    if (retrains_cnt > 0 && retrains_period > 0)
+    {
+        uapi_lwip_setsockopt(accept_sockfd, IPPROTO_TCP, TCP_MAX_NRTX, (void *)&retrains_cnt, sizeof(int));
+        uapi_lwip_setsockopt(accept_sockfd, IPPROTO_TCP, TCP_RTO_VALUE, (void *)&retrains_period, sizeof(int));
     }
 
     qcm_socket_add_monitor(sock, QCM_SOCK_MONITOR_RD);
@@ -1673,8 +1705,11 @@ int qcm_socket_get_system_opt(qcm_socket_system_option_e opt, void *value)
         }
         break;
         case QCM_TCP_TIMEWAIT_FAST_RELEASE_OPT: {
+            qosa_uint32_t _fast_release_timewait = 0;
             qosa_uint8_t *fast_release_timewait = (qosa_uint8_t *)value;
-            *fast_release_timewait = system_cfg_ptr->fast_release_timewait;
+            qcm_socket_get_twrecycle(&_fast_release_timewait);
+            system_cfg_ptr->fast_release_timewait = (qosa_uint8_t)_fast_release_timewait;
+            *fast_release_timewait = (qosa_uint8_t)_fast_release_timewait;
             ret = QCM_SOCK_SUCCESS;
         }
         break;
@@ -2115,6 +2150,26 @@ int qcm_socket_get_opt(int s, qcm_socke_option_e opt, void *value)
         case QCM_SOCK_STATE_OPT: {
             *((int *)value) = sock->state;
             QLOGV("state: %d", sock->state);
+            ret = QCM_SOCK_SUCCESS;
+        }
+        break;
+        case QCM_SOCK_LOCAL_PORT_OPT: {
+            if (sock->family == QCM_AF_INET)
+            {
+                struct sockaddr_in local_sa;
+                socklen_t          local_sa_len = sizeof(struct sockaddr_in);
+                qosa_memset(&local_sa, 0, sizeof(struct sockaddr_in));
+                uapi_lwip_getsockname(sock->socket_fd, (struct sockaddr *)&local_sa, &local_sa_len);
+                *((qosa_uint16_t *)value) = ntohs(local_sa.sin_port);
+            }
+            else
+            {
+                struct sockaddr_in6 local_sa6;
+                socklen_t           local_sa6_len = sizeof(struct sockaddr_in6);
+                qosa_memset(&local_sa6, 0, sizeof(struct sockaddr_in6));
+                getsockname(sock->socket_fd, (struct sockaddr *)&local_sa6, &local_sa6_len);
+                *((qosa_uint16_t *)value) = ntohs(local_sa6.sin6_port);
+            }
             ret = QCM_SOCK_SUCCESS;
         }
         break;
@@ -2649,6 +2704,9 @@ static void qcm_socket_monitor_task(void *pData)
             continue;
         }
 
+        QLOGE("event_mask: %d", s_event.event_mask);
+        QLOGV("socket %d state(%d)", sock->socket_fd, sock->state);
+
         if (s_event.event_mask & QL_DS_READ_EVENT)
         {
             QLOGV("socket %d READABLE, state:%d", sock->socket_fd, sock->state);
@@ -2735,7 +2793,15 @@ static void qcm_socket_monitor_task(void *pData)
         }
         if (s_event.event_mask & QL_DS_CLOSE_EVENT)
         {
-            if ((sock->event_mask & QCM_SOCK_CLOSE_EVENT) != 0 && sock->event_cb != QOSA_NULL)
+            if (QCM_SOC_STATE_CONNECTING == sock->state)
+            {
+                ret = QCM_SOCK_INTERNAL_ERROR;
+                if ((sock->event_mask & QCM_SOCK_CONNECT_EVENT) != 0 && sock->event_cb != QOSA_NULL)
+                {
+                    sock->event_cb(sock->num, QCM_SOCK_CONNECT_EVENT, ret, sock->user_argv);
+                }
+            }
+            else if ((sock->event_mask & QCM_SOCK_CLOSE_EVENT) != 0 && sock->event_cb != QOSA_NULL)
             {
                 sock->state = QCM_SOC_STATE_CLOSING;
                 sock->event_cb(sock->num, QCM_SOCK_CLOSE_EVENT, ret, sock->user_argv);
@@ -2911,9 +2977,13 @@ void qcm_socket_get_retrains_period(qosa_uint32_t *retrains_period)
  */
 void qcm_socket_set_twrecycle(qosa_uint32_t fast_recyle)
 {
-    QOSA_UNUSED(fast_recyle);
+    unir_set_lwip_tcp_twrecycle(fast_recyle);
 }
 
+void qcm_socket_get_twrecycle(qosa_uint32_t *fast_recyle)
+{
+    *fast_recyle = unir_get_lwip_tcp_twrecycle();
+}
 /**
  * @brief Set UDP filtering mode
  *

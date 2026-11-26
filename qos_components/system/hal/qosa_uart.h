@@ -149,8 +149,11 @@ typedef enum
  */
 typedef enum
 {
-    QOSA_UART_MODE_NORMAL = 1, /*!< Uart mode, used for user to transmit custom data */
-    QOSA_UART_MODE_AT = 2,     /*!< AT mode, user cannot call Uart related input/output API for use in this mode */
+    QOSA_UART_MODE_NORMAL = 1,        /*!< Uart mode, used for user to transmit custom data */
+    QOSA_UART_MODE_AT = 2,            /*!< AT mode, user cannot call Uart related input/output API for use in this mode */
+    QOSA_UART_TX_MODE_CCIO = 3,           /*!< Send by CCIO/OPAQ */
+    QOSA_UART_TX_MODE_DRIVER = 4,         /*!< Send by driver polling */
+    QOSA_UART_TX_MODE_DRIVER_DMA = 5,     /*!< Send by driver DMA */
 } qosa_uart_mode_e;
 
 /**
@@ -213,6 +216,7 @@ typedef enum
     QOSA_UART_IOCTL_DCD_GET,         /*!< Get DCD status */
     QOSA_UART_IOCTL_DCD_SET,         /*!< Set DCD status */
     QOSA_UART_IOCTL_CHANGE_BAUDRATE, /*!< Change baud rate */
+    QOSA_UART_IOCTL_DROP_RX_CACHE,   /*!< Drop pending RX cache */
     QOSA_UART_IOCTL_RECORD_DTR_FUNC, /*!< Set DTR callback function */
 } qosa_uart_ioctl_cmd_e;
 

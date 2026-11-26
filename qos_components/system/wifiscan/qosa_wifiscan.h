@@ -33,8 +33,13 @@
 /** Default value for number of scan cycles for wifiscan */
 #define QOSA_WIFI_SCAN_ROUND_DEF                  (1)
 
+#ifdef CONFIG_QOSA_QT2131_PLATFORM_FUNC
+/** Minimum value for maximum number of APs scanned by wifiscan */
+#define QOSA_WIFI_SCAN_AP_CNT_MIN                 (5)
+#else
 /** Minimum value for maximum number of APs scanned by wifiscan */
 #define QOSA_WIFI_SCAN_AP_CNT_MIN                 (4)
+#endif //CONFIG_QOSA_QT2131_PLATFORM_FUNC
 /** Maximum value for maximum number of APs scanned by wifiscan */
 #define QOSA_WIFI_SCAN_AP_CNT_MAX                 (30)
 /** Default value for maximum number of APs scanned by wifiscan */

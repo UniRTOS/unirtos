@@ -74,6 +74,9 @@ struct mbed_ssl_backend_data
     mbedtls_x509_crt         clicert;
     mbedtls_pk_context       pk;
     mbedtls_ssl_config       config;
+#if defined(MBEDTLS_SSL_ALPN)
+    const char               *alpn_list[2];
+#endif
 #if defined(MBEDTLS_TIMING_C)
     mbedtls_timing_delay_context timer;
 #endif
@@ -374,7 +377,7 @@ static int mbed_ssl_verify(void *data, mbedtls_x509_crt *crt, int depth, qosa_ui
 
     QLOGD("Verify requested for (Depth %d) flags=%d", depth, *flags);
     mbedtls_x509_crt_info(buf, sizeof(buf) - 1, "", crt);
-    QLOGD("%s", buf);
+    //QLOGD("%s", buf);
 
     /* The user is not configured to ignore CA check items
        or each CA item has been validated */
@@ -1115,6 +1118,31 @@ static qcm_vtls_result_status_e mbed_connect_step1(qcm_ssl_connect_data_t *conns
         mbedtls_ssl_conf_ciphersuites(&backend->config, mbedtls_ssl_list_ciphersuites());
     }
 
+    if (conf->alpn_name != QOSA_NULL)
+    {
+#if defined(MBEDTLS_SSL_ALPN)
+        int alpn_ret = 0;
+
+        backend->alpn_list[0] = conf->alpn_name;
+        backend->alpn_list[1] = QOSA_NULL;
+        alpn_ret = mbedtls_ssl_conf_alpn_protocols(&backend->config, backend->alpn_list);
+        if (alpn_ret != 0)
+        {
+#ifdef MBEDTLS_ERROR_C
+            mbedtls_strerror(alpn_ret, errorbuf, sizeof(errorbuf));
+#endif
+            QLOGE("mbedTLS: set ALPN failed ret=(-0x%X) %s, name=%s, len=%d", -alpn_ret, errorbuf, conf->alpn_name, qosa_strlen(conf->alpn_name));
+            ret = QCM_VTLS_SSL_INVALID_PARAM_ERR;
+            goto exit;
+        }
+        QLOGI("mbedTLS: ALPN configured name=%s, len=%d", conf->alpn_name, qosa_strlen(conf->alpn_name));
+#else
+        QLOGE("mbedTLS: ALPN configured but MBEDTLS_SSL_ALPN is disabled");
+        ret = QCM_VTLS_SSL_INVALID_PARAM_ERR;
+        goto exit;
+#endif
+    }
+
     if (conf->transport == QCM_SSL_DTLS_PROTOCOL)
     {
         //Set dtls mtu
@@ -1215,6 +1243,9 @@ static qcm_vtls_result_status_e mbed_connect_step2(qcm_ssl_connect_data_t *conns
 #if defined(MBEDTLS_TIMING_C) && defined(MBEDTLS_SSL_PROTO_DTLS)
     qosa_uint32_t                 fin_ms = 0;
 #endif
+#if defined(MBEDTLS_SSL_ALPN)
+    const char                   *negotiated_alpn = QOSA_NULL;
+#endif
     struct mbed_ssl_backend_data *backend = (struct mbed_ssl_backend_data *)connssl->backend;
 
     //If the IO is a blocking function, this function returns with the result immediately.
@@ -1262,6 +1293,14 @@ static qcm_vtls_result_status_e mbed_connect_step2(qcm_ssl_connect_data_t *conns
     }
 
     QLOGD("mbedTLS: Handshake complete, cipher is %s", mbedtls_ssl_get_ciphersuite(&backend->ssl));
+
+#if defined(MBEDTLS_SSL_ALPN)
+    if (connssl->ssl_config.alpn_name != QOSA_NULL)
+    {
+        negotiated_alpn = mbedtls_ssl_get_alpn_protocol(&backend->ssl);
+        QLOGI("mbedTLS: ALPN negotiated=%s", negotiated_alpn != QOSA_NULL ? negotiated_alpn : "none");
+    }
+#endif
 
     connssl->connecting_state = QCM_SSL_CONNECT_3;
     QLOGV("SSL connected");

@@ -117,6 +117,7 @@ void qosa_log_printf(int level, int tag, const char* funcname, int line, const c
 #define LOG_TAG_TCPIP_NB_API UNILOG_UNIRTOS_QTCP_NB
 #define LOG_TAG_PDP_API      UNILOG_UNIRTOS_QPDP
 #define LOG_TAG_HTTP_API     UNILOG_UNIRTOS_QHTP
+#define LOG_TAG_ANDLINK_API  UNILOG_UNIRTOS_QADL
 #define LOG_TAG_LWM2M_API    UNILOG_UNIRTOS_QM2M
 #define LOG_TAG_MODEM        UNILOG_UNIRTOS_QMDM
 #define LOG_TAG_SMTP_API     UNILOG_UNIRTOS_QMTP
@@ -132,6 +133,7 @@ void qosa_log_printf(int level, int tag, const char* funcname, int line, const c
 #define LOG_TAG_PING_API     UNILOG_UNIRTOS_QPIG
 #define LOG_TAG_LBS_API      UNILOG_UNIRTOS_QLBS
 #define LOG_TAG_WIFISCAN_API UNILOG_UNIRTOS_QWIS
+#define LOG_TAG_WIFI_API     UNILOG_UNIRTOS_QWIF
 #define LOG_TAG_QURL_API     UNILOG_UNIRTOS_QURL
 #define LOG_TAG_COMPONENT    UNILOG_UNIRTOS_QCMP
 #define LOG_TAG_MINI_HTTP    UNILOG_UNIRTOS_QMHT
@@ -158,6 +160,11 @@ void qosa_log_printf(int level, int tag, const char* funcname, int line, const c
 #define LOG_TAG_MRD_API      UNILOG_UNIRTOS_QMRD
 #define LOG_TAG_CI           UNILOG_UNIRTOS_QUCI
 #define LOG_TAG_NET_API      UNILOG_UNIRTOS_QNET
+#define LOG_TAG_DATACALL     UNILOG_UNIRTOS_QDAT
+#define LOG_TAG_SIM          UNILOG_UNIRTOS_QSIM
+#define LOG_TAG_NETWORK      UNILOG_UNIRTOS_QNWK
+#define LOG_TAG_USBNET       UNILOG_UNIRTOS_QUNE
+#define LOG_TAG_DEV          UNILOG_UNIRTOS_QDEV
 #define LOG_TAG_CALL         UNILOG_UNIRTOS_QCAL
 #define LOG_TAG_IMS          UNILOG_UNIRTOS_QIMS
 #define LOG_TAG_SMS          UNILOG_UNIRTOS_QSMS
@@ -168,6 +175,10 @@ void qosa_log_printf(int level, int tag, const char* funcname, int line, const c
 #define LOG_TAG_ESIM         UNILOG_UNIRTOS_ESIM
 #define LOG_TAG_JAMM_DETECT  UNILOG_UNIRTOS_QJAM
 #define LOG_TAG_SECBOOT      UNILOG_UNIRTOS_QSEC
+#define LOG_TAG_CMUX         UNILOG_UNIRTOS_CMUX
+#define LOG_TAG_FIREWALL_API UNILOG_UNIRTOS_QFWL
+#define LOG_TAG_NETDEV      UNILOG_UNIRTOS_QNDV
+#define LOG_TAG_AGORA_RTC    UNILOG_UNIRTOS_ARTC
 
 #ifdef UNIRTOS_APPS_COMPILE
 

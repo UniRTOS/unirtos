@@ -60,6 +60,7 @@ typedef enum
     QOSA_BOOT_CAUSE_PANIC,       /*!< System exception dump reset boot */
     QOSA_BOOT_CAUSE_SWRESET,     /*!< Software active reset boot */
     QOSA_BOOT_CAUSE_FOTA,        /*!< FOTA process reset boot */
+    QOSA_BOOT_CAUSE_USB,         /*!< Plug in USB to boot */
     QOSA_BOOT_CAUSE_INVALID
 } qosa_boot_cause_e;
 
@@ -171,4 +172,71 @@ qosa_power_error_e qosa_get_pwrkey_level(qosa_uint8_t *pwrkey_level);
  *        - If failed return others
  */
 qosa_power_error_e qosa_pwrkey_callback_register(qosa_pwrkey_callback pwrkey_cb);
+
+/**
+ * @brief Get power save mode
+ *
+ * @param[out] char **mode
+ *          - Returns power save mode string ("0"=disabled, "1"=enabled)
+ *
+ * @return int
+ *        - 0 if successful, non-zero if failed
+ */
+int qosa_power_get_mode(char **mode);
+
+/**
+ * @brief Set power save mode
+ *
+ * @param[in] const char *mode
+ *          - Power save mode string ("0"=disabled, "1"=enabled)
+ *
+ * @return int
+ *        - 0 if successful, non-zero if failed
+ */
+int qosa_power_set_mode(const char *mode);
+
+/**
+ * @brief Get auto shutdown time
+ *
+ * @param[out] char **time_min
+ *          - Returns shutdown time in minutes as string
+ *
+ * @return int
+ *        - 0 if successful, non-zero if failed
+ */
+int qosa_power_get_shutdown_time(char **time_min);
+
+/**
+ * @brief Set auto shutdown time
+ *
+ * @param[in] const char *time_min
+ *          - Shutdown time in minutes as string
+ *
+ * @return int
+ *        - 0 if successful, non-zero if failed
+ */
+int qosa_power_set_shutdown_time(const char *time_min);
+
+/**
+ * @brief Get auto sleep time
+ *
+ * @param[out] char **time_min
+ *          - Returns sleep time in minutes as string
+ *
+ * @return int
+ *        - 0 if successful, non-zero if failed
+ */
+int qosa_power_get_sleep_time(char **time_min);
+
+/**
+ * @brief Set auto sleep time
+ *
+ * @param[in] const char *time_min
+ *          - Sleep time in minutes as string
+ *
+ * @return int
+ *        - 0 if successful, non-zero if failed
+ */
+int qosa_power_set_sleep_time(const char *time_min);
+
 #endif /* __QOSA_POWER_H__ */

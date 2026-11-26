@@ -65,6 +65,7 @@ typedef enum
     QCM_TCP_NODELAY_OPT = 9,    /*!< Enables/Disables Nagle's algorithm to reduce latency. */
     QCM_SOCK_ERROR_OPT = 10,    /*!< Gets the pending error status of the socket. */
     QCM_SOCK_STATE_OPT = 11,    /*!< Gets the current state of the socket. */
+    QCM_SOCK_LOCAL_PORT_OPT = 12, /*!< Gets the local port number of the socket. */
 } qcm_socke_option_e;
 
 /**
@@ -154,6 +155,8 @@ typedef struct
 #define QCM_AF_INET                   2
 /** Same as PF_INET */
 #define QCM_PF_INET                   QCM_AF_INET
+/** Legacy name retained for existing cellular callers. */
+#define OSA_PF_INET                   QCM_PF_INET
 /** Same as AF_INET6 */
 #define QCM_AF_INET6                  10
 /** Same as PF_INET6 */
@@ -184,13 +187,14 @@ typedef struct
 #define QCM_TCPIP_SOCKET_CALL_BACK_ENABLE 1
 #endif
 /** Socket callback function switch */
-#if defined(CONFIG_QOSA_ASR1903_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR160X_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR1805_PLATFORM_FUNC)
+#if defined(CONFIG_QOSA_ASR1903_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR160X_PLATFORM_FUNC) \
+    || defined(CONFIG_QOSA_ASR1805_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR1803_PLATFORM_FUNC)
 #define qcm_socket_with_call_back(family, type, protocol, qcm_socket_tcpack_callback) lwip_socket_with_callback(family, type, protocol, qcm_socket_tcpack_callback)
 #elif (defined(CONFIG_QOSA_BK7238_PLATFORM_FUNC) ||defined(CONFIG_QOSA_BK7258_PLATFORM_FUNC) || defined(CONFIG_QOSA_ECR6600_PLATFORM_FUNC)) 
 #define qcm_socket_with_call_back(family, type, protocol, qcm_socket_tcpack_callback) 
-#else /* CONFIG_QOSA_ASR1903_PLATFORM_FUNC || CONFIG_QOSA_ASR160X_PLATFORM_FUNC || CONFIG_QOSA_ASR1805_PLATFORM_FUNC */
+#else /* CONFIG_QOSA_ASR1903_PLATFORM_FUNC || CONFIG_QOSA_ASR160X_PLATFORM_FUNC || CONFIG_QOSA_ASR1805_PLATFORM_FUNC || CONFIG_QOSA_ASR1803_PLATFORM_FUNC */
 #define qcm_socket_with_call_back(family, type, protocol, qcm_socket_tcpack_callback) lwip_socket_with_call_back(family, type, protocol, qcm_socket_tcpack_callback)
-#endif /* CONFIG_QOSA_ASR1903_PLATFORM_FUNC || CONFIG_QOSA_ASR160X_PLATFORM_FUNC || CONFIG_QOSA_ASR1805_PLATFORM_FUNC */
+#endif /* CONFIG_QOSA_ASR1903_PLATFORM_FUNC || CONFIG_QOSA_ASR160X_PLATFORM_FUNC || CONFIG_QOSA_ASR1805_PLATFORM_FUNC || CONFIG_QOSA_ASR1803_PLATFORM_FUNC */
 
 /** Event notification callback function interface */
 typedef void (*qcm_socket_event_cb)(int sock_hndl, int event, int code, void *user_argv);
@@ -562,5 +566,26 @@ const char *qcm_inet_ntop(int af, const void *src, char *dst, int size);
  *
  */
 int qcm_socket_get_last_close_event(int s);
+
+/**
+ * @brief Create a server (listen) socket bound to a specific IP address and port.
+ *
+ * Unlike qcm_socket_create() this function does NOT require an active PDP
+ * data call.  It is intended for server-side sockets (HTTP server, etc.)
+ * that need to bind to a LAN gateway IP or INADDR_ANY.
+ *
+ * The returned handle is a valid qcm_socket handle ?a use qcm_socket_listen(),
+ * qcm_socket_accept(), qcm_socket_read(), qcm_socket_send() and
+ * qcm_socket_close() with it.
+ *
+ * @param[in] family   Address family (QCM_AF_INET or QCM_AF_INET6)
+ * @param[in] bind_ip  Dotted-decimal IPv4 address to bind to.
+ *                     NULL or empty string ?�� INADDR_ANY.
+ * @param[in] port     Port number (host byte order), e.g. 80.
+ * @param[in] block    QOSA_TRUE for blocking, QOSA_FALSE for non-blocking.
+ *
+ * @return qcm_socket handle (>= 1) on success, negative error code on failure.
+ */
+int qcm_socket_create_server(int family, const char *bind_ip, int port, qosa_bool_t block);
 
 #endif /* __QOSA_SOCKET_H__ */

@@ -50,6 +50,7 @@
  */
 #cmakedefine CONFIG_QCM_UTILS_TLV_FUNC
 
+#cmakedefine CONFIG_QCM_UTILS_TTLV_FUNC
 /**
  * support check UTF-8 characters
  */
@@ -84,6 +85,7 @@
  * UniRTOS OSA_LWM2M function
  */
 #cmakedefine CONFIG_QCM_LWM2M_DTLS_FUNC
+#cmakedefine CONFIG_QCM_QUECTHING_FUNC
 
 /**
  * UniRTOS mini http function
@@ -94,6 +96,11 @@
  * UniRTOS lbs function
  */
 #cmakedefine CONFIG_QCM_LBS_FUNC
+
+/**
+ * UniRTOS firewall function
+ */
+#cmakedefine CONFIG_QCM_FIREWALL_FUNC
 
 /**
  * UniRTOS mms function
@@ -136,6 +143,27 @@
 #cmakedefine CONFIG_QCM_PING_FUNC
 
 /**
+ * UniRTOS hy_andlink function
+ */
+#cmakedefine CONFIG_QCM_HY_ANDLINK_FUNC
+
+/**
+ * UniRTOS MIFI function
+ */
+#cmakedefine CONFIG_QCM_MIFI_FUNC
+
+/**
+ * UniRTOS MIFI SIMPOLL function
+ */
+#cmakedefine CONFIG_QCM_MIFI_SIMPOLL_FUNC
+
+/**
+ * UniRTOS MIFI power saver function
+ */
+#cmakedefine CONFIG_QCM_MIFI_POWER_SAVER_FUNC
+
+
+/**
  * UniRTOS urc function
  */
 #cmakedefine CONFIG_QCM_URC_FUNC
@@ -149,6 +177,16 @@
  * UniRTOS spi nor function
  */
 #cmakedefine CONFIG_QCM_SPI_NOR_FUNC
+
+/**
+ * UniRTOS VNET function
+ */
+#cmakedefine CONFIG_QCM_VNET_FUNC
+
+/**
+ * UniRTOS VNET SPI function
+ */
+#cmakedefine CONFIG_QCM_VNET_SPINET_FUNC
 
 /**
  * UniRTOS dmhttp function
@@ -215,12 +253,44 @@
  * UniRTOS gnss function
  */
 #cmakedefine CONFIG_QCM_GNSS_FUNC
+#cmakedefine CONFIG_QCM_GNSS_CC1161_UART_PORT @CONFIG_QCM_GNSS_CC1161_UART_PORT@
+#cmakedefine CONFIG_QCM_GNSS_CC1161_UART_FUNC @CONFIG_QCM_GNSS_CC1161_UART_FUNC@
+#cmakedefine CONFIG_QCM_GNSS_CC1161_UART_TX_PIN @CONFIG_QCM_GNSS_CC1161_UART_TX_PIN@
+#cmakedefine CONFIG_QCM_GNSS_CC1161_UART_RX_PIN @CONFIG_QCM_GNSS_CC1161_UART_RX_PIN@
+#cmakedefine CONFIG_QCM_GNSS_CC1161_VMAIN_PIN @CONFIG_QCM_GNSS_CC1161_VMAIN_PIN@
+#cmakedefine CONFIG_QCM_GNSS_CC1161_VMAIN_FUNC @CONFIG_QCM_GNSS_CC1161_VMAIN_FUNC@
+#cmakedefine CONFIG_QCM_GNSS_CC1161_RESET_PIN @CONFIG_QCM_GNSS_CC1161_RESET_PIN@
+#cmakedefine CONFIG_QCM_GNSS_CC1161_VBACK_PIN @CONFIG_QCM_GNSS_CC1161_VBACK_PIN@
+#cmakedefine CONFIG_QCM_GNSS_CC1161_VMAIN_GPIO @CONFIG_QCM_GNSS_CC1161_VMAIN_GPIO@
+#cmakedefine CONFIG_QCM_GNSS_CC1161_RESET_GPIO @CONFIG_QCM_GNSS_CC1161_RESET_GPIO@
+#cmakedefine CONFIG_QCM_GNSS_CC1161_VBACK_GPIO @CONFIG_QCM_GNSS_CC1161_VBACK_GPIO@
+#cmakedefine CONFIG_QCM_GNSS_CC1161_CLK32_PIN @CONFIG_QCM_GNSS_CC1161_CLK32_PIN@
+#cmakedefine CONFIG_QCM_GNSS_CC1161_CLK32_FUNC @CONFIG_QCM_GNSS_CC1161_CLK32_FUNC@
 
 /**
  * UniRTOS Utils Xmodem function
  */
 #cmakedefine CONFIG_QCM_UTILS_XMODEM_FUNC
 
+/**
+ * UniRTOS webui function
+ */
+#cmakedefine CONFIG_QCM_WEBUI_FUNC
+
+/**
+ * UniRTOS Aliyun Link SDK function
+ */
+#cmakedefine CONFIG_QCM_ALIYUN_LINK_SDK_FUNC
+
+/**
+ * UniRTOS Agora RTSA SDK function
+ */
+#cmakedefine CONFIG_QCM_AGORA_RTSA_SDK_FUNC
+
+/**
+ * UniRTOS operator auth function
+ */
+#cmakedefine CONFIG_QCM_OPAUTH_FUNC
 
 /******************************************************************************
  *    Business layer task control
@@ -257,6 +327,12 @@
 #cmakedefine CONFIG_QCM_MQTT_TASK_STACK_SIZE @CONFIG_QCM_MQTT_TASK_STACK_SIZE@
 
 /**
+ * @brief FIREWALL business layer task stack size
+ * @brief Stack size for FIREWALL business layer task
+ */
+#cmakedefine CONFIG_QCM_FIREWALL_TASK_STACK_SIZE @CONFIG_QCM_FIREWALL_TASK_STACK_SIZE@
+
+/**
  * @brief NTP TASK stack size
  * @brief Stack size for NTP task
  */
@@ -281,6 +357,12 @@
 #cmakedefine CONFIG_QCM_PING_TASK_STACK_SIZE @CONFIG_QCM_PING_TASK_STACK_SIZE@
 
 /**
+ * @brief hy_andlink thread stack size
+ * @brief Stack size for hy_andlink task
+ */
+#cmakedefine CONFIG_QCM_HY_ANDLINK_TASK_STACK_SIZE @CONFIG_QCM_HY_ANDLINK_TASK_STACK_SIZE@
+
+/**
  * @brief LBS TASK stack size
  * @brief Stack size for LBS task
  */
@@ -302,5 +384,17 @@
  * @brief Stack size for urc ri task
  */
 #cmakedefine CONFIG_QCM_URC_RI_TASK_STACK_SIZE @CONFIG_QCM_URC_RI_TASK_STACK_SIZE@
+
+/**
+ * @brief qurl ftp offset setting
+ * @brief qurl ftp offset setting
+ */
+#cmakedefine CONFIG_QCM_QURL_FTP_OFFSET_SETTING
+
+/**
+ * @brief Network get cell fail backfill
+ * @brief Backfill serving cell location information from cached registration IND when network get cell fails
+ */
+#cmakedefine CONFIG_QCM_NETWORK_GET_CELL_FAIL_BACKFILL
 
 #endif /* _QCM_CONPONENTS_CONFIG_H_ */

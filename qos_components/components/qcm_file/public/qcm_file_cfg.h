@@ -31,7 +31,11 @@
 // QCM_USER_DIR_ROOT is the directory for user file
 // under QCM_USER_DIR_ROOT, you should only use unir_vfs_xxxxx interface to do file access.
 /** QCM_USER_DIR_ROOT defined according to the platform file system */
-#if defined(CONFIG_QOSA_EIGEN718_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR1903_PLATFORM_FUNC) || defined(CONFIG_QOSA_UIS8852_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR160X_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR1805_PLATFORM_FUNC)
+#if defined(CONFIG_QOSA_EIGEN718_PLATFORM_FUNC) || defined(CONFIG_QOSA_QCX216_PLATFORM_FUNC)\
+ || defined(CONFIG_QOSA_ASR1903_PLATFORM_FUNC) || defined(CONFIG_QOSA_UIS8852_PLATFORM_FUNC)\
+ || defined(CONFIG_QOSA_ASR160X_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR1805_PLATFORM_FUNC)\
+ || defined(CONFIG_QOSA_UIS8360S_PLATFORM_FUNC) || defined(CONFIG_QOSA_XY4100_PLATFORM_FUNC)\
+ || defined(CONFIG_QOSA_UIS8910_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR1803_PLATFORM_FUNC)
 #define QCM_USER_DIR_ROOT      "/user/"
 #define QCM_USER_DIR_ROOT_LEN  6  //only check first 5 characters
 #else /* CONFIG_QOSA_EIGEN718_PLATFORM_FUNC */

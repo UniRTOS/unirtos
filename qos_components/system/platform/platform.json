@@ -1,10 +1,68 @@
 {
 	"asr_1903": [
-		"RG255AACN_AA"
+		"RG255AACN_AA",
+		"RG255AACN_AM",
+		"RG255AAEU_AA",
+		"RG255ACCN_AM"
+	],
+
+	"asr_1805": [
+		"EG200ADCN_LD",
+		"EG200ADCN_LH",
+		"QEC230ADP_CN"
+	],
+
+	"asr_1803": [
+		"EC200AEU_V1HA",
+		"EG950AEL_LC"
 	],
 
 	"asr_160x": [
-		"EG810MEU_LA"
+		"EG810MEU_LA",
+		"EG915NEA_AK",
+		"EG915KEU_LC",
+		"EG800AKGL_11LC",
+		"EG800AKCN_91LC",
+		"EG810MGL_LA",
+		"EG810MCN_GB",
+		"EC800MCN_LA",
+		"EC800MCN_LE",
+		"EG810MCN_LA",
+		"EC600MCN_LA",
+		"EC600MCN_LE",
+		"EC600MEU_LA",
+		"EC600MLA_LA",
+		"EC200MCN_LA",
+		"EC200MCN_LE",
+		"EG800AKEU_11LC",
+		"EG800AKEU_11LG",
+		"EG800AKCN_11LN",
+		"EG800AKCN_11LG",
+		"EG800AKCN_11LM",
+		"EG600AKCN_11LG",
+		"EG600AKCN_91LC",
+		"EG600AKCN_11LC",
+		"EG810AKCN_11LC",
+		"EG800AKLA_11LG",
+		"EG800AKLA_11LC",
+		"EG915KEU_LA",
+		"EG915KEU_LG",
+		"EG915KLA_LA",
+		"EG915KLA_LC",
+		"EG915KLA_LG",
+		"EC600KCN_LC",
+		"EC600KCN_LK",
+		"EC800KCN_LC",
+		"EC800KCN_LK",
+		"EC800KCN_MD",
+		"EG800KCN_GC",
+		"EG800KEU_LC",
+		"EG800KLA_LC",
+		"EG915NLA_AN",
+		"EG915NLA_AL",
+		"EG915NLA_AK",
+		"EG915NEA_AN",
+		"EG915AKEU_11LC"
 	],
 
 	"eigen": [
@@ -19,9 +77,12 @@
 
 	"eigen_718": [
 		"EG800ZEU_LA",
+		"EG800ZEU_LT",
 		"EG800ZCN_LA",
+		"EG900ZCN_LA",
 		"EC800ZCN_LF",
 		"EG800ZLA_LA",
+		"EG800ZLA_LT",
 		"EG800ZGL_LA",
 		"EG800ZCN_LG",
 		"EG800ZCN_LH",
@@ -41,9 +102,24 @@
 	"Linux": [
 		"ubuntu"
 	],
-	
+
 	"uis8852": [
 		"EC800UGCN_LB"
+	],
+
+	"uis8910": [
+		"EC200UEU_DC",
+        "EC600UEC_DC",
+        "EC600UEU_DC"
+	],
+
+	"uis8360s": [
+		"QRC255UCACN_SA",
+        "RG155UCCN_SA"
+	],
+
+	"xy4100": [
+		"EG800YACN_11LC"
 	],
 
 	"qcx216": [
@@ -51,12 +127,15 @@
 		"EG800QNA_LC",
 		"EG800QNAD_LC",
 		"EG800QIN_LC",
+        "EG800QGL_LC",
 		"EG915QNA_LC",
 		"EG915QNA_LG",
 		"EG915QAF_LG",
 		"EG916QGL_LG",
 		"EG915QJP_LC",
-		"EG915QJP_LG"
+				"EG915QJP_LG",
+				"EG915QNAD_LG",
+				"EG216QGL_LG"
 	],
 	"bk7258": [
 		"FCM665D"

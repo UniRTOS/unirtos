@@ -55,6 +55,7 @@ typedef enum
 {
     // Currently, only the cmd for setting the fota mode has been added, and additional ones can be added as needed in the future
     QOSA_FOTA_OPT_CMD_SET_FOTA_MODE = 0,  // Set Upgrade Mode
+    QOSA_FOTA_OPT_CMD_SET_MINI_URL,       // Set the package URL of QOSA_FOTA_MINI_MODE, param = char * (ASR160X), see the end of this file
 }qosa_fota_opt_cmd_e;
 
 typedef enum
@@ -62,6 +63,7 @@ typedef enum
     // DFOTA uses the original factory differential upgrade, while fullfota uses the full upgrade newly added by Quec
     QOSA_FOTA_DFOTA_MODE = 0, // Default DFOTA
     QOSA_FOTA_FULL_MODE, // Full FOTA
+    QOSA_FOTA_MINI_MODE, // Mini-system FOTA (ASR160X): the mini system downloads the package after a reboot, see the end of this file
 }qosa_fota_mode_e;
 
 /**
@@ -81,6 +83,9 @@ typedef void *qosa_fota_t;
  * @return osa_fota_manage_t *
  *       - Return corresponding FOTA management handle pointer if successful
  *       - Return OSA_NULL if failed
+ *
+ * @note QOSA_FOTA_MINI_MODE (ASR160X): fota_name must be QOSA_NULL, the package URL is set with
+ *       QOSA_FOTA_OPT_CMD_SET_MINI_URL before, see the end of this file
  */
 qosa_fota_t *qosa_fota_init(char *fota_name, qosa_bool_t del_old_file);
 
@@ -262,4 +267,57 @@ int qosa_fota_updater_start(void);
  *       - Return other values if failed
  */
 qosa_fota_errno_e qosa_fota_set_opt(qosa_fota_opt_cmd_e cmd, void *param);
+
+/*
+ * Mini-system FOTA: QOSA_FOTA_MINI_MODE, ASR160X only.
+ *
+ * The main system only checks the request and arms the mini system. After the reboot the mini
+ * system downloads and applies the package on its own, like AT+QFOTADL, reports the
+ * +QIND: "FOTA" URCs on the AT ports and boots the new firmware.
+ *   qosa_fota_set_opt(QOSA_FOTA_OPT_CMD_SET_FOTA_MODE, QOSA_FOTA_MINI_MODE)
+ *   qosa_fota_get_default_packname()  gives an empty name in this mode: there is no package
+ *                                     file, the URL goes to QOSA_FOTA_OPT_CMD_SET_MINI_URL
+ *   qosa_fota_set_opt(QOSA_FOTA_OPT_CMD_SET_MINI_URL, url)
+ *                                     NUL-terminated http:// or https:// URL, at most 255 bytes,
+ *                                     ending with the file name. Its extension gives the layout:
+ *                                     ending in '1' (<name>.mini_1) = two packages, <name>.mini_2
+ *                                     sits next to it; anything else = one merged package.
+ *                                     QOSA_FOTA_PARAM_ERROR if the URL cannot be used.
+ *   qosa_fota_init(QOSA_NULL, QOSA_TRUE)
+ *                                     opens the request for that URL. QOSA_NULL if no URL was set,
+ *                                     in the mini system, or while another request is open. Each
+ *                                     request takes the URL, the next one sets it again.
+ *   qosa_fota_verify_image()          merged package: downloads its first 4 KB over PDP context 1,
+ *                                     which the mini system uses too, and checks them against
+ *                                     the running firmware (QOSA_FOTA_READ_ERROR: no HTTP
+ *                                     206, connect, DNS or TLS; QOSA_FOTA_IMAGE_VERIFY_ERROR: wrong
+ *                                     package). Then saves the URL (QOSA_FOTA_FLASH_WRITE_ERROR).
+ *                                     Secure FOTA (signature check before the reboot) is not
+ *                                     supported yet.
+ *   qosa_fota_deinit()
+ *   qosa_fota_flag_set()              arms the mini system, it starts at the next reboot
+ *   qosa_power_reset(QOSA_RESET_FOTA) reboot now, or leave it to a later reboot
+ * Blocking calls, the task needs at least 8 KB of stack. Do not run it together with AT+QFOTADL.
+ *
+ * Application full FOTA: QOSA_FOTA_FULL_MODE, ASR160X OpenCPU builds only.
+ *
+ * It needs a "customer_fs" partition in the flash layout (the customer adds it to the partition
+ * JSON and to the download template). The kernel mounts that partition as its own LittleFS
+ * volume; without it qosa_fota_set_opt() refuses QOSA_FOTA_FULL_MODE with
+ * QOSA_FOTA_NOT_SUPPORT_ERROR.
+ *
+ * The package is the FBFMake full package of ap_application.bin of the CSDK build
+ * (fbfmake_full.bat: FBFMake -f config -a a -b a, one image whose Flash_Entry_Address is the offset
+ * of ap_application), as for the application full FOTA of the ASR1606 open SDK. A raw
+ * ap_application.bin is refused.
+ *   qosa_fota_set_opt(QOSA_FOTA_OPT_CMD_SET_FOTA_MODE, QOSA_FOTA_FULL_MODE)
+ *   qosa_fota_init(path or QOSA_NULL, QOSA_TRUE), qosa_fota_write_packet_data() ...
+ *   qosa_fota_verify_image(), qosa_fota_deinit(), qosa_fota_flag_set(), then reset.
+ * In this mode qosa_fota_get_default_packname() returns the package file that QOSA_NULL selects.
+ * qosa_fota_init(path, QOSA_FALSE) verifies a package file that is already on the module instead.
+ * At the next boot the kernel copies the image into ap_application before the application
+ * starts, then reboots once more. qosa_fota_get_update_result() reports that install until
+ * qosa_fota_file_reset() deletes the package and its record.
+ */
+
 #endif /* __QOSA_FOTA_H__ */

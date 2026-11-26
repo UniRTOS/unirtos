@@ -1394,55 +1394,6 @@ qosa_int64_t qcm_file_total_size(const char *path)
 }
 
 /**
- * @brief Convert the errno error value from system file operations to custom ERROR codes
- *
- * @return qcm_file_error_e
- *        - Corresponding converted error code
- */
-static qcm_file_error_e file_errocode_get(void)
-{
-    qcm_file_error_e errcode = QCM_FILE_OK;
-
-#ifdef CONFIG_QOSA_LINUX_PLATFORM_FUNC
-    switch (errno)
-#else
-    switch (qosa_get_errno())
-#endif
-    {
-        case ENOENT:
-            errcode = QCM_FILE_NOT_FOUND;
-            break;
-
-        case ENOMEM:
-        case ENOSPC:
-        case EOVERFLOW:
-            errcode = QCM_FILE_NO_SPACE;
-            break;
-
-        case EROFS:
-            errcode = QCM_FILE_DEVICE_READONLY;
-            break;
-        case ENOTDIR:
-            errcode = QCM_FILE_DIR_NOT_EXIST;
-            break;
-
-        case ENAMETOOLONG:
-            errcode = QCM_FILE_INVALID_FILE_NAME;
-            break;
-
-        case EBUSY:
-            errcode = QCM_FILE_ALREADY_OPERATION;
-            break;
-        case EMLINK:
-            errcode = QCM_FILE_CREATE_EXCEED;
-            break;
-        default:
-            break;
-    }
-    return errcode;
-}
-
-/**
  * @brief Corresponding to the fopen function in POSIX
  *
  * @param[in] const char * file_name
@@ -1503,19 +1454,9 @@ Q_FILE qcm_file_fopen(const char *file_name, const char *mode)
     file_id = qosa_vfs_open(file_real_path, open_mode);
     if (file_id <= 0)
     {
-        QLOGV("file_id = %d", file_id);
-        err = file_errocode_get();
-        if (err)
-        {
-            QLOGE("file open failed, errcode %x", err);
-            return err;
-        }
-/** Value specified by the platform interface */
-#if defined(CONFIG_QOSA_ASR1903_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR160X_PLATFORM_FUNC) || defined(CONFIG_QOSA_ASR1805_PLATFORM_FUNC)
-        err = (file_id == OSA_LFS_FILE_IS_OPENED_TOO_MUCH ? QCM_FILE_REACH_MAX_OPENFILE_NUM : QCM_FILE_FAILED_TO_OPEN_FILE);
-#else /* CONFIG_QOSA_ASR1903_PLATFORM_FUNC || CONFIG_QOSA_ASR160X_PLATFORM_FUNC || CONFIG_QOSA_ASR1805_PLATFORM_FUNC */
-        err = QCM_FILE_FAILED_TO_OPEN_FILE;
-#endif /* CONFIG_QOSA_ASR1903_PLATFORM_FUNC || CONFIG_QOSA_ASR160X_PLATFORM_FUNC || CONFIG_QOSA_ASR1805_PLATFORM_FUNC */
+        QLOGE("file open failed, file_id %d", file_id);
+        // reference : qosa_errno.h
+        err = (file_id == -ENFILE ? QCM_FILE_REACH_MAX_OPENFILE_NUM : QCM_FILE_FAILED_TO_OPEN_FILE);
         return err;
     }
 
@@ -1606,13 +1547,9 @@ int qcm_file_open_ex(const char *file_name, int mode, qosa_bool_t open_platform)
     file_id = qosa_vfs_open(file_real_path, mode);
     if (file_id <= 0)
     {
-        err = file_errocode_get();
-        if (err)
-        {
-            QLOGE("file open failed, errcode %x", err);
-            return err;
-        }
-        return QCM_FILE_FAILED_TO_OPEN_FILE;
+        QLOGE("file open failed, file_id %d", file_id);
+        err = (file_id == -ENFILE ? QCM_FILE_REACH_MAX_OPENFILE_NUM : QCM_FILE_FAILED_TO_OPEN_FILE);
+        return err;
     }
 
     file_info.fd = file_id;
@@ -1703,12 +1640,7 @@ int qcm_file_remove(const char *file_name)
     ret = qosa_vfs_unlink(file_real_path);
     if (ret != 0)
     {
-        int errcode = file_errocode_get();
-        if (errcode)
-        {
-            QLOGE("delete file failed, errcode %x,%s", errcode, file_name);
-            return errcode;
-        }
+        QLOGE("delete file failed, ret %d,%s", ret, file_name);
         return QCM_FILE_DELETE_FILE_FAIL;
     }
 
@@ -2132,7 +2064,10 @@ int qcm_file_mkdir(const char *path, qosa_uint32_t mode)
         }
         else
 #else
-        if (qosa_get_errno() == EEXIST)  //dir exist
+        //rtos: judge by the return value of the vfs adapter, all platforms
+        //report an existing directory as -EEXIST(-17); errno is not set by
+        //the adapters on this path, so it must not be used here.
+        if (ret == -EEXIST)  //dir exist
         {
             require_action(ret, return QCM_FILE_DIR_ALREADY_EXIST, "Dir is already exist");
         }
