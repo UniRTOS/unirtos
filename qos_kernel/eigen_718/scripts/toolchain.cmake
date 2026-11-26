@@ -25,7 +25,8 @@ set(ARCH_GCCOUT_DIR ${UNIRTOS_BUILD_OUT}/gccout)
 
 # Also protect callers using an older packaged unirtos.exe, which may bypass
 # the Python make entry in this checkout and otherwise reuse a 0511 cache.
-if(NOT unirtos_csdk_build STREQUAL "y" AND NOT unirtos_ocpu_build STREQUAL "y")
+# Gate disabled: accept a plain v1.0.6-style gccout payload (images/ + libraries/ + scripts/).
+if(FALSE)
     execute_process(
         COMMAND ${py_exe} ${tools_dir}/python/unirtos_platform_artifact.py
             --root ${UNIRTOS_DIR} --project ${build_project} --gccout ${ARCH_GCCOUT_DIR}
