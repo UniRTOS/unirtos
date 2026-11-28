@@ -5,8 +5,6 @@ import os
 from pathlib import Path
 import shutil
 
-from unirtos_platform_artifact import ensure_a04_gccout
-
 from unirtos_common import (
     ARM_ARCH_LIST,
     DEFAULT_BUILD_MODEMAPP,
@@ -247,9 +245,6 @@ def clean_for_new(output_root: Path):
 
 
 def ensure_gccout_for_app(sdk_root_path: Path, output_root: Path, arch: str, project: str, toolchain_root: Path):
-    if arch == "eigen_718":
-        ensure_a04_gccout(sdk_root_path, output_root, project, toolchain_root)
-        return
     firmware_pack = firmware_pack_path(output_root)
     gccout_dir = gccout_dir_path(output_root)
     gccout_libraries = gccout_dir / "libraries"
